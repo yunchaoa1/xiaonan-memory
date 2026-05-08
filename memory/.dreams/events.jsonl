@@ -1,0 +1,3 @@
+{"type":"memory.recall.recorded","timestamp":"2026-05-08T02:44:28.009Z","query":"pending tasks heartbeat reminders today","resultCount":1,"results":[{"path":"memory/2026-05-08.md","startLine":47,"endLine":67,"score":1}]}
+{"type":"memory.recall.recorded","timestamp":"2026-05-08T05:07:09.708Z","query":"白绮罗穿书 LoRA 训练 21:43","resultCount":1,"results":[{"path":"memory/2026-05-08.md","startLine":1,"endLine":30,"score":1}]}
+{"type":"memory.recall.recorded","timestamp":"2026-05-08T08:08:40.561Z","query":"白绮罗穿书 LoRA 训练 启动时间 checkpoint","resultCount":3,"results":[{"path":"memory/2026-05-08.md","startLine":1,"endLine":30,"score":1},{"path":"memory/2026-05-08.md","startLine":25,"endLine":50,"score":1},{"path":"memory/2026-05-08.md","startLine":47,"endLine":78,"score":1}]}
