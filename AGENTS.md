@@ -50,6 +50,24 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - When you make a mistake → document it so future-you doesn't repeat it
 - **Text > Brain** 📝
 
+## 🔄 GitHub Memory Sync（双机记忆同步）
+
+Workspace 是一个 Git 仓库，远程地址：`git@github.com:yunchaoa1/xiaonan-memory.git`（SSH）
+
+**自动 push（每次写完记忆后）：**
+- 更新了 MEMORY.md → 立即 git add + commit + push
+- 写了 memory/YYYY-MM-DD.md → 立即 git add + commit + push
+- 改了 SOUL.md / AGENTS.md / IDENTITY.md → 同上
+- 不需要等凡哥提醒，自动执行
+
+**自动 pull（每次 session 启动时）：**
+- 启动后先 git pull，确保跟另一台电脑的小南记忆同步
+- 如果有冲突（两台同时改了同一文件），以 GitHub 版本为准，手工合并
+
+**Heartbeat 定期维护：**
+- 每天 1-2 次检查 git status，确认没有滞留未提交的记忆
+- 每周做一次 git gc 清理
+
 ## Red Lines
 
 - **先问再做**：执行任何操作前，先告知凡哥你要做什么，等他明确回复同意后再动手。不要擅自做主，不要自己决定就开始。
