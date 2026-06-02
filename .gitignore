@@ -1,4 +1,52 @@
-TOOLS.md
+# 媒体文件（太大，不同步）
+*.mp3
+*.flac
+*.wav
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 临时/脚本
 *.log
-双机小南部署方案.md
-开源AI短剧管线方案-汇报总结.md
+*.safetensors
+*.yaml
+
+# OpenClaw 系统文件
+.openclaw/
+skills/
+comfyui-wsl.skill
+
+# 项目临时目录
+gemini-proxy/
+video_frames/
+workflows/
+
+# 临时代理/工具
+auto_shutdown.py
+auto_resume_training.py
+monitor_training_shutdown.py
+batch_upscale.py
+download_models.py
+download_clip_vae.py
+tmp_check_comfyui.ps1
+
+# 生图脚本（项目用）
+gen_*.py
+step1_*.py
+lora_*.py
+make_*.py
+digest_panorama.py
+panorama_digest_v2.py
+update_kf_to_firstframe.py
+strength_test_old.py
+
+# 中间产物
+*.xlsx
+*.json
