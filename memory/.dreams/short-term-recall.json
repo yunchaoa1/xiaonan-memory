@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-08T08:08:40.561Z",
+  "updatedAt": "2026-05-19T09:08:23.303Z",
   "entries": {
     "memory:memory/2026-05-08.md:47:67": {
       "key": "memory:memory/2026-05-08.md:47:67",
@@ -40,16 +40,17 @@
       "endLine": 30,
       "source": "memory",
       "snippet": "# 2026-05-08 日志 ## 白绮罗穿书 LoRA 训练状态（07:40-10:01） ### 训练运行确认 - 训练于昨天 21:42 启动，PID 14008，Python 进程 `D:\\Python312\\python.exe` - GPU 100% 利用率，显存 15684/16303 MB（几乎跑满） - 温度 57°C，运行近 12 小时后仍在跑 - **但输出目录 `D:\\ai-toolkit-win\\output\\白绮罗穿书_lora_5000\\` 中没有任何 checkpoint 文件** - 只有 config.yaml（21:43 创建） - 可能原因：训练速度极慢，还没跑到 250 步；或保存功能有问题 ### 训练 config 关键参数（从 config.yaml 读取） - 多分辨率训练：[768, 1024, 1280] - 数据集：35 张图，D:\\SDkecheng\\白绮罗穿书_processed\\ - save_every: 250, max_step_saves_to_keep: 4 - disable_sampling: true（不生成采样图，省时间） - 优化器：adamw, lr=0.0001 - 梯度检查点：开启，noise_scheduler: flowmatch - 底模：Z-Image-Turbo FP8 量化 ### 训练速度估算 - Z-Image 模型规模巨大（与 Flux 同级），16GB 笔记本 GPU 跑得很吃力 - 估算每个 step 约 3-10 分钟 - 250 步约需 21 小时",
-      "recallCount": 2,
+      "recallCount": 3,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 2,
+      "totalScore": 3,
       "maxScore": 1,
       "firstRecalledAt": "2026-05-08T05:07:09.708Z",
-      "lastRecalledAt": "2026-05-08T08:08:40.561Z",
+      "lastRecalledAt": "2026-05-08T10:09:15.927Z",
       "queryHashes": [
         "4e203e37c59e",
-        "d1814edbfaba"
+        "d1814edbfaba",
+        "d53f34102c6e"
       ],
       "recallDays": [
         "2026-05-08"
@@ -72,15 +73,16 @@
       "endLine": 50,
       "source": "memory",
       "snippet": "- 250 步约需 21 小时（以此推算，12 小时没到第 250 步是可能的） - **5000 步预计需要数天甚至数周** - 之前 2000 步旧 LoRA 效果差，但旧数据集只有 29 张、标注错误 ### 关键讨论 - 凡哥决定不关机，电脑留在家继续跑训练 - AI Toolkit CLI 不支持暂停/恢复，关机 = 进程终止 = 从头开始 - max_step_saves_to_keep: 4 是滚动保留最近 4 个 checkpoint（不是攒够 4 个才保存） - 显存跑满时无法同时测试 LoRA，只能等训练跑完 - 教程里老师跑 5000 步用的是 SD1.5/SDXL（模型小），不适用于 Z-Image --- ## 记忆系统建立（10:04-10:20） ### 讨论背景 凡哥发现很多小细节之前聊过但小南会忘记，希望建立更好的记忆机制。 ### 最终方案 1. **每日详细日志**：写入 `memory/YYYY-MM-DD.md`，记得越详细越好 2. **长期重要记忆**：写入 `MEMORY.md`，永久保留 3. **自动沉淀**：小南自行判断，聊到决策/偏好/结论/重要信息时主动记录，不等凡哥开口 4. **半年清理**：不重要记忆半年后新替旧，重要的一直不变 5. **关机前回顾**：凡哥说「要关机了」时，小南自动回顾当日内容 6. **崩溃恢复**：即使会话崩溃，文件已写，重启后读取日志即可恢复上下文",
-      "recallCount": 1,
+      "recallCount": 2,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 1,
+      "totalScore": 1.6322486223285462,
       "maxScore": 1,
       "firstRecalledAt": "2026-05-08T08:08:40.561Z",
-      "lastRecalledAt": "2026-05-08T08:08:40.561Z",
+      "lastRecalledAt": "2026-05-08T10:09:15.927Z",
       "queryHashes": [
-        "d1814edbfaba"
+        "d1814edbfaba",
+        "d53f34102c6e"
       ],
       "recallDays": [
         "2026-05-08"
@@ -103,15 +105,16 @@
       "endLine": 78,
       "source": "memory",
       "snippet": "4. **半年清理**：不重要记忆半年后新替旧，重要的一直不变 5. **关机前回顾**：凡哥说「要关机了」时，小南自动回顾当日内容 6. **崩溃恢复**：即使会话崩溃，文件已写，重启后读取日志即可恢复上下文 ### 磁盘空间确认 - 当前所有记忆文件仅约 40KB - 纯文本 md 文件极小，一年日志约 2-5 MB - 对比 D 盘模型文件（Z-Image 31GB），完全可以忽略 - 凡哥确认：不用担心空间，记得越详细越好 ### 上下文状态 - 当前会话上下文：55k/1M tokens（6%），安全 - 模型：DeepSeek V4 Pro，1M 上下文窗口 --- --- ## 开源短剧管线讨论（10:34-11:04） ### 开源 vs 闭源 - 凡哥公司测试过闭源平台，领导对一站式方案不感兴趣 - 原因：成本不可控，质量不可预测，变现不确定 - 策略：纯开源，用数量战胜质量，大批量产出 ### 7 步开源管线 ``` 1.剧本(LLM) → 2.角色(ComfyUI+LoRA) → 3.分镜(LLM) → 4.关键帧(ComfyUI) → 5.视频(LTX-2.3) → 6.配音(TTS) → 7.合成(ffmpeg) ``` - 全部本地运行，零外部 API 成本 - 步骤 5 和步骤 6 保持分离（LTX-2.3 音画同出不稳定时独立控制） - 凡哥角色：创意总监 + 审核；小南角色：全自动执行引擎",
-      "recallCount": 1,
+      "recallCount": 2,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 1,
+      "totalScore": 1.632151575983524,
       "maxScore": 1,
       "firstRecalledAt": "2026-05-08T08:08:40.561Z",
-      "lastRecalledAt": "2026-05-08T08:08:40.561Z",
+      "lastRecalledAt": "2026-05-08T10:09:15.927Z",
       "queryHashes": [
-        "d1814edbfaba"
+        "d1814edbfaba",
+        "d53f34102c6e"
       ],
       "recallDays": [
         "2026-05-08"
@@ -125,6 +128,961 @@
         "2.角色",
         "3.分镜",
         "4.关键帧"
+      ]
+    },
+    "memory:memory/2026-05-08.md:1:35": {
+      "key": "memory:memory/2026-05-08.md:1:35",
+      "path": "memory/2026-05-08.md",
+      "startLine": 1,
+      "endLine": 35,
+      "source": "memory",
+      "snippet": "# 2026-05-08 日志 ## 白绮罗穿书 LoRA 训练状态（07:40-10:01） ### 训练运行确认 - 训练于昨天 21:42 启动，PID 14008，Python 进程 `D:\\Python312\\python.exe` - GPU 100% 利用率，显存 15684/16303 MB（几乎跑满） - 温度 57°C，运行近 12 小时后仍在跑 - **但输出目录 `D:\\ai-toolkit-win\\output\\白绮罗穿书_lora_5000\\` 中没有任何 checkpoint 文件** - 只有 config.yaml（21:43 创建） - 可能原因：训练速度极慢，还没跑到 250 步；或保存功能有问题 ### 训练 config 关键参数（从 config.yaml 读取） - 多分辨率训练：[768, 1024, 1280] - 数据集：35 张图，D:\\SDkecheng\\白绮罗穿书_processed\\ - save_every: 250, max_step_saves_to_keep: 4 - disable_sampling: true（不生成采样图，省时间） - 优化器：adamw, lr=0.0001 - 梯度检查点：开启，noise_scheduler: flowmatch - 底模：Z-Image-Turbo FP8 量化 ### 训练速度估算 - Z-Image 模型规模巨大（与 Flux 同级），16GB 笔记本 GPU 跑得很吃力 - 估算每个 step 约 3-10 分钟 - 250 步约需 21 小时",
+      "recallCount": 19,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 19,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T00:54:04.143Z",
+      "lastRecalledAt": "2026-05-17T22:51:22.616Z",
+      "queryHashes": [
+        "93c6bb221c06",
+        "23f913bbcf52",
+        "07faa1129c11",
+        "d1814edbfaba",
+        "c925116c8f70",
+        "ec599e44f164",
+        "52e02580e71b",
+        "5d003463a096",
+        "72c5af341824",
+        "1bf6fb6f2aa5",
+        "4c64d6405260",
+        "48172de5495e",
+        "72a657f09aa3",
+        "cbe8186aec64",
+        "2c1932155165",
+        "6a1082976a32",
+        "1132be35aad4",
+        "b7cb56f5726c",
+        "95a610720f40"
+      ],
+      "recallDays": [
+        "2026-05-09",
+        "2026-05-10",
+        "2026-05-11",
+        "2026-05-13",
+        "2026-05-14",
+        "2026-05-18"
+      ],
+      "conceptTags": [
+        "40-10",
+        "python.exe",
+        "15684/16303",
+        "ai-toolkit-win",
+        "白绮罗穿书-lora-5000",
+        "config.yaml",
+        "白绮罗穿书-processed",
+        "save-every"
+      ]
+    },
+    "memory:memory/2026-05-08.md:68:103": {
+      "key": "memory:memory/2026-05-08.md:68:103",
+      "path": "memory/2026-05-08.md",
+      "startLine": 68,
+      "endLine": 103,
+      "source": "memory",
+      "snippet": "- 凡哥确认：不用担心空间，记得越详细越好 ### 上下文状态 - 当前会话上下文：55k/1M tokens（6%），安全 - 模型：DeepSeek V4 Pro，1M 上下文窗口 --- --- ## 开源短剧管线讨论（10:34-11:04） ### 开源 vs 闭源 - 凡哥公司测试过闭源平台，领导对一站式方案不感兴趣 - 原因：成本不可控，质量不可预测，变现不确定 - 策略：纯开源，用数量战胜质量，大批量产出 ### 7 步开源管线 ``` 1.剧本(LLM) → 2.角色(ComfyUI+LoRA) → 3.分镜(LLM) → 4.关键帧(ComfyUI) → 5.视频(LTX-2.3) → 6.配音(TTS) → 7.合成(ffmpeg) ``` - 全部本地运行，零外部 API 成本 - 步骤 5 和步骤 6 保持分离（LTX-2.3 音画同出不稳定时独立控制） - 凡哥角色：创意总监 + 审核；小南角色：全自动执行引擎 - 执行策略：逐个击破，等白绮罗 LoRA 跑完从步骤 1 开始 ### LTX-2.3 模型发现 - 凡哥提到的\"TXL2.3\"实际是 **LTX-2.3** - 以色列 Lightricks 公司，**已开源！** - 22B 参数，DiT 架构，原生 ComfyUI 支持 - 音画同出（端到端音视频联合生成）、4K/20秒/48FPS - 支持 LoRA 微调，有蒸馏加速版 - 纳入 7 步管线，是步骤 5 核心方案 ### 汇报总结文件 - 生成了 `开源AI短剧管线方案-汇报总结.md`（2685 字节）",
+      "recallCount": 4,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 3.263886574597456,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T01:17:06.586Z",
+      "lastRecalledAt": "2026-05-17T07:27:23.061Z",
+      "queryHashes": [
+        "23f913bbcf52",
+        "07faa1129c11",
+        "fab3a13f8e18",
+        "b64d65b3487d"
+      ],
+      "recallDays": [
+        "2026-05-09",
+        "2026-05-17"
+      ],
+      "conceptTags": [
+        "55k/1m",
+        "34-11",
+        "1.剧本",
+        "2.角色",
+        "3.分镜",
+        "4.关键帧",
+        "5.视频",
+        "ltx-2.3"
+      ]
+    },
+    "memory:memory/2026-05-08.md:47:81": {
+      "key": "memory:memory/2026-05-08.md:47:81",
+      "path": "memory/2026-05-08.md",
+      "startLine": 47,
+      "endLine": 81,
+      "source": "memory",
+      "snippet": "- 教程里老师跑 5000 步用的是 SD1.5/SDXL（模型小），不适用于 Z-Image --- ## 记忆系统建立（10:04-10:20） ### 讨论背景 凡哥发现很多小细节之前聊过但小南会忘记，希望建立更好的记忆机制。 ### 最终方案 1. **每日详细日志**：写入 `memory/YYYY-MM-DD.md`，记得越详细越好 2. **长期重要记忆**：写入 `MEMORY.md`，永久保留 3. **自动沉淀**：小南自行判断，聊到决策/偏好/结论/重要信息时主动记录，不等凡哥开口 4. **半年清理**：不重要记忆半年后新替旧，重要的一直不变 5. **关机前回顾**：凡哥说「要关机了」时，小南自动回顾当日内容 6. **崩溃恢复**：即使会话崩溃，文件已写，重启后读取日志即可恢复上下文 ### 磁盘空间确认 - 当前所有记忆文件仅约 40KB - 纯文本 md 文件极小，一年日志约 2-5 MB - 对比 D 盘模型文件（Z-Image 31GB），完全可以忽略 - 凡哥确认：不用担心空间，记得越详细越好 ### 上下文状态 - 当前会话上下文：55k/1M tokens（6%），安全 - 模型：DeepSeek V4 Pro，1M 上下文窗口 --- --- ## 开源短剧管线讨论（10:34-11:04） ### 开源 vs 闭源 - 凡哥公司测试过闭源平台，领导对一站式方案不感兴趣",
+      "recallCount": 2,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 2,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T02:52:38.083Z",
+      "lastRecalledAt": "2026-05-09T04:23:56.327Z",
+      "queryHashes": [
+        "d1814edbfaba",
+        "5b4eeb88660e"
+      ],
+      "recallDays": [
+        "2026-05-09"
+      ],
+      "conceptTags": [
+        "sd1.5/sdxl",
+        "z-image",
+        "04-10",
+        "memory/yyyy-mm-dd.md",
+        "memory.md",
+        "聊到决策/偏好/结论/重要信息时主动记录",
+        "2-5",
+        "55k/1m"
+      ]
+    },
+    "memory:memory/2026-05-08.md:122:137": {
+      "key": "memory:memory/2026-05-08.md:122:137",
+      "path": "memory/2026-05-08.md",
+      "startLine": 122,
+      "endLine": 137,
+      "source": "memory",
+      "snippet": "- 当前驱动：591.91（CUDA 13.1），较新但不稳定 - GPU：NVIDIA GeForce RTX 5080 Laptop，175W 功耗上限 - 建议：考虑换 Studio Driver 或等驱动更新 ### 分段训练讨论 - 凡哥确认：之前 2000 步跑了 2 小时没崩（那次配置不同） - AI Toolkit 不支持 checkpoint resume - 凡哥提议：先跑 2000 步 → 检查 → 再跑 2000 步（但需确认上次 2000 步 2 小时的底模是否也是 Z-Image） --- ## 规则更新 - SOUL.md：加入自动沉淀触发条件、半年清理规则 - HEARTBEAT.md：加入定期回顾任务 - MEMORY.md：加入记忆管理策略、7步管线计划、LTX-2.3 信息",
+      "recallCount": 8,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 7.591237813037044,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T03:54:05.949Z",
+      "lastRecalledAt": "2026-05-17T07:11:12.534Z",
+      "queryHashes": [
+        "52e02580e71b",
+        "dbc5a21712cb",
+        "5b4eeb88660e",
+        "5087406ac41b",
+        "739fefe4b7e2",
+        "f1a7ec5ca28a",
+        "89d16eb389ac",
+        "5f4af7664207"
+      ],
+      "recallDays": [
+        "2026-05-09",
+        "2026-05-10",
+        "2026-05-17"
+      ],
+      "conceptTags": [
+        "591.91",
+        "13.1",
+        "z-image",
+        "soul.md",
+        "heartbeat.md",
+        "memory.md",
+        "ltx-2.3",
+        "当前"
+      ]
+    },
+    "memory:memory/2026-05-08.md:25:57": {
+      "key": "memory:memory/2026-05-08.md:25:57",
+      "path": "memory/2026-05-08.md",
+      "startLine": 25,
+      "endLine": 57,
+      "source": "memory",
+      "snippet": "- 250 步约需 21 小时（以此推算，12 小时没到第 250 步是可能的） - **5000 步预计需要数天甚至数周** - 之前 2000 步旧 LoRA 效果差，但旧数据集只有 29 张、标注错误 ### 关键讨论 - 凡哥决定不关机，电脑留在家继续跑训练 --- ## 白绮罗穿书 LoRA 训练检查（18:08） ### 状态：疑似卡住 ⚠️ - 训练进程重启于 16:57（新 PID 3600，之前旧 PID 14008 已不存在） - 仅 1 个 checkpoint：step 500/5000（10%），17:24 生成 - 训练速度很快：~3秒/步，27分钟完成 500 步 - 但从 17:24 起 44 分钟无新 checkpoint - GPU 利用率 0%，P8 空闲（8W），但显存仍占 15.7GB/16.3GB - 进程存在但疑似卡死在数据加载或保存环节 - 已通过飞书告知凡哥 - AI Toolkit CLI 不支持暂停/恢复，关机 = 进程终止 = 从头开始 - max_step_saves_to_keep: 4 是滚动保留最近 4 个 checkpoint（不是攒够 4 个才保存） - 显存跑满时无法同时测试 LoRA，只能等训练跑完 - 教程里老师跑 5000 步用的是 SD1.5/SDXL（模型小），不适用于 Z-Image --- ## 记忆系统建立（10:04-10:20） ### 讨论背景 凡哥发现很多小细节之前聊过但小南会忘记，希望建立更好的记忆机制。 ### 最终方案 1. **每日详细日志**：写入 `memo",
+      "recallCount": 9,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 8.760918885873771,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T04:20:44.133Z",
+      "lastRecalledAt": "2026-05-17T22:51:22.616Z",
+      "queryHashes": [
+        "69919c804550",
+        "dbc5a21712cb",
+        "1132be35aad4",
+        "4dc43f5aef4b",
+        "739fefe4b7e2",
+        "f1a7ec5ca28a",
+        "89d16eb389ac",
+        "5f4af7664207",
+        "95a610720f40"
+      ],
+      "recallDays": [
+        "2026-05-09",
+        "2026-05-14",
+        "2026-05-17",
+        "2026-05-18"
+      ],
+      "conceptTags": [
+        "500/5000",
+        "3秒/步",
+        "15.7gb/16.3gb",
+        "不支持暂停/恢复",
+        "max-step-saves-to-keep",
+        "sd1.5/sdxl",
+        "z-image",
+        "04-10"
+      ]
+    },
+    "memory:memory/2026-05-09.md:25:54": {
+      "key": "memory:memory/2026-05-09.md:25:54",
+      "path": "memory/2026-05-09.md",
+      "startLine": 25,
+      "endLine": 54,
+      "source": "memory",
+      "snippet": "- GPU 99%，75°C，预计 ~26 分钟完成（剩余 ~500 步） - ⚠️ 第一次启动因 exec timeout 设置太短被 SIGTERM，第二次用 no-timeout background 成功 ### GPU 训练异常监控机制 - Cron job `90c965a2` 每 5 分钟巡检 - `memory/training_monitor.json` 记录状态 ### 今日沟通 - 凡哥问 GPU 四个引擎（3D/Copy/Video Encode/Video Decode）含义 → 解释了 LoRA 只用 3D，其他 0% 正常 - 凡哥要求把断点续训知识写入长期记忆 ✅ ## 白绮罗 LoRA 测试（12:32-13:02） - ComfyUI WSL 启动在 8189 端口 - 使用 `z-image文生图（lora版）.json` 工作流 - 测试参数：25步、CFG 4.5、1024×1024、seed=42、euler/simple - 18 张图（6 列×3 行）全部成功 - 生成速度：~45s/张（Z-Image 25步） - 结果已发飞书三行对比图 ### 测试脚本位置 - `lora_test.py` 在 workspace，可复用 - 18 张原图：`/tmp/bql_test/` - 对比图：`/tmp/bql_row_1/2/3.png` - API 结果：`lora_test_results.json` ### 文件名映射规则 - bql_xxxxx_00001_.png = 正面站立全身照 - bql_xxxxx_0",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.7786289328584604,
+      "maxScore": 0.7786289328584604,
+      "firstRecalledAt": "2026-05-09T09:07:54.419Z",
+      "lastRecalledAt": "2026-05-09T09:07:54.419Z",
+      "queryHashes": [
+        "73414813d51f"
+      ],
+      "recallDays": [
+        "2026-05-09"
+      ],
+      "conceptTags": [
+        "no-timeout",
+        "memory/training-monitor.json",
+        "3d/copy/video",
+        "encode/video",
+        "32-13",
+        "z-image文生图",
+        "4.5",
+        "euler/simple"
+      ]
+    },
+    "memory:memory/2026-05-09.md:1:32": {
+      "key": "memory:memory/2026-05-09.md:1:32",
+      "path": "memory/2026-05-09.md",
+      "startLine": 1,
+      "endLine": 32,
+      "source": "memory",
+      "snippet": "# 2026-05-09 日志 ## 白绮罗穿书 LoRA 训练 ### 第 2 次训练崩溃（10:33-11:37） - 凡哥上午重启训练，配置改为： - 目标 3000 步（原 5000），save_every=500（原 250），分辨率固定 1024 - 速度约 3.1s/it，预计 ~2.6h 完成 - 11:28 左右崩溃于 2707/3000（90%），进程无声死亡（PID 33620 僵尸） - GPU 0%，但显存残留 15.6GB 未释放 - 日志无报错，最后一条在 step 2707 - 已有 checkpoint：1000、1500、2000、2500（每种 85MB） ### 关键发现：AI Toolkit 原生断点续训 - 查 BaseSDTrainProcess.py 源码确认： - 第 1991-2016 行：自动从 optimizer.pt 加载优化器状态 - 第 858 行：从 checkpoint 元数据读取步数 → set start_step - **不需要任何配置**，直接重跑 `python run.py output/xxx/config.yaml` 即可续训 - 已写入 MEMORY.md 长期记忆 ### 第 3 次训练（11:48 开始，续训） - 杀僵尸进程（PID 33620）→ 释放显存 - 备份 checkpoint + optimizer.pt + config.yaml 到 `_backup` 目录 - 直接重跑原 config → 自动从 2500 步续训 - GPU 99%，75°C，",
+      "recallCount": 11,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 10.760284048404102,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T09:07:54.419Z",
+      "lastRecalledAt": "2026-05-17T02:48:04.525Z",
+      "queryHashes": [
+        "73414813d51f",
+        "5d003463a096",
+        "72c5af341824",
+        "1bf6fb6f2aa5",
+        "4c64d6405260",
+        "48172de5495e",
+        "72a657f09aa3",
+        "3bed90bb9d62",
+        "68beb8e6656c",
+        "6a1082976a32",
+        "abcc29a36467"
+      ],
+      "recallDays": [
+        "2026-05-09",
+        "2026-05-10",
+        "2026-05-13",
+        "2026-05-17"
+      ],
+      "conceptTags": [
+        "backup",
+        "备份",
+        "33-11",
+        "save-every",
+        "3.1s/it",
+        "2.6h",
+        "2707/3000",
+        "15.6gb"
+      ]
+    },
+    "memory:memory/2026-05-09.md:85:105": {
+      "key": "memory:memory/2026-05-09.md:85:105",
+      "path": "memory/2026-05-09.md",
+      "startLine": 85,
+      "endLine": 105,
+      "source": "memory",
+      "snippet": "- 第5段 2000→2500 ❌ 异常中断（速度崩到91s/it） - 第6段 2500→3000 ⏳ 待续 ### 当前产物 - checkpoint: 500步（备份）+ 2000步（最新） - optimizer.pt 完好，可断点续训 ### 回家后操作 1. 杀僵尸进程 2. config steps=2500（需重跑第5段） 3. 启动训练 → 第6段 steps=3000 → 完成 ### 今日关键产出 - AI Toolkit 断点续训机制验证 ✅ - 分段训练策略确立（500步/段）✅ - 动态速度检测脚本完成 ✅ - 自动续训 + cron 部署 ✅ - Checkpoint 备份机制 ✅ - LoRA 测试标准流程写入 MEMORY.md ✅ - 训练 SOP 完整写入 MEMORY.md ✅",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 1,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T12:15:43.586Z",
+      "lastRecalledAt": "2026-05-09T12:15:43.586Z",
+      "queryHashes": [
+        "72c5af341824"
+      ],
+      "recallDays": [
+        "2026-05-09"
+      ],
+      "conceptTags": [
+        "备份",
+        "速度崩到91s/it",
+        "optimizer.pt",
+        "500步/段",
+        "memory.md",
+        "异常",
+        "中断",
+        "速度"
+      ]
+    },
+    "memory:memory/2026-05-09.md:25:62": {
+      "key": "memory:memory/2026-05-09.md:25:62",
+      "path": "memory/2026-05-09.md",
+      "startLine": 25,
+      "endLine": 62,
+      "source": "memory",
+      "snippet": "- GPU 99%，75°C，预计 ~26 分钟完成（剩余 ~500 步） - ⚠️ 第一次启动因 exec timeout 设置太短被 SIGTERM，第二次用 no-timeout background 成功 ### GPU 训练异常监控机制 - Cron job `90c965a2` 每 5 分钟巡检 - `memory/training_monitor.json` 记录状态 ### 今日沟通 - 凡哥问 GPU 四个引擎（3D/Copy/Video Encode/Video Decode）含义 → 解释了 LoRA 只用 3D，其他 0% 正常 - 凡哥要求把断点续训知识写入长期记忆 ✅ ## 白绮罗 LoRA 测试（12:32-13:02） - ComfyUI WSL 启动在 8189 端口 - 使用 `z-image文生图（lora版）.json` 工作流 - 测试参数：25步、CFG 4.5、1024×1024、seed=42、euler/simple - 18 张图（6 列×3 行）全部成功 - 生成速度：~45s/张（Z-Image 25步） - 结果已发飞书三行对比图 ### 测试脚本位置 - `lora_test.py` 在 workspace，可复用 - 18 张原图：`/tmp/bql_test/` - 对比图：`/tmp/bql_row_1/2/3.png` - API 结果：`lora_test_results.json` ### 文件名映射规则 - bql_xxxxx_00001_.png = 正面站立全身照 - bql_xxxxx_0",
+      "recallCount": 7,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 6.358445675752735,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T12:20:19.032Z",
+      "lastRecalledAt": "2026-05-17T02:48:04.525Z",
+      "queryHashes": [
+        "a525305d7768",
+        "b41621875c77",
+        "3bed90bb9d62",
+        "2c1932155165",
+        "1132be35aad4",
+        "3f2baaa42d9b",
+        "abcc29a36467"
+      ],
+      "recallDays": [
+        "2026-05-09",
+        "2026-05-10",
+        "2026-05-11",
+        "2026-05-14",
+        "2026-05-17"
+      ],
+      "conceptTags": [
+        "no-timeout",
+        "memory/training-monitor.json",
+        "3d/copy/video",
+        "encode/video",
+        "32-13",
+        "z-image文生图",
+        "4.5",
+        "euler/simple"
+      ]
+    },
+    "memory:memory/2026-05-09.md:53:96": {
+      "key": "memory:memory/2026-05-09.md:53:96",
+      "path": "memory/2026-05-09.md",
+      "startLine": 53,
+      "endLine": 96,
+      "source": "memory",
+      "snippet": "- bql_xxxxx_00003_.png = 坐姿托腮 ## 自动续训完成（17:34 cron 触发） ### 训练状态 - auto_resume_training.py 检测到训练已停，步数=5000 - 状态：**completed**（已到达 5000 步，完成全部 10 段分段训练） - 训练名称：白绮罗穿书_lora_5000，rank=32 ### LoRA 测试 - 启动 ComfyUI WSL（8189 端口 + --lowvram） - 5000步 checkpoint 的 3 张图 → 全部成功 ✅ - 500步 checkpoint 的 3 张图 → 全部成功 ✅ - 无LoRA 基线的 3 张图 → 全部成功 ✅ - 中间 checkpoint（1000~4500）未保留（save_every=500, max_step_saves_to_keep 限制） - 3×3 对比网格已生成：bql_comparison_grid.png ### 飞书通知 - 已发送对比网格图 + 训练摘要给凡哥 - 提醒中间 checkpoint 丢失问题 ### 注意事项 - 训练实际跑到 5000 步（而非原计划 3000），自动续训系统一直续到训练自然停止 - 中间段可能因 max_step_saves_to_keep 限制被覆盖 ## 关机前状态（18:43） ### 训练进展 - 第1段 0→500 ✅ - 第2段 500→1000 ✅ - 第3段 1000→1500 ✅ - 第4段 1500→2000 ✅ - 第5段 2000→2500",
+      "recallCount": 7,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 6.208910052542701,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T12:20:19.032Z",
+      "lastRecalledAt": "2026-05-17T22:51:22.616Z",
+      "queryHashes": [
+        "a525305d7768",
+        "b41621875c77",
+        "3f2baaa42d9b",
+        "89d16eb389ac",
+        "abcc29a36467",
+        "5f4af7664207",
+        "95a610720f40"
+      ],
+      "recallDays": [
+        "2026-05-09",
+        "2026-05-17",
+        "2026-05-18"
+      ],
+      "conceptTags": [
+        "bql-xxxxx-00003",
+        "auto-resume-training.py",
+        "白绮罗穿书-lora-5000",
+        "save-every",
+        "max-step-saves-to-keep",
+        "bql-comparison-grid.png",
+        "png",
+        "自动"
+      ]
+    },
+    "memory:memory/2026-05-09.md:85:119": {
+      "key": "memory:memory/2026-05-09.md:85:119",
+      "path": "memory/2026-05-09.md",
+      "startLine": 85,
+      "endLine": 119,
+      "source": "memory",
+      "snippet": "- 第5段 2000→2500 ❌ 异常中断（速度崩到91s/it） - 第6段 2500→3000 ⏳ 待续 ### 当前产物 - checkpoint: 500步（备份）+ 2000步（最新） - optimizer.pt 完好，可断点续训 ### 回家后操作 1. 杀僵尸进程 2. config steps=2500（需重跑第5段） 3. 启动训练 → 第6段 steps=3000 → 完成 ## 20:19 自动续训 — 第6段启动 - 脚本路径 bug：反斜杠未转正斜杠 → 已修复（新增 _win2wsl() 函数） - 第5段 2000→2500 已完成，checkpoint 2500 步已备份 - 第6段（最后一段）2500→3000 已自动启动 - 速度 ~3.97s/it，预计 ~33min 完成（20:52 左右） - 飞书通知已发 ✅ ## 20:24 训练全部完成 🎉 - cron 自动巡检检测到训练已停，步数=3000（target=3000）→ completed - 全部 6 段完成：0→500→1000→1500→2000→2500→3000 - 最后一段速度 ~0.60s/it，平滑后 ~2.49s/it - 飞书通知已发，等待凡哥说「开始测试」 - training_monitor.json → active=false, status=completed ### 今日关键产出 - AI Toolkit 断点续训机制验证 ✅ - 分段训练策略确立（500步/段）✅ - 动态速度检测脚本完成 ✅ - 自动续训 + cron 部署 ✅",
+      "recallCount": 11,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 11,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-09T14:10:31.426Z",
+      "lastRecalledAt": "2026-05-13T06:24:42.393Z",
+      "queryHashes": [
+        "5dbcb4111d0d",
+        "e1ec2272d88b",
+        "1bf6fb6f2aa5",
+        "4c64d6405260",
+        "9838d28fcea1",
+        "ca9b095750fd",
+        "48172de5495e",
+        "72a657f09aa3",
+        "cbe8186aec64",
+        "3bed90bb9d62",
+        "6a1082976a32"
+      ],
+      "recallDays": [
+        "2026-05-09",
+        "2026-05-10",
+        "2026-05-13"
+      ],
+      "conceptTags": [
+        "备份",
+        "速度崩到91s/it",
+        "optimizer.pt",
+        "3.97s/it",
+        "0.60s/it",
+        "2.49s/it",
+        "training-monitor.json",
+        "500步/段"
+      ]
+    },
+    "memory:memory/2026-05-10.md:1:43": {
+      "key": "memory:memory/2026-05-10.md:1:43",
+      "path": "memory/2026-05-10.md",
+      "startLine": 1,
+      "endLine": 43,
+      "source": "memory",
+      "snippet": "# 2026-05-10 日志 ## Z-Image Turbo 训练知识大更新 🔥 ### 凡哥分享了 B 站老师教程 - 老师用的是 AdamW8Bit 优化器 + Layer Offloading + EMA - 老师提到了\"反蒸馏 LoRA\"的概念 ### 凡哥找到了官方训练模板 - URL: `z-image-turbo.com/zh/lora-training` - 官方推荐参数：AdamW8Bit, lr=1e-4, 2000-3000步, rank=8-16, DOP 开启 - 核心要求：必须使用带 training adapter 的预设 ### 凡哥找到了反蒸馏适配器 - HuggingFace: `ostris/zimage_turbo_training_adapter` - 两个版本：v1(170MB) / v2(340MB) - 作者是 Ostris（AI Toolkit 作者本人） - 训练时加载，推理时移除 ### 我们的参数对比分析 - 最大问题：之前完全没用反蒸馏适配器 - AdamW8Bit 之前 C 库失败，需重新排查 - 缺了 EMA/DOP/Layer Offloading/Weight Decay ### 已写入 MEMORY.md 长期记忆 - 完整的 Z-Image Turbo 训练知识 - 官方参数表 - 根因分析 - 下一步计划 ### 下一步 - 等待凡哥确认行动计划 - 下载 v2 适配器 - 研究 AI Toolkit adapter 配置 - 重写 config - 排查 AdamW8Bit 环境 #",
+      "recallCount": 7,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 6.4033865325417665,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-10T06:24:27.965Z",
+      "lastRecalledAt": "2026-05-10T09:00:34.824Z",
+      "queryHashes": [
+        "01076d884e1e",
+        "09f957f3e88f",
+        "4373e8719452",
+        "298ec87e1103",
+        "9838d28fcea1",
+        "ca9b095750fd",
+        "0289976fe084"
+      ],
+      "recallDays": [
+        "2026-05-10"
+      ],
+      "conceptTags": [
+        "z-image",
+        "1e-4",
+        "2000-3000步",
+        "8-16",
+        "ema/dop/layer",
+        "offloading/weight",
+        "memory.md",
+        "日志"
+      ]
+    },
+    "memory:memory/2026-05-10.md:1:39": {
+      "key": "memory:memory/2026-05-10.md:1:39",
+      "path": "memory/2026-05-10.md",
+      "startLine": 1,
+      "endLine": 39,
+      "source": "memory",
+      "snippet": "# 2026-05-10 日志 ## Z-Image Turbo 训练知识大更新 🔥 ### 凡哥分享了 B 站老师教程 - 老师用的是 AdamW8Bit 优化器 + Layer Offloading + EMA - 老师提到了\"反蒸馏 LoRA\"的概念 ### 凡哥找到了官方训练模板 - URL: `z-image-turbo.com/zh/lora-training` - 官方推荐参数：AdamW8Bit, lr=1e-4, 2000-3000步, rank=8-16, DOP 开启 - 核心要求：必须使用带 training adapter 的预设 ### 凡哥找到了反蒸馏适配器 - HuggingFace: `ostris/zimage_turbo_training_adapter` - 两个版本：v1(170MB) / v2(340MB) - 作者是 Ostris（AI Toolkit 作者本人） - 训练时加载，推理时移除 ### 我们的参数对比分析 - 最大问题：之前完全没用反蒸馏适配器 - AdamW8Bit 之前 C 库失败，需重新排查 - 缺了 EMA/DOP/Layer Offloading/Weight Decay ### 已写入 MEMORY.md 长期记忆 - 完整的 Z-Image Turbo 训练知识 - 官方参数表 - 根因分析 - 下一步计划 ### 下一步 - 段 2 正在试「无 optimizer.pt 续训」方案 - 如果段 2 稳定通过 → 确认 optimizer.pt 是根因 - 后续续训同样先删 optimiz",
+      "recallCount": 3,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 2.6319623405516737,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-10T10:30:27.496Z",
+      "lastRecalledAt": "2026-05-14T01:46:36.972Z",
+      "queryHashes": [
+        "abe03f9cfcbc",
+        "68beb8e6656c",
+        "b7cb56f5726c"
+      ],
+      "recallDays": [
+        "2026-05-10",
+        "2026-05-14"
+      ],
+      "conceptTags": [
+        "z-image",
+        "1e-4",
+        "2000-3000步",
+        "8-16",
+        "ema/dop/layer",
+        "offloading/weight",
+        "memory.md",
+        "optimizer.pt"
+      ]
+    },
+    "memory:memory/2026-05-08.md:97:128": {
+      "key": "memory:memory/2026-05-08.md:97:128",
+      "path": "memory/2026-05-08.md",
+      "startLine": 97,
+      "endLine": 128,
+      "source": "memory",
+      "snippet": "- 22B 参数，DiT 架构，原生 ComfyUI 支持 - 音画同出（端到端音视频联合生成）、4K/20秒/48FPS - 支持 LoRA 微调，有蒸馏加速版 - 纳入 7 步管线，是步骤 5 核心方案 ### 汇报总结文件 - 生成了 `开源AI短剧管线方案-汇报总结.md`（2685 字节） - 涵盖：管线方案、LTX-2.3 分析、执行策略、思想同步与记忆体系、步骤5/6分离考量 --- ## 计算机蓝屏崩溃（13:07-13:19） ### 崩溃记录 - **2026-05-08 19:37（北京时间）** — Windows 蓝屏自动重启 - 错误码：`0x00020001`（非标准 BSOD，疑似 GPU 驱动/硬件错误） - Dump：`C:\\Windows\\Minidump\\050826-17281-01.dmp` - 上次相同崩溃：2026-04-28 14:26（同样错误码） ### 崩溃影响 - 训练进程死亡，从昨天 21:43 到崩溃时跑了近 22 小时 - **零产出**：无 checkpoint 文件，训练需从头开始 - 但确认了：配置稳定可运行（无死锁/swap颠簸），问题是 GPU 驱动扛不住长时间满载 ### 驱动信息 - 当前驱动：591.91（CUDA 13.1），较新但不稳定 - GPU：NVIDIA GeForce RTX 5080 Laptop，175W 功耗上限 - 建议：考虑换 Studio Driver 或等驱动更新 ### 分段训练讨论 - 凡哥确认：之前 2000 步跑了 2 小时没崩（那次配置不同） -",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 1,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-10T10:30:39.313Z",
+      "lastRecalledAt": "2026-05-10T10:30:39.313Z",
+      "queryHashes": [
+        "5087406ac41b"
+      ],
+      "recallDays": [
+        "2026-05-10"
+      ],
+      "conceptTags": [
+        "4k/20秒/48fps",
+        "开源ai短剧管线方案-汇报总结.md",
+        "ltx-2.3",
+        "步骤5/6分离考量",
+        "07-13",
+        "驱动/硬件错误",
+        "050826-17281-01.dmp",
+        "无死锁/swap颠簸"
+      ]
+    },
+    "memory:memory/2026-05-10.md:33:63": {
+      "key": "memory:memory/2026-05-10.md:33:63",
+      "path": "memory/2026-05-10.md",
+      "startLine": 33,
+      "endLine": 63,
+      "source": "memory",
+      "snippet": "- 如果段 2 稳定通过 → 确认 optimizer.pt 是根因 - 后续续训同样先删 optimizer.pt ### 今日教训总结 - AdamW8Bit + Windows = optimizer.pt 续训崩溃，必须重置优化器 - 自动续训脚本有 4 个 Bug，全部修复 - 反蒸馏适配器 v2 + quantize_te + layer_offloading = V3 稳定配置 - 以后每次续训前：删 optimizer.pt → 杀僵尸 → 改 config → 启动 ## 14:03 自动续训 — 第2段启动 - auto_resume_training.py 检测到训练已停，步数=500（target=3000）→ resumed - 第2段 500→1000 已自动启动 - 速度 5.56s/it（平滑），预计 ~46min 完成（14:49 左右） - 飞书通知已发 ✅ ## 17:00 自动续训 — 第3段启动 - auto_resume_training.py 检测到训练已停，步数=1000（target=3000）→ resumed - 第3段 1000→1500 已自动启动 - 速度 2.56s/it（平滑），预计 ~21min 完成（17:21 左右） - 飞书通知已发 ✅ ## 14:33 自动续训 — 第2段崩溃，自动重启 - auto_resume_training.py 检测到训练已停，配置步数=1500 - checkpoint: ❌, optimizer: ❌ → 判定为崩溃（第1次） - 已自动杀僵尸进程 + 重启当前段",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.7806995998863027,
+      "maxScore": 0.7806995998863027,
+      "firstRecalledAt": "2026-05-10T10:30:39.313Z",
+      "lastRecalledAt": "2026-05-10T10:30:39.313Z",
+      "queryHashes": [
+        "5087406ac41b"
+      ],
+      "recallDays": [
+        "2026-05-10"
+      ],
+      "conceptTags": [
+        "optimizer.pt",
+        "quantize-te",
+        "layer-offloading",
+        "auto-resume-training.py",
+        "5.56s/it",
+        "2.56s/it",
+        "如果",
+        "稳定"
+      ]
+    },
+    "memory:memory/2026-05-10.md:57:66": {
+      "key": "memory:memory/2026-05-10.md:57:66",
+      "path": "memory/2026-05-10.md",
+      "startLine": 57,
+      "endLine": 66,
+      "source": "memory",
+      "snippet": "- 已自动杀僵尸进程 + 重启当前段 - 飞书通知已发 ✅ - crash_count: 1（累计3次会停止自动续训，等人工介入） ## 17:09 自动续训 — 第3段启动 - auto_resume_training.py 检测到训练已停，步数=1000（target=3000）→ resumed - 第3段 1000→1500 已自动启动 - 速度 2.14s/it（平滑），预计 ~18min 完成（17:28 左右） - 飞书通知已发 ✅",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.7391656784212521,
+      "maxScore": 0.7391656784212521,
+      "firstRecalledAt": "2026-05-10T10:30:39.313Z",
+      "lastRecalledAt": "2026-05-10T10:30:39.313Z",
+      "queryHashes": [
+        "5087406ac41b"
+      ],
+      "recallDays": [
+        "2026-05-10"
+      ],
+      "conceptTags": [
+        "crash-count",
+        "auto-resume-training.py",
+        "2.14s/it",
+        "自动",
+        "僵尸",
+        "进程",
+        "当前",
+        "通知"
+      ]
+    },
+    "memory:memory/2026-05-12.md:1:26": {
+      "key": "memory:memory/2026-05-12.md:1:26",
+      "path": "memory/2026-05-12.md",
+      "startLine": 1,
+      "endLine": 26,
+      "source": "memory",
+      "snippet": "# 2026-05-12 日志 ## 一、LoRA 训练文档补齐 凡哥让我读取 `D:\\Users\\bobby\\Desktop\\新建文件夹\\3训练人物lora.docx`，里面只有「一、数据集准备」完成，让我根据记忆补齐后面三章： - 二、数据集标签标注 - 三、AI学习数据集产出LoRA文件 - 四、LoRA测试 ### 后续修改（凡哥反馈）： 1. 第二章新增「Qwen 2511编辑模型数据集特殊优势」——数据集是Qwen2511自己生成的，caption直接复用生图提示词，因为\"自己画自己认\"理解最深 2. 第三章去掉「分段训练SOP」，换成「训练过程监控」（cron巡检+飞书通知），保留「异常中断续训机制」 3. 全文所有英文、专业名词加中文解释（因为要用做AI短剧教程） ### 额外补充： - 第一章加了\"统一服装版本/不统一服装版本\"的目的说明 - \"选择底模\"补充了底模概念的通俗解释 ## 二、ComfyUI 环境大迁移（极其重要） ### 发现问题 - 凡哥实际用的是 **Windows Desktop 版 ComfyUI**（`D:\\Program Files (x86)\\ComfyUI`），不是 WSL 版 - Desktop 版是 Electron 封装，**不暴露 HTTP API**——它用内部 IPC 通信，不监听任何 TCP 端口 - 这意味着无法从 WSL 通过 API 操控 Desktop 版 ### 方案：安装独立 Python 版 ComfyUI",
+      "recallCount": 3,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 3,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-13T06:24:49.459Z",
+      "lastRecalledAt": "2026-05-13T06:25:04.688Z",
+      "queryHashes": [
+        "9e0f214ce96f",
+        "3c49e9ed8f3d",
+        "cca5b0028f50"
+      ],
+      "recallDays": [
+        "2026-05-13"
+      ],
+      "conceptTags": [
+        "3训练人物lora.docx",
+        "统一服装版本/不统一服装版本",
+        "日志",
+        "lora",
+        "训练",
+        "users",
+        "bobby",
+        "desktop"
+      ]
+    },
+    "memory:memory/2026-05-12.md:89:127": {
+      "key": "memory:memory/2026-05-12.md:89:127",
+      "path": "memory/2026-05-12.md",
+      "startLine": 89,
+      "endLine": 127,
+      "source": "memory",
+      "snippet": "- **⚠️ 但专用节点工作流导致卡死，未成功运行** ### Qwen Image Edit 可用工作流总结 ``` 标准 img2img（最稳定）： LoadImage → VAEEncode → KSampler(denoise≥0.90, 30steps, CFG≥5.0) → VAEDecode → SaveImage 关键参数：denoise 0.90-0.95 | steps 25-30 | CFG 5.0-5.5 | euler+simple 提示词：中文优先，简洁直接（不要超过80字），重点放前面 ``` ## 五、风格分析 凡哥发了一张 3D 国风女性角色图询问风格名称，以便用 Z-Image Turbo 生成类似风格的参考图。 分析结果：**高精度 3D 国风角色渲染**（类似原神/逆水寒手游建模风格、Midjourney V6 质感） 给出 Z-Image 可理解的风格描述词： ``` 高质量3D数字插画，皮肤白皙通透带有柔和光泽感， 发丝细腻顺滑根根分明，服装布料纹理清晰， 柔光灯照在面部形成柔和阴影，画质精细如同游戏角色宣传海报 ``` ## 六、Workflow 生成 给凡哥生成了 `qwen_image_edit_workflow.json`，放在 `D:\\Users\\bobby\\Desktop\\新建文件夹\\` ## 七、ComfyUI 启动方式 ```bash # Windows PowerShell（在 D:\\SDkecheng\\ComfyUI 目录） .\\.venv\\Scripts\\python.exe main.py",
+      "recallCount": 5,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 5,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-13T06:24:49.459Z",
+      "lastRecalledAt": "2026-05-17T02:28:15.069Z",
+      "queryHashes": [
+        "9e0f214ce96f",
+        "1132be35aad4",
+        "4dc43f5aef4b",
+        "739fefe4b7e2",
+        "f1a7ec5ca28a"
+      ],
+      "recallDays": [
+        "2026-05-13",
+        "2026-05-14",
+        "2026-05-17"
+      ],
+      "conceptTags": [
+        "0.90",
+        "5.0",
+        "0.90-0.95",
+        "25-30",
+        "5.0-5.5",
+        "z-image",
+        "类似原神/逆水寒手游建模风格",
+        "qwen-image-edit-workflow.json"
+      ]
+    },
+    "memory:memory/2026-05-12.md:22:50": {
+      "key": "memory:memory/2026-05-12.md:22:50",
+      "path": "memory/2026-05-12.md",
+      "startLine": 22,
+      "endLine": 50,
+      "source": "memory",
+      "snippet": "- 凡哥实际用的是 **Windows Desktop 版 ComfyUI**（`D:\\Program Files (x86)\\ComfyUI`），不是 WSL 版 - Desktop 版是 Electron 封装，**不暴露 HTTP API**——它用内部 IPC 通信，不监听任何 TCP 端口 - 这意味着无法从 WSL 通过 API 操控 Desktop 版 ### 方案：安装独立 Python 版 ComfyUI - **安装位置**：`D:\\SDkecheng\\ComfyUI\\` - **Python 环境**：Python 3.12.11 + PyTorch 2.11.0+cu130，用 Desktop 版的 uv 创建 - **API 端口**：`18188` - **WSL 访问 API**：`http://172.26.112.1:18188`（WSL2 网关 IP） - **浏览器访问**：`http://localhost:18188` ### 清理 D:\\SDkecheng 删除的：`.venv`（旧WSL环境）、`Git/`（340MB）、`compact_*`（6个磁盘压缩脚本）、`wps_fix.reg`、`temp/` 保留的：`models/`（265GB）、`input/`、`output/`、`user/`、`custom_nodes/`（迁移到 ComfyUI 内） ### 关键踩坑：WSL 软链接 vs Windows Junction - WSL 创建的 `ln -s` 软链接在 Windows 侧不生效 - **必须用 Wi",
+      "recallCount": 3,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 3,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-13T06:24:54.510Z",
+      "lastRecalledAt": "2026-05-14T00:49:03.024Z",
+      "queryHashes": [
+        "3c49e9ed8f3d",
+        "cca5b0028f50",
+        "4dc43f5aef4b"
+      ],
+      "recallDays": [
+        "2026-05-13",
+        "2026-05-14"
+      ],
+      "conceptTags": [
+        "网关",
+        "3.12.11",
+        "2.11.0",
+        "172.26.112.1",
+        "wps-fix.reg",
+        "custom-nodes",
+        "实际",
+        "的是"
+      ]
+    },
+    "memory:memory/2026-05-12.md:115:133": {
+      "key": "memory:memory/2026-05-12.md:115:133",
+      "path": "memory/2026-05-12.md",
+      "startLine": 115,
+      "endLine": 133,
+      "source": "memory",
+      "snippet": "给凡哥生成了 `qwen_image_edit_workflow.json`，放在 `D:\\Users\\bobby\\Desktop\\新建文件夹\\` ## 七、ComfyUI 启动方式 ```bash # Windows PowerShell（在 D:\\SDkecheng\\ComfyUI 目录） .\\.venv\\Scripts\\python.exe main.py --listen 0.0.0.0 --port 18188 ``` 关闭电脑前不需要手动停止 ComfyUI，关机即可。 ## 八、今日教训 1. **WSL soft link ≠ Windows Junction**：跨文件系统时必须用 Windows 原生的 Junction/mklink 2. **Electron 版 ComfyUI 不暴露 API**：必须用独立 Python 版 3. **Qwen Image Edit 的 img2img 跟 SD 不同**：需要高 denoise（≥0.90）才能实现显著编辑，因为它的 conditioning 机制不同 4. **不要遇到困难就换底模**：凡哥强调核心是 Qwen 2511 Edit，应该深挖它的正确用法而不是换方案 5. **--lowvram 导致极端慢**：RTX 5080 16GB 跑 Z-Image fp8 不需要 --lowvram",
+      "recallCount": 2,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 2,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-13T06:24:54.510Z",
+      "lastRecalledAt": "2026-05-13T06:25:04.688Z",
+      "queryHashes": [
+        "3c49e9ed8f3d",
+        "cca5b0028f50"
+      ],
+      "recallDays": [
+        "2026-05-13"
+      ],
+      "conceptTags": [
+        "qwen-image-edit-workflow.json",
+        "python.exe",
+        "main.py",
+        "0.0.0.0",
+        "junction/mklink",
+        "0.90",
+        "z-image",
+        "生成"
+      ]
+    },
+    "memory:memory/2026-05-12.md:42:74": {
+      "key": "memory:memory/2026-05-12.md:42:74",
+      "path": "memory/2026-05-12.md",
+      "startLine": 42,
+      "endLine": 74,
+      "source": "memory",
+      "snippet": "- `ComfyUI\\input → D:\\SDkecheng\\input` - `ComfyUI\\output → D:\\SDkecheng\\output` ### Desktop 版卸载 - 路径：`D:\\Program Files (x86)\\ComfyUI` → 已删除 ✅ - 注意：以后不要往回装 Desktop 版 ### 自定义节点 - 从旧 WSL 版迁移 37 个自定义节点到新环境 - 部分缺依赖（cv2、timm、triton、zhipuai 等），不影响核心功能 - 关键节点：`ComfyUI-WanVideoWrapper`、`qweneditutils`、`comfyui-qwenmultiangle`、`ComfyUI-GGUF` 等 ## 三、Qwen Image 模型问题排查 ### UNET Loader 找不到模型 - `z-image-turbo-fp8-e4m3fn.safetensors` 之前在 `checkpoints/` 而非 `diffusion_models/` - UNET Loader 只扫描 `diffusion_models/` 和 `unet/` - 已移到 `D:\\SDkecheng\\models\\diffusion_models\\` ✅ ### 8-step Lightning LoRA 问题 - Z-Image Turbo 自带 8 步加速，Lightning LoRA 是给非 Turbo 原版用的 - 两个一起用 = 加速套加速 = 可能相互干扰 - **结论：用 Turbo 底模时不要加",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 1,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-13T06:24:54.510Z",
+      "lastRecalledAt": "2026-05-13T06:24:54.510Z",
+      "queryHashes": [
+        "3c49e9ed8f3d"
+      ],
+      "recallDays": [
+        "2026-05-13"
+      ],
+      "conceptTags": [
+        "comfyui-wanvideowrapper",
+        "comfyui-qwenmultiangle",
+        "comfyui-gguf",
+        "diffusion-models",
+        "8-step",
+        "z-image",
+        "comfyui",
+        "input"
+      ]
+    },
+    "memory:memory/2026-05-14.md:54:75": {
+      "key": "memory:memory/2026-05-14.md:54:75",
+      "path": "memory/2026-05-14.md",
+      "startLine": 54,
+      "endLine": 75,
+      "source": "memory",
+      "snippet": "- 参数：rank 16, lr 1e-4, AdamW8Bit, EMA, 反蒸馏适配器 v2 ### 训练踩坑 - AI Toolkit .venv 路径是 venv 不是 .venv - config 需放在 config/ 下（不是 output/） - YAML 中 Windows 路径不能用反斜杠，需用正斜杠 - 僵尸 Python 进程占 GPU 导致训练无法启动，taskkill 清掉后恢复 - exec timeout 杀掉过第一次训练（304/3000），第二次成功 ## LoRA 测试（23:57-00:20） - 标准矩阵：5 checkpoint × 3 姿势 = 15 张 - 强度对比：2500/3000 × 4 强度 = 8 张 - 测试结果已发飞书 - 凡哥关机 ## 今日总结 - 数据集生成从 v3 → v4.2（.done 标记、续传、安全检查） - 禁止清单 10 条写入长期记忆 - 26→25 张精选训练集 - 训练完成：齐镇海_lora 3000 步 - LoRA 测试完成，待凡哥确认效果",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.6325990756563123,
+      "maxScore": 0.6325990756563123,
+      "firstRecalledAt": "2026-05-17T02:27:27.494Z",
+      "lastRecalledAt": "2026-05-17T02:27:27.494Z",
+      "queryHashes": [
+        "ef46c1d7122f"
+      ],
+      "recallDays": [
+        "2026-05-17"
+      ],
+      "conceptTags": [
+        "1e-4",
+        "304/3000",
+        "57-00",
+        "2500/3000",
+        "v4.2",
+        "齐镇海-lora",
+        "参数",
+        "rank"
+      ]
+    },
+    "memory:memory/2026-05-17.md:194:219": {
+      "key": "memory:memory/2026-05-17.md:194:219",
+      "path": "memory/2026-05-17.md",
+      "startLine": 194,
+      "endLine": 219,
+      "source": "memory",
+      "snippet": "- 参考图_全景图_羽化v4.png（羽化拼接，已修bug但仍有硬拼感） --- ## ⏭️ 明天任务 ### 最高优先级 1. **补第4面墙**：用 Z-Image + 同seed(888888888) 生成「门对面空白墙面」 - 提示词：茅草屋室内，门对面的土墙，夯土上半青石下半，墙上没有装饰，空镜无人物 - 这是白绮罗被门撞飞后嵌上去的那面墙 2. **重构连续全景**：用 Qwen 2511 img2img 消化拼接图 → 产出真正透视连续的 360° 空间 - 高 denoise(0.95-1.0) + 强空间连续性提示词 - 自检通过后再发凡哥 ### 如果全景搞定 3. **P2 人物场景融合**：Z-Image + LoRA 生成白绮罗/阿念 → Qwen 2511 融合裁切场景 ### 陈烬生 4. 步骤3 质检（凡哥安排） ### 参考 - 赛博飞升脚本：`D:\\SDkecheng\\output\\赛博飞升（镜头）.xlsx`（已在飞书收到） - LTX工作流：`D:\\SDkecheng\\ComfyUI\\user\\default\\workflows\\LTX-2.3_-_I2V_Short-Story_PromptRelay五图视频制作.json` - MEMORY.md 已更新场景生成方法 + 当前进度",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 1,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-18T08:10:25.558Z",
+      "lastRecalledAt": "2026-05-18T08:10:25.558Z",
+      "queryHashes": [
+        "9c0804cec9ed"
+      ],
+      "recallDays": [
+        "2026-05-18"
+      ],
+      "conceptTags": [
+        "参考图-全景图-羽化v4.png",
+        "z-image",
+        "0.95-1.0",
+        "生成白绮罗/阿念",
+        "ltx-2.3",
+        "memory.md",
+        "参考",
+        "全景"
+      ]
+    },
+    "memory:memory/2026-05-17.md:169:202": {
+      "key": "memory:memory/2026-05-17.md:169:202",
+      "path": "memory/2026-05-17.md",
+      "startLine": 169,
+      "endLine": 202,
+      "source": "memory",
+      "snippet": "5. **明天方案**：用拼接图作为 Qwen 2511 参考，让它消化成真正连续空间 ### 生成后自检纪律（永久遵守） **每次生成后必须用图像模型验证再发给凡哥** 今天踩坑：发了三版有人的场景图给凡哥 --- ## 七、已有文件清单 ### 脚本 - `gen_chenjinsheng.py` v1.1（进程锁+队列检测+安全检查） - `gen_qizhenhai_v4.py` v4.3（同上4修复） - `gen_caption.py`（标注生成工具） - `赛博飞升_关键帧规划_v3.xlsx`（5段关键帧规划） - `D:\\SDkecheng\\start_comfyui.bat`（ComfyUI启动脚本，含Git环境变量） ### 场景参考图（D:\\SDkecheng\\output\\赛博飞升_参考图\\） - 参考图_weapon.png ✅ - 参考图_holopanel.png ✅ - 参考图_room.png ✅（暗房间） - 参考图_pano_left.png ✅（茅草屋左：厨房角） - 参考图_pano_center.png ✅（茅草屋中：床+窗） - 参考图_pano_right.png ✅（茅草屋右：门口） - 参考图_全景图_拼接.png（直接拼接，有缝） - 参考图_全景图_羽化v4.png（羽化拼接，已修bug但仍有硬拼感） --- ## ⏭️ 明天任务 ### 最高优先级 1. **补第4面墙**：用 Z-Image + 同seed(888888888) 生成「门对面空白墙面」 - 提示词：茅草屋室内，门对面的土墙，夯土",
+      "recallCount": 3,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 3,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-18T08:10:25.558Z",
+      "lastRecalledAt": "2026-05-19T09:08:23.303Z",
+      "queryHashes": [
+        "9c0804cec9ed",
+        "7cadfddf631d",
+        "6902f88bc130"
+      ],
+      "recallDays": [
+        "2026-05-18",
+        "2026-05-19"
+      ],
+      "conceptTags": [
+        "gen-chenjinsheng.py",
+        "v1.1",
+        "gen-qizhenhai-v4.py",
+        "v4.3",
+        "gen-caption.py",
+        "赛博飞升-关键帧规划-v3.xlsx",
+        "start-comfyui.bat",
+        "赛博飞升-参考图"
+      ]
+    },
+    "memory:memory/2026-05-14.md:1:32": {
+      "key": "memory:memory/2026-05-14.md:1:32",
+      "path": "memory/2026-05-14.md",
+      "startLine": 1,
+      "endLine": 32,
+      "source": "memory",
+      "snippet": "# 2026-05-14 日志 ## 齐镇海数据集生成分析（08:48-09:51） ### 问题发现 - 凌晨电脑重启，数据集只到 241/290 张（缺口 49 张） - 凡哥还发现两次\"生成20多张后被清空重来\" ### 根因分析 1. **出图慢根因**：77% 时间浪费在换 prompt 间隙（12-15分钟/批），单张实际 37 秒 2. **清空重来根因**：脚本开头 `shutil.rmtree(OUTPUT)` 每次重启删掉所有产出 3. **API 不稳定**：无重试机制 + 轮询竞争条件 4. **影子乱根因**：提示词\"纯白背景\"+\"清晰的浅灰色阴影\"是物理矛盾，Qwen Image 模型对光影关系理解弱 ### 修复行动 1. ✅ v4 脚本：删除 shutil.rmtree + 续传逻辑 + 顺序跑完每个 lid 2. ✅ 三个脚本全部删除影子描述（24 处） 3. ✅ 文档 `3训练人物lora.docx` 删除影子描述 + 添加错误案例配图（4张） ### LoRA 全自动流水线框架确立 - 凡哥要求：以后做任何角色都按 6 步流水线 - 已写入 MEMORY.md 永久遵守 - 当前进度：3/6 步已攻破，3 步待开发 - 逐步击破，不赶工 ### ComfyUI 启动踩坑 - WSL 直调 Windows Python 报 Permission denied - 需用 cmd.exe 传 Windows 路径启动 - 启动命令：`cmd.exe /c \"D:\\SDkecheng\\ComfyUI\\.venv\\Scripts\\pyth",
+      "recallCount": 2,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 2,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-18T08:10:25.558Z",
+      "lastRecalledAt": "2026-05-19T09:08:23.303Z",
+      "queryHashes": [
+        "9c0804cec9ed",
+        "6902f88bc130"
+      ],
+      "recallDays": [
+        "2026-05-18",
+        "2026-05-19"
+      ],
+      "conceptTags": [
+        "48-09",
+        "241/290",
+        "12-15分钟/批",
+        "shutil.rmtree",
+        "3训练人物lora.docx",
+        "memory.md",
+        "3/6",
+        "cmd.exe"
+      ]
+    },
+    "memory:memory/2026-05-19.md:1:19": {
+      "key": "memory:memory/2026-05-19.md:1:19",
+      "path": "memory/2026-05-19.md",
+      "startLine": 1,
+      "endLine": 19,
+      "source": "memory",
+      "snippet": "## 提示词画风规范确立 - **白绮罗画风确认**（凡哥发参考图纠正）：**国风精致插画风格，游戏角色原画质感**，不是传统武侠写实，不是动画片 - 对应画风： - 人物 → 国风精致插画风格，游戏角色原画质感，高清渲染 - 场景 → 国风精致插画风格，游戏场景设定稿质感，高清渲染 - 武器/道具 → 国风精致插画风格，游戏武器设定稿质感，高清渲染 - **所有提示词必须写画风**，已写入 MEMORY.md 核心提示词工程章节 ## 提示词产出 - 白绮罗茅草屋场景提示词 v4（三面墙全景+木门+床+饭桌+画风） - 科幻武器产品图提示词 v2（能量枪+白色背景+画风） ## 批量放大完成 - 素材库 3 张图全部放大完成（RealESRGAN + Z-Image Turbo + Florence-2 自动图生文） - 输出在 D:\\SDkecheng\\ComfyUI\\output\\，文件名前缀 `放大_赛博飞升_` - 脚本 workspace/batch_upscale.py 可用",
+      "recallCount": 2,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 2,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-19T09:07:17.905Z",
+      "lastRecalledAt": "2026-05-19T09:08:23.303Z",
+      "queryHashes": [
+        "7cadfddf631d",
+        "6902f88bc130"
+      ],
+      "recallDays": [
+        "2026-05-19"
+      ],
+      "conceptTags": [
+        "武器/道具",
+        "memory.md",
+        "z-image",
+        "florence-2",
+        "放大-赛博飞升",
+        "workspace/batch-upscale.py",
+        "提示",
+        "规范"
+      ]
+    },
+    "memory:memory/2026-05-17.md:81:127": {
+      "key": "memory:memory/2026-05-17.md:81:127",
+      "path": "memory/2026-05-17.md",
+      "startLine": 81,
+      "endLine": 127,
+      "source": "memory",
+      "snippet": "- 凡哥说老师视频确认：16GB + 虚拟内存能跑完整 22B 工作流 - 暂不纠结显存 --- ## 四、LTX PromptRelay 工作流学习（19:48-21:00） ### 工作流分析 - 文件：`LTX-2.3_-_I2V_Short-Story_PromptRelay五图视频制作.json` - 146 nodes, 126 links, Kijai 开发 - 5 个关键帧图（SEGMENT 1-5）× PromptRelay 分镜提示词 → 最长 30 秒视频 ### PromptRelay 两种语法 Block（推荐）： ``` Scene 1: 描述1 Scene 2: 描述2 ``` Inline： ``` 描述1 [权重] | 描述2 [权重] ``` 第一段为全局锚点（静态描述），后续只写变化。 ### 管线流程 ``` 5张图(LTXVAddGuideMulti) → PromptRelayEncodeTimeline → DualCLIP+UNET → LTXVScheduler+Sampler → LatentUpsampler → VAEDecode → VHS_VideoCombine ``` --- ## 五、赛博飞升关键帧规划（21:09-23:09） ### 迭代历程 v1: 5段，每段平均分配 — 凡哥说不对，要按动作实际时长 v2: 4段 — 凡哥纠正：工作流是5段不是4段 v3: 5段，696帧=29秒 — 最终版 ### v3 最终5段规划 | 段 | 镜号 | 秒 | 帧 | 台词 | 核心动作 | |:-",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 1,
+      "maxScore": 1,
+      "firstRecalledAt": "2026-05-19T09:08:23.303Z",
+      "lastRecalledAt": "2026-05-19T09:08:23.303Z",
+      "queryHashes": [
+        "6902f88bc130"
+      ],
+      "recallDays": [
+        "2026-05-19"
+      ],
+      "conceptTags": [
+        "48-21",
+        "ltx-2.3",
+        "1-5",
+        "vhs-videocombine",
+        "09-23",
+        "老师",
+        "视频",
+        "确认"
       ]
     }
   }
