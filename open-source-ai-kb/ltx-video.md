@@ -1,73 +1,80 @@
 # LTX-Video — AI 视频生成
 
-> 基于官方 Model Card (LTX-2.3) 和论文 (arxiv:2601.03233)
+> 基于官方 Model Card、论文 (arxiv:2601.03233)、官方提示词指南
 > 官方：https://huggingface.co/Lightricks/LTX-2.3
 
 ## ① 能帮我做什么
-- 从首帧图 + 音频生成口型同步视频
-- **画音一体生成**：视频和音频在同一个模型里同步产出
-- 支持多镜头硬切（Cut to），适合访谈类视频
-- 双通道模式：先粗生成再超分，兼顾速度和质量
+- 首帧图 + 音频 → 口型同步视频（Image-to-Video + Audio）
+- **画音一体**：视频和音频在同一个 DiT 模型里生成
+- 多镜头硬切（Cut to），适合访谈类视频
+- 双通道模式：粗生成 → 超分
+- 官方还提供 API（ltx.video），有 Fast/Pro 两档
 
 ## ② 怎么用
 
-**模型架构（理解原理有助于高效使用）：**
-- 类型：DiT（Diffusion Transformer）音视频基础模型
-- 结构：非对称双流 Transformer — 14B 参数视频流 + 5B 参数音频流
-- 双向音视频交叉注意力（Cross-Attention），实现画音同步
+**模型架构（理解原理有助于调参）：**
+- DiT（Diffusion Transformer），非对称双流：14B 视频 + 5B 音频
+- 双向音视频交叉注意力，实现画音同步
+- Modality-CFG：视频和音频引导分开控制
 - 多语言文本编码器，英文为主
-- **Modality-CFG**：视频和音频可以分开控制引导强度，我们视频通道 scale×0.5 就是这个原理
 
 **我们用的版本：**
-`ltx-2.3-22b-distilled-1.1` — 8步蒸馏版，CFG=1，相比 v1.0 改进了音频和视觉质量
-- 全量版 `ltx-2.3-22b-dev` 可训练但更慢，目前不需要
-- LoRA 版 `ltx-2.3-22b-distilled-lora-384-1.1` 可微调风格
+`ltx-2.3-22b-distilled-1.1` — 8步蒸馏版，CFG=1，v1.1 改进了音频和视觉质量
 
 **ComfyUI 参数：**
 - UNET：ltx-2.3-22b-distilled-1.1_transformer_only_fp8_scaled
-- 分辨率：736×1280（竖屏，736/32=23 ✅，1280/32=40 ✅）
-- 帧率：24fps
-- Seed：42（固定，保证一致性）
-- CFG：1.0（蒸馏版标准）
-- Epsilon：0.001
+- 分辨率：736×1280（竖屏，满足 32 整除约束）
+- 帧率：24fps | Seed：42 | CFG：1.0 | Epsilon：0.001
+- 双通道：通道1 8步（scale×0.5）+ 通道2 4步超分（denoise 0.42）
 
-**⚠️ 尺寸约束（官方要求）：**
+**⚠️ 尺寸约束（官方硬要求）：**
 - 宽高必须能被 32 整除
-- 帧数必须满足 `帧数 = N × 8 + 1`（即减1后能被8整除）
-- 不满足时需 padding 后裁剪，ComfyUI 节点会自动处理
-
-**双通道生成：**
-- 通道1：8步主生成（scale×0.5）
-- 通道2：4步超分（denoise 0.42, ×2 latent upscaler）
+- 帧数 = N × 8 + 1（减1后能被8整除）
+- ComfyUI 节点会自动 padding 处理
 
 **镜头切换**：硬切（Cut to），不用 LTX transition LoRA
-
 **⚠️ 文件禁放 /tmp**，必须放 D:\SDkecheng\
 **⚠️ 音频段间 1 秒静音间隙**，合并用 `-c:a pcm_s16le`
 
 ## ③ 提示词技巧
 
-**模型如何理解语言：**
-LTX-2.3 使用多语言文本编码器，但训练数据以英文为主。英文提示词效果远好于中文。
+### 官方指南核心规则
 
-**官方提示词指南**（ltx.video/blog/how-to-prompt-for-ltx-2，国内被墙）
+**提示词 6 要素（官方）：**
+1. 定镜头（Establish the Shot）— 用电影术语描述景别
+2. 设场景（Set the Scene）— 光线、色调、材质、氛围
+3. 写动作（Describe the Action）— 从头到尾自然流动
+4. 定义角色（Define the Character(s)）— 年龄、发型、服装、特征
+5. 摄像机运动（Camera Movement）— 明确如何运动
+6. 描述音频（Describe the Audio）— 对白用引号括起来
 
-**我们验证过的规则：**
+**✅ 官方推荐写法：**
+- 写成一整段流畅的段落（single flowing paragraph）
+- 用现在时态动词
+- 细节程度匹配景别（特写 > 全景）
+- 4-8 句描述性句子
+- 大胆迭代——LTX 为快速实验设计
 
-❌ **禁止词**（模型看到就激活文字渲染导致画面出字）：
+**✅ 什么效果好：**
+电影级构图、情感人物瞬间、氛围/光线、清晰的摄影机语言、风格化美学、角色可以说话唱歌
+
+**❌ 官方明确不要写：**
+- **内心情绪标签**（不要写 sad/confused，用视觉线索替代！）
+- 文字和 Logo（不可靠）
+- 复杂物理（会出伪影，跳舞可以）
+- 场景过载（太多角色或动作）
+- 矛盾的光线逻辑
+- 过度复杂的提示词（从简单开始逐层加）
+
+### 我们的实战验证
+
+❌ **额外发现的禁止词**（激活文字渲染）：
 text, subtitle, watermark, letters, words, typography
+✅ **替代**：Clean visual presentation with sharp edges
 
-✅ **替代写法**：Clean visual presentation with sharp edges
-
-**核心原则：**
-- 提示词只写角色动作/表情/语气，不写具体台词——让 LTX 跟音频自然驱动
-- 单段单说话人，末尾标注另一方状态
-- 固定机位描述，段末写 Cut to next shot
-- 描述角色外观特征帮助模型保持一致性
-
-**典型模板：**
+**我们验证有效的模板：**
 ```
-[角色描述], seated on a black swivel chair. [动作/情绪].
+[角色描述], seated on a black swivel chair. [动作/情绪的身体线索].
 [His/Her] gaze is fixed steadily to the [left/right] side without moving.
 [Lips closed / Lips move naturally with speech]. Hands resting on armrests.
 Clean visual presentation with sharp edges. Fixed camera, no movement.
@@ -75,5 +82,10 @@ Clean visual presentation with sharp edges. Fixed camera, no movement.
 Cut to next shot.
 ```
 
-**Modality-CFG 原理（知道后用得更准）：**
-视频和音频引导是分开控制的。我们视频 scale×0.5 意味着给音频更多自由度，让口型更自然地跟随配音。如果画面不稳定可以适当提高视频 scale，如果口型不准可以降低。
+**Modality-CFG 实战：**
+视频 scale×0.5 = 给音频更多自由度让口型自然。画面不稳可提高 scale，口型不准可降低。
+
+### 官方 LipDub 功能
+视频配音替换工具，提示词格式：
+`[说话人] is speaking [语言], saying: "[完整对白]"`
+目前验证的语言：英/法/西/德/俄
