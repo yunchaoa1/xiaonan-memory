@@ -50,3 +50,5 @@ strength_test_old.py
 # 中间产物
 *.xlsx
 *.json
+chroma_db/
+.venv/
