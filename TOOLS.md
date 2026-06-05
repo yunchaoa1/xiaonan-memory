@@ -2,6 +2,12 @@
 
 Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
 
+## 翻墙代理（查外网用）
+
+- Windows 代理地址：`http://172.26.112.1:7890`
+- 使用方式：`curl -x http://172.26.112.1:7890` 或 `export https_proxy=http://172.26.112.1:7890`
+- 注意：只在需要查 HuggingFace/GitHub/Google 等外网时用
+
 ## Windows AI Toolkit
 
 见 `skills/comfyui-wsl/windows-aitk-rules.md` — 所有 Windows 侧操作必须遵循该规则文件。
