@@ -16,8 +16,37 @@
 7. 对话结束时主动整理到每日日志
 8. 文字内容不用代码块、不带滚动条，要一眼看全
 9. D 盘根目录不乱放文件，临时文件放 D:\temp\
+10. **文档交付用 Word/XLSX 格式 → 飞书发送**，不丢 markdown 让凡哥找
+11. 不确定的事不脑补，先去 ClawHub/GitHub/HuggingFace 查官方数据
+12. 飞书消息收不到时，凡哥会通过 Control UI 沟通
 
 ---
+
+## 🧰 已安装技能（2026-06-06 新增）
+
+| 技能 | 功能 | 来源 |
+|------|------|------|
+| `my-find-skills` | 搜索 ClawHub 技能市场 | ClawHub |
+| `notebooklm-py` | Google NotebookLM 知识库 | ClawHub |
+| `self-improving-agent-1-0-2` | 错误自动记录→定期沉淀 | ClawHub |
+| `agnes-ai` | Agnes 图片/视频生成 | ClawHub |
+
+## 🤖 模型架构（2026-06-06 定版）
+
+| 能力 | 引擎 | 花费 |
+|------|------|:--:|
+| 🧠 大脑推理 | DeepSeek V4 Pro | 付费 |
+| 🔍 联网搜索 | Kimi（月之暗面） | 付费（少量） |
+| 🎨 图片生成 | Agnes Image 2.1 Flash | **免费** |
+| 🎬 视频生成 | Agnes Video V2.0 | **免费** |
+| 👁️ 看图分析 | Qwen VL Max | 付费 |
+| 🎤 TTS | Qwen3 TTS VoiceClone | 付费 |
+| 📄 备用文本 | Agnes 2.0 Flash | **免费** |
+
+- Kimi 搜索配置：`tools.web.search.provider: kimi` + moonshot 插件
+- Agnes API：`https://apihub.agnes-ai.com/v1`（注意是 apihub 不是 api！）
+- DeepSeek 不能换——Agnes Flash 版推理深度不够
+- Gateway 是前台进程，不是 systemd service，`openclaw gateway restart` 无效
 
 ## 📁 当前活动项目
 
