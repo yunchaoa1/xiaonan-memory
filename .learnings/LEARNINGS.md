@@ -43,3 +43,26 @@ Docker build fails on Apple Silicon due to platform mismatch
 
 ---
 
+## [LRN-20260609-001] correction
+
+**Logged**: 2026-06-09T01:22:00Z
+**Priority**: critical
+**Status**: resolved
+**Area**: docs
+**Promoted**: MEMORY.md 规则第3条 + 第8条
+
+### Summary
+凡哥要求所有文字内容不用代码块、不截断、不带滚动条，让内容一眼看完。
+但我多次在发送提示词/技术内容时下意识使用代码块包裹。
+
+### Root Cause
+DeepSeek 默认输出习惯倾向用代码块格式化技术内容。
+我需要主动对抗这个倾向：凡哥的飞书对话中，任何长文本都直接裸发，不包裹。
+
+### Resolution
+- 已在 MEMORY.md 规则第3条和第8条重复强调
+- 本次对话中当场修正
+- 今后每次发提示词前自我检查：有没有代码块？
+
+---
+
