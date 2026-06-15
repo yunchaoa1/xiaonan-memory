@@ -58,7 +58,7 @@
 | 🔍 联网搜索 | Kimi（月之暗面） | 付费（少量） |
 | 🎨 图片生成 | Agnes Image 2.1 Flash | **免费** |
 | 🎬 视频生成 | Agnes Video V2.0 | **免费** |
-| 👁️ 看图分析 | Qwen VL Max | 付费 |
+| 👁️ 看图分析 | Qwen VL Max（OpenClaw）/ Agnes 2.0 Flash（Hermes） | 付费/免费 |（2026-06-16：Agnes 图片专用模型已下线，Hermes 改用通用模型）|
 | 🎤 TTS | Qwen3 TTS VoiceClone | 付费 |
 | 📄 备用文本 | Agnes 2.0 Flash | **免费** |
 
