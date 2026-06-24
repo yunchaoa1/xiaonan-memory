@@ -134,6 +134,7 @@
 - WSL/Ubuntu → D:\WSL\Ubuntu
 - C盘仅剩：Windows系统 + 虚拟内存 + 华硕驱动 + 几个搬不动的程序
 - ⚠️ 迁移用户文件夹正确方法：右键→属性→位置→移动（不要直接改注册表！）
+- 🆕 **Windows 桌面路径（2026-06-24 确认）**：`D:\Desktop`（用户文件夹迁移到D盘后桌面也在D盘，不是C:\Users\bobby\Desktop）
 - 🆕 **C/D迁移后遗症（2026-06-16）**：
   - HKCU\Environment\TEMP/TMP 带了双引号（`"D:\Temp"`）→ 所有安装器解压失败
   - 桌面注册表指向 `D:\Desktop` 而非 `D:\Users\bobby\Desktop`

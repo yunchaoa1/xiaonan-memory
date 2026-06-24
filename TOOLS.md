@@ -54,3 +54,10 @@ Add whatever helps you do your job. This is your cheat sheet.
 ## Related
 
 - [Agent workspace](/concepts/agent-workspace)
+
+## Windows 路径速查
+
+- 💻 **桌面：** `D:\Desktop`（不是 C 盘！用户文件夹已迁到 D 盘）
+- 📁 **临时文件：** `D:\temp\`
+- 🎬 **ComfyUI：** `D:\SDkecheng\ComfyUI\`
+- 🐍 **Python：** `D:\Python312\python.exe`
