@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星火智画 · 本地版</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#0f0f0f; color:#e0e0e0; display:flex; height:100vh; }
+/* 侧边栏 */
+.sidebar { width:260px; background:#1a1a1a; border-right:1px solid #2a2a2a; display:flex; flex-direction:column; }
+.sidebar h1 { padding:20px; font-size:18px; background:linear-gradient(135deg,#d946ef,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.sidebar .btn { margin:10px 20px; padding:10px 16px; background:#2a2a2a; border:1px solid #3a3a3a; color:#e0e0e0; border-radius:6px; cursor:pointer; font-size:14px; }
+.sidebar .btn:hover { background:#3a3a3a; }
+.sidebar .btn.primary { background:linear-gradient(135deg,#d946ef,#f59e0b); color:#fff; border:none; }
+.project-list { flex:1; overflow-y:auto; padding:10px 20px; }
+.project-item { padding:10px; margin:4px 0; border-radius:6px; cursor:pointer; font-size:13px; }
+.project-item:hover { background:#252525; }
+.project-item.active { background:#2a2a2a; border:1px solid #d946ef; }
+/* 主区域 */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.toolbar { padding:16px 24px; border-bottom:1px solid #2a2a2a; display:flex; gap:10px; align-items:center; background:#1a1a1a; }
+.toolbar .title { font-size:20px; font-weight:600; flex:1; }
+.content { flex:1; display:flex; overflow:hidden; }
+.left-panel { flex:1; padding:24px; overflow-y:auto; }
+.right-panel { width:360px; background:#1a1a1a; border-left:1px solid #2a2a2a; padding:20px; overflow-y:auto; }
+/* 剧本区 */
+textarea { width:100%; min-height:150px; background:#0f0f0f; border:1px solid #3a3a3a; color:#e0e0e0; padding:12px; border-radius:6px; font-size:14px; resize:vertical; font-family:inherit; }
+textarea:focus { outline:none; border-color:#d946ef; }
+/* 分镜卡片 */
+.scene-card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px; padding:16px; margin-bottom:12px; }
+.scene-card .scene-num { font-size:12px; color:#888; margin-bottom:4px; }
+.scene-card .scene-text { font-size:14px; line-height:1.6; }
+.scene-card .scene-status { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; margin-top:8px; }
+.scene-card .status-pending { background:#3a3a00; color:#f59e0b; }
+.scene-card .status-done { background:#003a00; color:#22c55e; }
+.status-bar { padding:8px 24px; background:#111; border-top:1px solid #2a2a2a; font-size:12px; color:#666; }
+.empty-state { text-align:center; padding:60px 20px; color:#555; }
+.empty-state .icon { font-size:48px; margin-bottom:16px; }
+input[type=text] { width:100%; padding:8px 12px; background:#0f0f0f; border:1px solid #3a3a3a; color:#e0e0e0; border-radius:6px; font-size:14px; }
+input[type=text]:focus { outline:none; border-color:#d946ef; }
+label { display:block; margin:12px 0 6px; font-size:13px; color:#888; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h1>✨ 星火智画</h1>
+  <button class="btn primary" onclick="newProject()">+ 新建项目</button>
+  <div class="project-list" id="projectList">
+    <div class="empty-state"><div class="icon">📂</div>暂无项目</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="toolbar">
+    <div class="title" id="projectTitle">选择或新建项目</div>
+    <button class="btn" onclick="generateScenes()">🎬 生成分镜</button>
+    <button class="btn primary" onclick="saveScript()">💾 保存</button>
+  </div>
+  <div class="content">
+    <div class="left-panel" id="leftPanel">
+      <div class="empty-state">
+        <div class="icon">🎬</div>
+        <p>选择一个项目或新建项目开始</p>
+      </div>
+    </div>
+    <div class="right-panel">
+      <h3 style="font-size:14px;color:#888;margin-bottom:16px;">📐 分镜预览</h3>
+      <div id="sceneList">
+        <div class="empty-state"><div class="icon">📋</div>先生成剧本分镜</div>
+      </div>
+    </div>
+  </div>
+  <div class="status-bar" id="statusBar">ComfyUI: 检查中... | 项目: 0</div>
+</div>
+
+<script>
+let currentProject = null;
+const API = '/api';
+
+async function fetchAPI(url, opts={}) {
+  const res = await fetch(API+url, {...opts, headers:{'Content-Type':'application/json',...opts.headers}});
+  return res.json();
+}
+
+async function loadProjects() {
+  const list = await fetchAPI('/projects');
+  const el = document.getElementById('projectList');
+  if (list.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">📂</div>暂无项目</div>';
+    return;
+  }
+  el.innerHTML = list.map(p => 
+    `<div class="project-item${currentProject?.id===p.id?' active':''}" onclick="openProject('${p.id}')">
+      🎬 ${p.name}<br><small style="color:#666">${p.created_at} · ${p.scenes?.length||0} 个分镜</small>
+    </div>`
+  ).join('');
+}
+
+async function newProject() {
+  const name = prompt('项目名称：', '新短剧项目');
+  if (!name) return;
+  const p = await fetchAPI('/projects', {method:'POST', body:JSON.stringify({name})});
+  openProject(p.id);
+}
+
+async function openProject(pid) {
+  currentProject = await fetchAPI('/projects/'+pid);
+  document.getElementById('projectTitle').textContent = '🎬 ' + currentProject.name;
+  document.getElementById('leftPanel').innerHTML = `
+    <label>📝 剧本内容</label>
+    <textarea id="scriptInput" placeholder="在此输入剧本...">${currentProject.script||''}</textarea>
+    <p style="font-size:12px;color:#555;margin-top:8px;">输入剧本后点击「🎬 生成分镜」自动拆分为分镜脚本</p>
+  `;
+  renderScenes(currentProject.scenes||[]);
+  loadProjects();
+}
+
+async function saveScript() {
+  if (!currentProject) return alert('请先选择项目');
+  const script = document.getElementById('scriptInput')?.value || '';
+  await fetchAPI(`/projects/${currentProject.id}/script`, {
+    method:'POST', body:JSON.stringify({project_id:currentProject.id, content:script})
+  });
+  currentProject.script = script;
+  updateStatus('剧本已保存');
+}
+
+async function generateScenes() {
+  if (!currentProject) return alert('请先选择项目');
+  await saveScript();
+  if (!currentProject.script) return alert('请先输入剧本');
+  const num = parseInt(prompt('拆分为几个分镜？','5')) || 5;
+  const result = await fetchAPI(`/projects/${currentProject.id}/scenes/generate`, {
+    method:'POST', body:JSON.stringify({project_id:currentProject.id, num_scenes:num})
+  });
+  renderScenes(result.scenes);
+  updateStatus(`已生成 ${result.count} 个分镜`);
+}
+
+function renderScenes(scenes) {
+  const el = document.getElementById('sceneList');
+  if (!scenes.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">📋</div>先生成剧本分镜</div>';
+    return;
+  }
+  el.innerHTML = scenes.map(s => `
+    <div class="scene-card">
+      <div class="scene-num">🎞 分镜 #${s.number}</div>
+      <div class="scene-text">${s.summary}</div>
+      <div class="scene-status ${s.image_url?'status-done':'status-pending'}">${s.image_url?'✅ 已出图':'⏳ 待出图'}</div>
+    </div>
+  `).join('');
+}
+
+function updateStatus(msg) {
+  document.getElementById('statusBar').textContent = msg;
+}
+
+(async function init() {
+  try {
+    const s = await fetchAPI('/status');
+    updateStatus(`ComfyUI: ${s.comfyui} | 项目: ${s.projects}`);
+  } catch(e) {
+    updateStatus('ComfyUI: 离线 | 本地模式');
+  }
+  loadProjects();
+})();
+</script>
+</body>
+</html>
