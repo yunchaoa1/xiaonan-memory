@@ -52,3 +52,4 @@ strength_test_old.py
 *.json
 chroma_db/
 .venv/
+node_modules/
