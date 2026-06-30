@@ -31,14 +31,6 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0b0a0f;c
 .children{margin-left:32px;border-left:1px solid rgba(255,255,255,0.06);overflow:hidden;transition:max-height .3s ease}
 .children.collapsed{max-height:0}
 .children.expanded{max-height:3000px}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center}
-.modal.show{display:flex}
-.modal-box{background:#121116;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;max-width:600px;width:90%;max-height:70vh;overflow-y:auto}
-.modal-box h2{font-size:18px;margin-bottom:12px;color:#f2f0f7}
-.modal-box p{font-size:14px;line-height:1.7;color:rgba(242,240,247,0.7);margin-bottom:8px}
-.modal-box a{color:#a78bfa}
-.modal-close{float:right;cursor:pointer;font-size:20px;color:rgba(242,240,247,0.4);background:none;border:none;padding:4px 8px}
-.modal-close:hover{color:#f2f0f7}
 .footer{padding:20px 32px;font-size:11px;color:rgba(242,240,247,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:40px}
 .tip{font-size:12px;color:rgba(242,240,247,0.3);padding:2px 10px;font-style:italic}
 </style>
@@ -49,17 +41,15 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0b0a0f;c
   <div class="sub">最后更新：<span id="lastUpdate">—</span> · 公司小南 + 家里小南 共享</div>
 </div>
 <div class="tree" id="tree"></div>
-<div class="modal" id="modal"><div class="modal-box"><button class="modal-close" onclick="document.getElementById('modal').classList.remove('show')">✕</button><div id="modalContent"></div></div></div>
 <div class="footer">
-  📌 点击节点展开/折叠 · ✅完成 🔜进行中 ⚠️卡住 · 🟣紫色链接可点开详情 · <span id="nodeCount">—</span><br>
-  📁 同步仓库：D:\Hermes\xiaonan-memory · 操作指南：<a href="file:///D:/SDkechengz/SYNC-GUIDE.md" style="color:rgba(242,240,247,0.3)">SYNC-GUIDE.md</a>
+  📌 点击节点折叠/展开 · 紫色文字=点击直接打开对应文件 · <span id="nodeCount">—</span>
 </div>
 
 <script>
 // ============================================================
 // 🔧 修改这棵树 = 修改下面 DATA 对象
 // 状态: "done" | "progress" | "blocked" | "pending"
-// link: 可选，点击叶子时弹出的详情或文件路径
+// file: 可选，点击叶子时直接打开的md文件（相对于 D:\Hermes\xiaonan-memory\）
 // ============================================================
 const DATA = {
   label: "工作总控台", icon: "🏗️", status: "progress",
@@ -70,27 +60,27 @@ const DATA = {
         {
           label: "心魔谱系", icon: "👹", status: "done", count: "57/57",
           children: [
-            {label:"卷一·欲之魔（11条）",icon:"📿",status:"done",link:"heart-demons/02_天南心魔谱系.md"},
-            {label:"卷二·情之魔（13条）",icon:"💔",status:"done",link:"heart-demons/02_天南心魔谱系.md"},
-            {label:"卷三·见之魔（15条）",icon:"🔍",status:"done",link:"heart-demons/02_天南心魔谱系.md"},
-            {label:"卷四·行之魔（18条）",icon:"🔄",status:"done",link:"heart-demons/02_天南心魔谱系.md"}
+            {label:"卷一·欲之魔（11条）",icon:"📿",status:"done",file:"heart-demons/02_天南心魔谱系.md"},
+            {label:"卷二·情之魔（13条）",icon:"💔",status:"done",file:"heart-demons/02_天南心魔谱系.md"},
+            {label:"卷三·见之魔（15条）",icon:"🔍",status:"done",file:"heart-demons/02_天南心魔谱系.md"},
+            {label:"卷四·行之魔（18条）",icon:"🔄",status:"done",file:"heart-demons/02_天南心魔谱系.md"}
           ]
         },
         {
           label: "世界观体系", icon: "🌍", status: "done",
           children: [
-            {label:"六界体系",icon:"🏛️",status:"done",info:"渊→根→野→尘→真→渡",link:"南溟岛世界观大纲.md"},
-            {label:"六阶体系",icon:"🪜",status:"done",info:"启明→知途→见光→鉴心→归真→渡世",link:"南溟岛世界观大纲.md"},
-            {label:"心魔机制",icon:"🦠",status:"done",info:"游离态/寄生态/实体态",link:"南溟岛世界观大纲.md"},
-            {label:"渡者频道+截胡+降维KPI",icon:"📡",status:"done",link:"南溟岛世界观大纲.md"},
-            {label:"穿越机制",icon:"🌀",status:"done",info:"共鸣瓶颈·时间定格",link:"南溟岛世界观大纲.md"}
+            {label:"六界体系",icon:"🏛️",status:"done",info:"渊→根→野→尘→真→渡",file:"南溟岛世界观大纲.md"},
+            {label:"六阶体系",icon:"🪜",status:"done",info:"启明→知途→见光→鉴心→归真→渡世",file:"南溟岛世界观大纲.md"},
+            {label:"心魔机制",icon:"🦠",status:"done",info:"游离态/寄生态/实体态",file:"南溟岛世界观大纲.md"},
+            {label:"渡者频道+截胡+降维KPI",icon:"📡",status:"done",file:"南溟岛世界观大纲.md"},
+            {label:"穿越机制",icon:"🌀",status:"done",info:"共鸣瓶颈·时间定格",file:"南溟岛世界观大纲.md"}
           ]
         },
         {
           label: "38角色体系", icon: "👥", status: "progress",
           children: [
-            {label:"角色分类",icon:"🏷️",status:"done",info:"10化灵+28人类",link:"南溟岛世界观大纲.md"},
-            {label:"关系网",icon:"🕸️",status:"progress",info:"血缘/婚姻/友谊/师徒·基本定",link:"南溟岛世界观大纲.md"},
+            {label:"角色分类",icon:"🏷️",status:"done",info:"10化灵+28人类",file:"南溟岛世界观大纲.md"},
+            {label:"关系网",icon:"🕸️",status:"progress",info:"血缘/婚姻/友谊/师徒·基本定",file:"南溟岛世界观大纲.md"},
             {label:"穿越共鸣12类分配",icon:"🔮",status:"progress",info:"待逐人确认"},
             {label:"各角色成长故事",icon:"📖",status:"pending",info:"已有xlsx基础"},
             {label:"角色六阶定位",icon:"📊",status:"pending"}
@@ -99,7 +89,7 @@ const DATA = {
         {
           label: "19反派体系", icon: "😈", status: "pending",
           children: [
-            {label:"反派类型三分",icon:"🏷️",status:"done",info:"完全黑化/合成体/共生体",link:"南溟岛世界观大纲.md"},
+            {label:"反派类型三分",icon:"🏷️",status:"done",info:"完全黑化/合成体/共生体",file:"南溟岛世界观大纲.md"},
             {label:"19市县×19反派对应",icon:"🗺️",status:"pending"},
             {label:"反派心魔组合",icon:"🧬",status:"pending"},
             {label:"反派故事",icon:"📜",status:"pending",info:"历史事件/传说/文化代表"}
@@ -108,7 +98,7 @@ const DATA = {
         {
           label: "世界历史", icon: "⏳", status: "pending",
           children: [
-            {label:"六时期框架",icon:"📅",status:"done",info:"蛮荒→觉醒→部落→联盟→归真→黄金",link:"南溟岛世界观大纲.md"},
+            {label:"六时期框架",icon:"📅",status:"done",info:"蛮荒→觉醒→部落→联盟→归真→黄金",file:"南溟岛世界观大纲.md"},
             {label:"各时期角色分配",icon:"👤",status:"pending"},
             {label:"心魔爆发→人类应对推演",icon:"⚡",status:"pending"}
           ]
@@ -126,7 +116,7 @@ const DATA = {
     {
       label: "技术管线", icon: "🔧", status: "done",
       children: [
-        {label:"三步法固化",icon:"🎥",status:"done",link:"ai-pipeline/三步法丝滑连贯管线.md"},
+        {label:"三步法固化",icon:"🎥",status:"done",file:"ai-pipeline/三步法丝滑连贯管线.md"},
         {label:"ComfyUI管线",icon:"🖥️",status:"done",info:"D:\\SDkecheng\\ComfyUI\\ 端口18188"},
         {label:"视频制作8步流程",icon:"📋",status:"done"}
       ]
@@ -148,58 +138,49 @@ const DATA = {
   ]
 };
 
-// ============================================================
-// 渲染逻辑（不用改）
-// ============================================================
 const STATUS = {done:"✅",progress:"🔜",blocked:"⚠️",pending:"○"};
 const STATUS_CLASS = {done:"status-done",progress:"status-progress",blocked:"status-blocked",pending:"status-pending"};
-const REPO = "D:\\Hermes\\xiaonan-memory\\";
 
-function openLink(link) {
-  if (!link) return;
-  const modal = document.getElementById('modal');
-  const content = document.getElementById('modalContent');
-  // Try to open file:// or just show link
-  content.innerHTML = `<h2>📄 详情</h2><p>文件路径：<br><code>${REPO}${link}</code></p><p>在 git 仓库中打开此文件查看完整内容。</p>`;
-  modal.classList.add('show');
-}
-
-function buildTree(node, depth=0) {
-  const div = document.createElement('div');
+function buildTree(node, depth) {
+  depth = depth || 0;
+  var div = document.createElement('div');
   div.className = 'branch';
   
-  const row = document.createElement('div');
-  const hasChildren = node.children && node.children.length > 0;
-  const hasLink = node.link && !hasChildren;
-  row.className = 'node' + (hasChildren ? '' : ' leaf') + (hasLink ? ' has-link' : '');
+  var row = document.createElement('div');
+  var hasChildren = node.children && node.children.length > 0;
+  var hasFile = node.file && !hasChildren;
+  row.className = 'node' + (hasChildren ? '' : ' leaf') + (hasFile ? ' has-link' : '');
   
-  let labelHtml = node.label;
-  if (hasLink) labelHtml = `<span style="color:#a78bfa;cursor:pointer">${node.label} ↗</span>`;
-  if (node.info) labelHtml += ` <span class="tip">${node.info}</span>`;
+  var labelHtml = node.label;
+  if (hasFile) {
+    labelHtml = '<a href="file:///D:/Hermes/xiaonan-memory/' + node.file + '" target="_blank" onclick="event.stopPropagation()">' + node.label + ' ↗</a>';
+  }
+  if (node.info) labelHtml += ' <span class="tip">' + node.info + '</span>';
   
-  row.innerHTML = `
-    <span class="icon">${node.icon||''}</span>
-    <span class="label">${labelHtml}</span>
-    ${node.count ? `<span class="count">${node.count}</span>` : ''}
-    <span class="status ${STATUS_CLASS[node.status]||'status-pending'}">${STATUS[node.status]||'○'} ${node.status==='done'?'完成':node.status==='progress'?'进行中':node.status==='blocked'?'卡住':'待办'}</span>
-  `;
+  row.innerHTML =
+    '<span class="icon">' + (node.icon||'') + '</span>' +
+    '<span class="label">' + labelHtml + '</span>' +
+    (node.count ? '<span class="count">' + node.count + '</span>' : '') +
+    '<span class="status ' + (STATUS_CLASS[node.status]||'status-pending') + '">' + (STATUS[node.status]||'○') + ' ' + (node.status==='done'?'完成':node.status==='progress'?'进行中':node.status==='blocked'?'卡住':'待办') + '</span>';
   
   div.appendChild(row);
   
-  if (hasLink) {
-    row.addEventListener('click', (e) => { e.stopPropagation(); openLink(node.link); });
-  }
-  
   if (hasChildren) {
-    const children = document.createElement('div');
+    var children = document.createElement('div');
     children.className = 'children expanded';
-    node.children.forEach(child => children.appendChild(buildTree(child, depth+1)));
+    for (var i = 0; i < node.children.length; i++) {
+      children.appendChild(buildTree(node.children[i], depth+1));
+    }
     div.appendChild(children);
-    
-    row.addEventListener('click', (e) => {
+    row.addEventListener('click', function(e) {
       e.stopPropagation();
-      children.classList.toggle('expanded');
-      children.classList.toggle('collapsed');
+      if (children.classList.contains('expanded')) {
+        children.classList.remove('expanded');
+        children.classList.add('collapsed');
+      } else {
+        children.classList.remove('collapsed');
+        children.classList.add('expanded');
+      }
     });
   }
   
@@ -207,14 +188,14 @@ function buildTree(node, depth=0) {
 }
 
 function countNodes(node) {
-  let n = 1;
-  if (node.children) node.children.forEach(c => n += countNodes(c));
+  var n = 1;
+  if (node.children) for (var i = 0; i < node.children.length; i++) n += countNodes(node.children[i]);
   return n;
 }
 
 document.getElementById('tree').appendChild(buildTree(DATA));
 document.getElementById('lastUpdate').textContent = '2026-06-30 晚间 · 小南（Hermes）';
-document.getElementById('nodeCount').textContent = `共 ${countNodes(DATA)} 个节点`;
+document.getElementById('nodeCount').textContent = '共 ' + countNodes(DATA) + ' 个节点';
 </script>
 </body>
 </html>
