@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-29T06:35:15.170Z",
+  "updatedAt": "2026-06-30T01:14:42.161Z",
   "entries": {
     "memory:memory/2026-05-08.md:47:67": {
       "key": "memory:memory/2026-05-08.md:47:67",
@@ -1061,18 +1061,20 @@
       "endLine": 127,
       "source": "memory",
       "snippet": "- 凡哥说老师视频确认：16GB + 虚拟内存能跑完整 22B 工作流 - 暂不纠结显存 --- ## 四、LTX PromptRelay 工作流学习（19:48-21:00） ### 工作流分析 - 文件：`LTX-2.3_-_I2V_Short-Story_PromptRelay五图视频制作.json` - 146 nodes, 126 links, Kijai 开发 - 5 个关键帧图（SEGMENT 1-5）× PromptRelay 分镜提示词 → 最长 30 秒视频 ### PromptRelay 两种语法 Block（推荐）： ``` Scene 1: 描述1 Scene 2: 描述2 ``` Inline： ``` 描述1 [权重] | 描述2 [权重] ``` 第一段为全局锚点（静态描述），后续只写变化。 ### 管线流程 ``` 5张图(LTXVAddGuideMulti) → PromptRelayEncodeTimeline → DualCLIP+UNET → LTXVScheduler+Sampler → LatentUpsampler → VAEDecode → VHS_VideoCombine ``` --- ## 五、赛博飞升关键帧规划（21:09-23:09） ### 迭代历程 v1: 5段，每段平均分配 — 凡哥说不对，要按动作实际时长 v2: 4段 — 凡哥纠正：工作流是5段不是4段 v3: 5段，696帧=29秒 — 最终版 ### v3 最终5段规划 | 段 | 镜号 | 秒 | 帧 | 台词 | 核心动作 | |:-",
-      "recallCount": 1,
+      "recallCount": 2,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 1,
+      "totalScore": 1.500255462527275,
       "maxScore": 1,
       "firstRecalledAt": "2026-05-19T09:08:23.303Z",
-      "lastRecalledAt": "2026-05-19T09:08:23.303Z",
+      "lastRecalledAt": "2026-06-30T01:14:42.161Z",
       "queryHashes": [
-        "6902f88bc130"
+        "6902f88bc130",
+        "bfc49dfe7256"
       ],
       "recallDays": [
-        "2026-05-19"
+        "2026-05-19",
+        "2026-06-30"
       ],
       "conceptTags": [
         "48-21",
@@ -2099,6 +2101,130 @@
         "古人对比/对话/六层",
         "不配",
         "算盘"
+      ]
+    },
+    "memory:memory/2026-05-19.md:50:77": {
+      "key": "memory:memory/2026-05-19.md:50:77",
+      "path": "memory/2026-05-19.md",
+      "startLine": 50,
+      "endLine": 77,
+      "source": "memory",
+      "snippet": "### 踩坑记录（subgraph展开） - LTX工作流用的subgraph格式，扩展成API prompt极其复杂 - 关键学到： 1. subgraph链接是对象格式（{id, origin_id, ...}），主层是数组格式 [lid, fn, fs, tn, ts, lt] 2. KSampler有隐藏的control_after_generate widget，会打乱widget_values映射 3. 用object_info API获取节点定义才能正确映射widget值 4. subgraph虚拟节点(-10, -20)的link需要特殊处理 ## 四、赛博飞升 5镜分镜视频 ### 5张关键帧（凡哥提供，按顺序） 1. 沉睡全景（侧俯视角） 2. 面部特写 3. 醒来持科幻匕首（中景侧视，惊讶） 4. 跃起狂喜高举匕首（全身仰视，大笑） 5. 看到全息屏「欢迎来到仙侠世界」（中景侧脸，震惊捂嘴） ### LTX PromptRelay 分镜方案 - 总帧数：481帧 / 25FPS = 19.2秒 - 段1: 75帧/3秒 - 沉睡全景→推近面部特写 - 段2: 125帧/5秒 - 睁眼坐起→发现手中武器（惊讶） - 段3: 100帧/4秒 - 跳下床→高举匕首→仰天大笑 - 台词：「哈哈哈哈！去他妈的修仙，血肉苦弱！科技飞升！」 - 段4: 100帧/4秒 - 落地→全息屏从虚空浮现 - 段5: 81帧/3.2秒 - 看清屏幕内容→捂嘴震惊定格 ### 产出文件 - 工作流：`赛博飞升_开场_5镜分镜.json`（已保存到Comf",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.5185595780611038,
+      "maxScore": 0.5185595780611038,
+      "firstRecalledAt": "2026-06-30T01:14:42.161Z",
+      "lastRecalledAt": "2026-06-30T01:14:42.161Z",
+      "queryHashes": [
+        "bfc49dfe7256"
+      ],
+      "recallDays": [
+        "2026-06-30"
+      ],
+      "conceptTags": [
+        "origin-id",
+        "会打乱widget-values映射",
+        "用object-info",
+        "19.2秒",
+        "75帧/3秒",
+        "125帧/5秒",
+        "100帧/4秒",
+        "81帧/3.2秒"
+      ]
+    },
+    "memory:memory/2026-06-28.md:45:68": {
+      "key": "memory:memory/2026-06-28.md:45:68",
+      "path": "memory/2026-06-28.md",
+      "startLine": 45,
+      "endLine": 68,
+      "source": "memory",
+      "snippet": "> 小南，如何在你制作分镜脚本时，就能精准链接这个模板库，在生成提示词的时候，也就是说从分镜脚本了解到需要生成的视频内容后，如何精准的生成准确的提示词？这中间会有什么难点 ### 小南拆解完整链路 **三步流程：** ``` 分镜脚本 → 第1步：视觉需求提取 → 第2步：模板库匹配 → 第3步：变量融合翻译 → 提示词 ``` **三个核心难点：** | 难点 | 表现 | 解法 | |------|------|------| | A. 变量替换不准 | 模板是\"女人脸\"，要改成\"亚洲中年男人\" | 模板分\"骨骼\"和\"变量\"，骨骼不动，变量填 | | B. 不同平台说的不是同一种话 | LTX吃英文、Kling吃中文、Wan有自己的语法 | 每张卡存多平台版本 | | C. \"剂量感\"——情绪写到几分？ | \"sad\"太轻，\"crying sobbing\"太重 | 模板记\"剂量刻度\"：3分=靠光，5分=光+色，7分=光+色+表情，9分=全力 | --- ## 凡哥指出真正的问题：缺的不是技巧，缺的是知识 ### 凡哥原话",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.4889403253793716,
+      "maxScore": 0.4889403253793716,
+      "firstRecalledAt": "2026-06-30T01:14:42.161Z",
+      "lastRecalledAt": "2026-06-30T01:14:42.161Z",
+      "queryHashes": [
+        "bfc49dfe7256"
+      ],
+      "recallDays": [
+        "2026-06-30"
+      ],
+      "conceptTags": [
+        "小南",
+        "如何",
+        "制作",
+        "脚本",
+        "精准",
+        "这个",
+        "模板",
+        "生成"
+      ]
+    },
+    "memory:memory/2026-06-04.md:29:61": {
+      "key": "memory:memory/2026-06-04.md:29:61",
+      "path": "memory/2026-06-04.md",
+      "startLine": 29,
+      "endLine": 61,
+      "source": "memory",
+      "snippet": "- ltx-video.md（视频生成三板块，已整合官方提示词指南） - combo-tips.md（AI组合使用管线） - INDEX.md（总索引） - 跟踪清单.md（Echo-Infinity / ComfyUI v0.24 / MMG2Skill） ### 日报扫描系统 - cron 任务：每天 9:00 自动扫描 hf-mirror.com + GitHub + ModelScope - 筛选三领域：知识付费落地 / 短剧落地 / AI自动化办公落地 - 首次扫描（2026-06-04）：发现4个相关项目 - 跟踪项目加入每日标注🔍 ### closed-source-ai-kb/ - 空目录，待填 --- ## 📚 LTX 2.3 官方学习 通过 `docs.ltx.video/llms-full.txt`（AI专用文档格式）获取官方提示词指南： - 6要素：定镜头/设场景/写动作/定义角色/摄像机运动/描述音频 - 核心规则：一整段短文、现在时、细节匹配景别、4-8句 - 禁止：内心情绪标签（要用视觉线索！）、文字Logo、复杂物理 - 我们验证的额外禁止词：text, subtitle, watermark, letters, words, typography --- ## 🔍 HuMo 教程学习 - 知识星球课程：「Wan2.1 HuMo多图参考+音频数字人」 - 通过PowerShell+Edge CDP抓取+Qwen VL视频分析完整学习 - 教程分析存档：`humo_frames/humo_tutorial_analysis.m",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.4736594974994659,
+      "maxScore": 0.4736594974994659,
+      "firstRecalledAt": "2026-06-30T01:14:42.161Z",
+      "lastRecalledAt": "2026-06-30T01:14:42.161Z",
+      "queryHashes": [
+        "bfc49dfe7256"
+      ],
+      "recallDays": [
+        "2026-06-30"
+      ],
+      "conceptTags": [
+        "ltx-video.md",
+        "combo-tips.md",
+        "index.md",
+        "跟踪清单.md",
+        "echo-infinity",
+        "v0.24",
+        "hf-mirror.com",
+        "closed-source-ai-kb"
+      ]
+    },
+    "memory:memory/2026-05-22.md:58:99": {
+      "key": "memory:memory/2026-05-22.md:58:99",
+      "path": "memory/2026-05-22.md",
+      "startLine": 58,
+      "endLine": 99,
+      "source": "memory",
+      "snippet": "- 统一参数：denoise 0.90 / steps 28 / CFG 5.0 / 1664×928 ## 四、视频问题诊断 ### 4.1 视频1 vs 视频2 对比 - 视频1（正常）：背景稳定，无运镜，但桌子结构在帧间漂移 - 视频2（背景飘）：不是真运镜，是 prompt 写了两人交替说话 → LTX 插值时拉扯画面 - Qwen VL 逐帧分析确认：背景蓝色屏幕本身稳定，飘的是人物大幅姿态变化导致的画面拉扯 ### 4.2 解决方案 - 用 8 段单说话人 prompt（已写好） - CFG 降到 1.0-1.2，image_strength 拉到 0.95+ - 每段加 `background remains completely still` 锁死 ## 五、LTX 视频生成用时测算 ### 5.1 实测数据 - 8段/111秒音频：LTX 生成耗时 34分12秒 ≈ 18.4倍实时 ### 5.2 工时预估 | | 1分钟成品 | 20分钟成品 | |------|------|------| | 剧本+对话 | 15min | 45min | | TTS | 3min | 10min | | 音频切分 | 5min | 20min | | 首帧图(含抽卡30%) | 15min | 120min | | LTX视频生成 | 30min | 5.5h | | 剪辑拼接 | 10min | 60min | | 质检+改台词 | 10min | 30min | | **首版合计** | 1.4h | 9h | | **含抽卡最终** | 1.8h |",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.4646425813436508,
+      "maxScore": 0.4646425813436508,
+      "firstRecalledAt": "2026-06-30T01:14:42.161Z",
+      "lastRecalledAt": "2026-06-30T01:14:42.161Z",
+      "queryHashes": [
+        "bfc49dfe7256"
+      ],
+      "recallDays": [
+        "2026-06-30"
+      ],
+      "conceptTags": [
+        "0.90",
+        "5.0",
+        "4.1",
+        "4.2",
+        "1.0-1.2",
+        "image-strength",
+        "0.95",
+        "5.1"
       ]
     }
   }
