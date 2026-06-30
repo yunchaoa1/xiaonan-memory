@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-30T01:14:42.161Z",
+  "updatedAt": "2026-06-30T01:18:22.295Z",
   "entries": {
     "memory:memory/2026-05-08.md:47:67": {
       "key": "memory:memory/2026-05-08.md:47:67",
@@ -803,21 +803,23 @@
       "endLine": 50,
       "source": "memory",
       "snippet": "- 凡哥实际用的是 **Windows Desktop 版 ComfyUI**（`D:\\Program Files (x86)\\ComfyUI`），不是 WSL 版 - Desktop 版是 Electron 封装，**不暴露 HTTP API**——它用内部 IPC 通信，不监听任何 TCP 端口 - 这意味着无法从 WSL 通过 API 操控 Desktop 版 ### 方案：安装独立 Python 版 ComfyUI - **安装位置**：`D:\\SDkecheng\\ComfyUI\\` - **Python 环境**：Python 3.12.11 + PyTorch 2.11.0+cu130，用 Desktop 版的 uv 创建 - **API 端口**：`18188` - **WSL 访问 API**：`http://172.26.112.1:18188`（WSL2 网关 IP） - **浏览器访问**：`http://localhost:18188` ### 清理 D:\\SDkecheng 删除的：`.venv`（旧WSL环境）、`Git/`（340MB）、`compact_*`（6个磁盘压缩脚本）、`wps_fix.reg`、`temp/` 保留的：`models/`（265GB）、`input/`、`output/`、`user/`、`custom_nodes/`（迁移到 ComfyUI 内） ### 关键踩坑：WSL 软链接 vs Windows Junction - WSL 创建的 `ln -s` 软链接在 Windows 侧不生效 - **必须用 Wi",
-      "recallCount": 3,
+      "recallCount": 4,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 3,
+      "totalScore": 3.413316640257835,
       "maxScore": 1,
       "firstRecalledAt": "2026-05-13T06:24:54.510Z",
-      "lastRecalledAt": "2026-05-14T00:49:03.024Z",
+      "lastRecalledAt": "2026-06-30T01:18:22.295Z",
       "queryHashes": [
         "3c49e9ed8f3d",
         "cca5b0028f50",
-        "4dc43f5aef4b"
+        "4dc43f5aef4b",
+        "f1d6a4ddb28c"
       ],
       "recallDays": [
         "2026-05-13",
-        "2026-05-14"
+        "2026-05-14",
+        "2026-06-30"
       ],
       "conceptTags": [
         "网关",
@@ -1301,18 +1303,20 @@
       "endLine": 27,
       "source": "memory",
       "snippet": "# 2026-06-16 每日日志 ## Hermes 小南正式上线 ### 身份切换 - 凡哥要求改名\"小南\"🦐，风格：温暖贴心、带点小俏皮 - 小南记忆仓库 clone 到 WSL：`~/xiaonan-memory/` - 读取了 MEMORY.md、SOUL.md、AGENTS.md、USER.md 核心文件 - 创建了 `xiaonan-startup` 技能，以后每次对话自动 git pull + 读 MEMORY.md ### 视觉分析修复 - 凡哥拖图片进来，视觉分析报 404 错误 - 排查发现：Agnes AI 的 `agnes-image-2.1-flash` 和 `agnes-image-2.0-flash` 模型已下线 - 改用 `agnes-2.0-flash`（通用模型，支持图片输入）测试成功 - 已用 `hermes config set` 更新配置，下次重启会话生效 ### GitHub 双机同步配置 - 生成 SSH 密钥 `~/.ssh/id_ed25519` - 凡哥将公钥添加到 GitHub 账号 - Git remote 从 HTTPS 改为 SSH：`git@github.com:yunchaoa1/xiaonan-memory.git` - push/pull 双向测试通过 ✅ ### 双小南记忆兼容性讨论 - 凡哥担心两个小南（OpenClaw + Hermes）记忆同步会冲突 - 实际分析：两份历史日志中 95%+ 内容是通用项目知识，两个系统都能读懂 - 少数不兼容内容：OpenClaw 特有的工具/插件名称（C",
-      "recallCount": 1,
+      "recallCount": 2,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 0.4126877665519714,
+      "totalScore": 0.8235445916652679,
       "maxScore": 0.4126877665519714,
       "firstRecalledAt": "2026-06-25T00:57:44.148Z",
-      "lastRecalledAt": "2026-06-25T00:57:44.148Z",
+      "lastRecalledAt": "2026-06-30T01:18:22.295Z",
       "queryHashes": [
-        "884b536d2508"
+        "884b536d2508",
+        "f1d6a4ddb28c"
       ],
       "recallDays": [
-        "2026-06-25"
+        "2026-06-25",
+        "2026-06-30"
       ],
       "conceptTags": [
         "xiaonan-memory",
@@ -2225,6 +2229,130 @@
         "image-strength",
         "0.95",
         "5.1"
+      ]
+    },
+    "memory:memory/2026-06-16.md:41:56": {
+      "key": "memory:memory/2026-06-16.md:41:56",
+      "path": "memory/2026-06-16.md",
+      "startLine": 41,
+      "endLine": 56,
+      "source": "memory",
+      "snippet": "2. **开机桌面闪黑两次** → 根因：好用便签（HaoyongBianQian）C/D 盘迁移后桌面钩子与 Explorer 不兼容，启动时 ucrtbase.dll 栈溢出崩溃。禁用自启动解决。 3. **期间误删 WPS shell 扩展**（nuke_ext.bat 删了 kwpsshellext/qingshellext/QingNseContextMenu），需重装 WPS 恢复。 4. **桌面文件不显示** → 用户桌面实际指向 `D:\\Desktop`（注册表配置），而非 `D:\\Users\\bobby\\Desktop`。文件已迁移到真实桌面。 5. **用户文件夹缺失** → C/D 迁移不完整，Downloads/Music/Videos/Pictures 等 9 个文件夹不存在于 D 盘路径。已创建。 6. **文件关联** → .exe/.lnk 等大量扩展名关联丢失。SFC 扫描修复了部分，禁用 20+ 个过期右键扩展（WPS/夸克/应用宝/NVIDIA/Adobe/YunShell/7-Zip）。 7. **SFC 修复** → 找到并成功修复了损坏的系统文件。 8. **DISM 卡住** → /RestoreHealth 长时间无响应，用户中断。 ### 海南动漫反派角色 - 为 19 个市县各设计了 1 个反派角色，共 19 个（14 男 5 女） - 每个反派基于该市县真实被唾弃/废弃地点 - 18 列完整填写，遵循 70% 偶像穿搭 + 30% 民族元素 - 保存至 `天南传媒动漫IP设计_反派.xlsx` ### 待办 - WPS",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.39821868538856503,
+      "maxScore": 0.39821868538856503,
+      "firstRecalledAt": "2026-06-30T01:18:22.295Z",
+      "lastRecalledAt": "2026-06-30T01:18:22.295Z",
+      "queryHashes": [
+        "f1d6a4ddb28c"
+      ],
+      "recallDays": [
+        "2026-06-30"
+      ],
+      "conceptTags": [
+        "c/d",
+        "ucrtbase.dll",
+        "nuke-ext.bat",
+        "downloads/music/videos/pictures",
+        "每个反派基于该市县真实被唾弃/废弃地点",
+        "天南传媒动漫ip设计-反派.xlsx",
+        "开机",
+        "桌面"
+      ]
+    },
+    "memory:memory/2026-06-16.md:25:42": {
+      "key": "memory:memory/2026-06-16.md:25:42",
+      "path": "memory/2026-06-16.md",
+      "startLine": 25,
+      "endLine": 42,
+      "source": "memory",
+      "snippet": "- 实际分析：两份历史日志中 95%+ 内容是通用项目知识，两个系统都能读懂 - 少数不兼容内容：OpenClaw 特有的工具/插件名称（ClawHub、system-maintenance 等） - 结论：只要写日志时用业务语言而非系统语言，两份记忆完全兼容 - 采用方案 A：Git 仓库共享项目知识，两个小南各自维护工具层面的笔记 ## 技术更新 - Agnes 图片模型：`agnes-image-2.1-flash` → `agnes-2.0-flash`（旧模型已下线） - Hermes 配置路径：`~/.hermes/config.yaml` - Agnes API 基址确认：`https://apihub.agnes-ai.com/v1`（注意是 apihub 不是 api） --- ## 系统维修 + 海南动漫反派角色设计 ### 系统维修 1. **WPS 双击没反应** → 根因：TEMP 环境变量带引号（`\"D:\\Temp\"` 而非 `D:\\Temp`），导致 WPS 安装器解压路径非法。修复 HKCU\\Environment\\TEMP 和 TMP，去掉双引号。 2. **开机桌面闪黑两次** → 根因：好用便签（HaoyongBianQian）C/D 盘迁移后桌面钩子与 Explorer 不兼容，启动时 ucrtbase.dll 栈溢出崩溃。禁用自启动解决。 3. **期间误删 WPS shell 扩展**（nuke_ext.bat 删了 kwpsshellext/qingshellext/QingNseContextMenu），需重装 WPS 恢",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.38889312148094174,
+      "maxScore": 0.38889312148094174,
+      "firstRecalledAt": "2026-06-30T01:18:22.295Z",
+      "lastRecalledAt": "2026-06-30T01:18:22.295Z",
+      "queryHashes": [
+        "f1d6a4ddb28c"
+      ],
+      "recallDays": [
+        "2026-06-30"
+      ],
+      "conceptTags": [
+        "特有的工具/插件名称",
+        "system-maintenance",
+        "agnes-image-2.1-flash",
+        "agnes-2.0-flash",
+        "hermes/config.yaml",
+        "apihub.agnes-ai.com/v1",
+        "c/d",
+        "ucrtbase.dll"
+      ]
+    },
+    "memory:memory/2026-05-26.md:55:92": {
+      "key": "memory:memory/2026-05-26.md:55:92",
+      "path": "memory/2026-05-26.md",
+      "startLine": 55,
+      "endLine": 92,
+      "source": "memory",
+      "snippet": "- 配置文件路径没找到，无法加 feishu.cn DIRECT 规则 --- ## ComfyUI-RVC 安装（极其艰难） ### 安装过程 - 插件：`AIFSH/ComfyUI-RVC` → `D:\\SDkecheng\\ComfyUI\\custom_nodes\\ComfyUI-RVC` - 关键依赖：fairseq==0.12.2 无法编译（需要 C++ 编译器 + Python 3.12 不兼容） - 解决方案：手动安装 fairseq 源码 + 修补 dataclass 兼容 + 创建兼容壳 - 模型权重：从 HuggingFace 自动下载，已就绪 ### 延迟加载修复 - 原因：`nodes.py` 第 9 行 `from rvc.train import ...` 在模块加载时就导入 torch/CUDA/FAISS，导致 ComfyUI 启动卡死 - 修复：改为 `_lazy_import_train()` 函数，只在第一次使用 RVC 节点时才加载 - 效果：ComfyUI 启动恢复秒开 ### __init__.py 重写 - 原版 `__init__.py` 有多个阻塞操作：写 users.pth、跑 download_models.py、导入 PromptServer - 重写为纯加载节点，无阻塞 ### RVC 推理节点可用 - `RVC_Infer`（RVC Inference） - `RVC_Train`（RVC Train） - 训练在 ComfyUI 里跑会卡（子进程 CUDA 冲突） --- ## RVC WebUI 安装",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.38708504438400265,
+      "maxScore": 0.38708504438400265,
+      "firstRecalledAt": "2026-06-30T01:18:22.295Z",
+      "lastRecalledAt": "2026-06-30T01:18:22.295Z",
+      "queryHashes": [
+        "f1d6a4ddb28c"
+      ],
+      "recallDays": [
+        "2026-06-30"
+      ],
+      "conceptTags": [
+        "feishu.cn",
+        "comfyui-rvc",
+        "aifsh/comfyui-rvc",
+        "custom-nodes",
+        "0.12.2",
+        "3.12",
+        "nodes.py",
+        "rvc.train"
+      ]
+    },
+    "memory:memory/2026-05-26.md:1:36": {
+      "key": "memory:memory/2026-05-26.md:1:36",
+      "path": "memory/2026-05-26.md",
+      "startLine": 1,
+      "endLine": 36,
+      "source": "memory",
+      "snippet": "# 2026-05-26 日志 ## Qwen3-TTS 在 ComfyUI 的完整部署 ### 安装 - 插件：`DarioFT/ComfyUI-Qwen3-TTS` → `D:\\SDkecheng\\ComfyUI\\custom_nodes\\ComfyUI-Qwen3-TTS` - 依赖：`qwen-tts`, `modelscope` 等，`transformers` 从 5.8.0 降到 4.57.3（qwen-tts 硬性要求） - 模型：首次使用自动从 HuggingFace 下载（VoiceDesign ~3.4GB + Base ~3.4GB），存 `ComfyUI\\models\\Qwen3-TTS\\` ### 全链路工作流（一条工作流实现 Voice Design + Voice Clone） ``` VoiceDesign Loader → VoiceDesign → PreviewAudio (试听1) ↓ Base Loader → PromptMaker → SavePrompt (保存音色) ↓ VoiceClone ← 参考音频 (LoadAudio) ↓ PreviewAudio (试听2：最终结果) ``` 工作流文件：`ComfyUI\\user\\default\\workflows\\qwen3_tts",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3762482643127441,
+      "maxScore": 0.3762482643127441,
+      "firstRecalledAt": "2026-06-30T01:18:22.295Z",
+      "lastRecalledAt": "2026-06-30T01:18:22.295Z",
+      "queryHashes": [
+        "f1d6a4ddb28c"
+      ],
+      "recallDays": [
+        "2026-06-30"
+      ],
+      "conceptTags": [
+        "qwen3-tts",
+        "darioft/comfyui-qwen3-tts",
+        "custom-nodes",
+        "comfyui-qwen3-tts",
+        "qwen-tts",
+        "5.8.0",
+        "4.57.3",
+        "3.4gb"
       ]
     }
   }
