@@ -75,22 +75,35 @@
 
 ## 五、每天同步流程
 
-### 上班时
+### 公司小南（白天）
 
 ```
-1. git pull origin main
-2. 浏览器打开 dashboard-tree.html 看最新状态
-3. 知道今天要做什么
+1. 修改 D:\SDkechengz\dashboard-tree.html（本地树）
+2. 不改 git，只改本地
 ```
 
-### 下班时
+### 下班同步（公司小南）
 
 ```
-1. 修改树上对应节点的状态（完成→done，新开始→progress）
+1. cp D:\SDkechengz\dashboard-tree.html → D:\Hermes\xiaonan-memory\dashboard-tree.html
 2. git add -A && git commit -m "日期: 树的更新说明" && git push
 ```
 
----
+### 上班同步（家里小南）
+
+```
+1. git pull origin main
+2. cp D:\Hermes\xiaonan-memory\dashboard-tree.html → 你本地的树路径
+3. 浏览器打开，看最新状态
+```
+
+## 六、三个位置
+
+| 位置 | 路径 | 谁维护 |
+|------|------|:---:|
+| 公司本地 | `D:\SDkechengz\dashboard-tree.html` | 公司小南 |
+| Git仓库 | `D:\Hermes\xiaonan-memory\dashboard-tree.html` | 双方push |
+| 家里本地 | （家里Hermes对应路径） | 家里小南 |
 
 ## 六、当前树的状态（2026-06-30 晚间）
 
