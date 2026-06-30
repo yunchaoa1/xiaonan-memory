@@ -72,6 +72,8 @@
 | API | http://172.26.112.1:18188/prompt |
 | ffmpeg | D:\tools\ffmpeg\ffmpeg.exe（WSL 无） |
 | GPU | RTX 5080 Laptop 16GB |
+| Hermes Desktop | D:\Hermes\ | v0.17.0 | DeepSeek + Agnes 视觉 |
+| Hermes 记忆仓库 | D:\Hermes\xiaonan-memory\ | git@github.com:yunchaoa1/xiaonan-memory.git |
 | 翻墙代理 | http://172.26.112.1:7890 |
 | Windows 桌面 | D:\Desktop |
 | Python | D:\Python312\python.exe |
