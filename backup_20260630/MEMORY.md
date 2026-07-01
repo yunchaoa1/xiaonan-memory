@@ -68,15 +68,15 @@
 | 模型·视频 | Agnes Video V2.0（免） |
 | 模型·看图 | Qwen VL Max（付，OpenClaw）/ Agnes Flash（免，Hermes） |
 | 模型·TTS | Qwen3 TTS VoiceClone（付） |
-| ComfyUI | D:\\SDkecheng\\ComfyUI\\ 端口18188 |
+| ComfyUI | D:\SDkecheng\ComfyUI\ | 端口18188 | Python 3.12.11 |
 | API | http://172.26.112.1:18188/prompt |
-| ffmpeg | D:\\tools\\ffmpeg\\ffmpeg.exe（WSL 无） |
+| ffmpeg | D:\tools\ffmpeg\ffmpeg.exe（WSL 无） |
 | GPU | RTX 5080 Laptop 16GB |
-| Hermes Desktop | D:\\Hermes\\ |
-| Hermes 记忆仓库 | D:\\Hermes\\xiaonan-memory\\ |
+| Hermes Desktop | D:\Hermes\ | v0.17.0 | DeepSeek + Agnes 视觉 |
+| Hermes 记忆仓库 | D:\Hermes\xiaonan-memory\ | git@github.com:yunchaoa1/xiaonan-memory.git |
 | 翻墙代理 | http://172.26.112.1:7890 |
-| Windows 桌面 | D:\\Desktop |
-| Python | D:\\Python312\\python.exe |
+| Windows 桌面 | D:\Desktop |
+| Python | D:\Python312\python.exe |
 | Agnes API | https://apihub.agnes-ai.com/v1 |
 | 模型目录 | ComfyUI 模型目录已 Junction 链接 |
 
