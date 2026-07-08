@@ -82,7 +82,16 @@ const DATA = {
             {label:"角色总表",icon:"🏷️",status:"done",info:"10化灵+28人类",file:"world/38角色总表.md"},
             {label:"关系网",icon:"🕸️",status:"progress",info:"血缘/婚姻/友谊/师徒·基本定",file:"world/关系网.md"},
             {label:"穿越共鸣12类分配",icon:"🔮",status:"progress",info:"待逐人确认"},
-            {label:"各角色成长故事",icon:"📖",status:"pending",info:"已有xlsx基础"},
+            {label:"各角色成长故事",icon:"📖",status:"progress",
+          children: [
+            {label:"齐白兰·完整版(9章)",icon:"🎤",status:"done",file:"characters/齐白兰_成长故事.md"},
+            {label:"角色底板·vlog文案生成",icon:"📋",status:"done",file:"characters/齐白兰_角色底板_vlog.md"},
+            {label:"齐镇海·骑楼哥",icon:"🏠",status:"done",info:"xlsx数据已对接"}
+          ]},
+        {label:"角色资产",icon:"💎",status:"progress",
+          children: [
+            {label:"齐白兰·出道单曲·爱的记忆",icon:"🎵",status:"done"}
+          ]},
             {label:"角色六阶定位",icon:"📊",status:"pending",info:"悟性≠阶位"}
           ]
         },
@@ -121,6 +130,7 @@ const DATA = {
         {label:"视频制作8步流程",icon:"📋",status:"done"}
       ]
     },
+    {label:"视频素材",icon:"🎬",status:"progress",children:[{label:"图片素材",icon:"🖼️",status:"progress",children:[{label:"场景图",icon:"🏙️",status:"progress",children:[{label:"骑楼老街·主街道",icon:"🏛️",status:"done",file:"references/骑楼老街场景/ComfyUI_00005_.png"}]}]}]},
     {
       label: "凡哥个人发展", icon: "🧠", status: "progress",
       children: [
