@@ -53,3 +53,7 @@ strength_test_old.py
 chroma_db/
 .venv/
 node_modules/
+
+# Hermes Desktop 临时附件/文档缓存
+.hermes/
+*.docx

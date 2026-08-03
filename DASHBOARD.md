@@ -76,8 +76,10 @@
 
 ComfyUI v0.27 · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端口18188
 更新方式：git + uv venv + uv sync
-翻墙：v2rayN+TUN · 双Agent同步：家+公司Git仓库
+Hermes：OpenAI Codex OAuth · gpt-5.5 主模型 + gpt-5.5 视觉；DeepSeek 保留备用，Agnes 废弃不用
+翻墙：v2rayN v7.12.7 · mixed:10808 · TUN 已开；Codex 当前可直连，失败再设 HTTP(S)_PROXY=127.0.0.1:10808
+双Agent同步：家+公司Git仓库；cron 已切到 openai-codex/gpt-5.5，但自动触发依赖 gateway/cron scheduler 运行
 
 ---
 
-> 📅 最后更新：2026-07-17 · 小南（Hermes）
+> 📅 最后更新：2026-08-03 · 小南（Hermes）

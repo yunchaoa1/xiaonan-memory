@@ -142,6 +142,8 @@ const DATA = {
       label: "系统维护", icon: "⚙️", status: "done",
       children: [
         {label:"Git记忆同步",icon:"🔄",status:"done",info:"SOUL启动pull+下班push"},
+        {label:"Hermes模型配置",icon:"🧠",status:"done",info:"Codex gpt-5.5主脑+视觉；DeepSeek备用；Agnes废弃"},
+        {label:"v2rayN代理",icon:"🌐",status:"done",info:"mixed:10808 · TUN已开"},
         {label:"TTS中文语音",icon:"🎤",status:"done",info:"Edge·晓晓"}
       ]
     }
@@ -204,7 +206,7 @@ function countNodes(node) {
 }
 
 document.getElementById('tree').appendChild(buildTree(DATA));
-document.getElementById('lastUpdate').textContent = '2026-06-30 晚间 · 小南（Hermes）· 树+内容拆分完成';
+document.getElementById('lastUpdate').textContent = '2026-08-03 · 小南（Hermes）· Codex gpt-5.5/视觉/代理链路统一';
 document.getElementById('nodeCount').textContent = '共 ' + countNodes(DATA) + ' 个节点';
 </script>
 </body>
