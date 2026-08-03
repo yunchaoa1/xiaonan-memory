@@ -63,16 +63,16 @@
 
 | 项目 | 详情 |
 |------|------|
-| 模型·主脑 | OpenAI Codex OAuth · gpt-5.5（Hermes 当前主力） |
+| 模型·主脑 | OpenAI Codex OAuth · gpt-5.6-sol（Hermes 当前主力）；gpt-5.5 留作回滚 |
 | 模型·备用推理 | DeepSeek 保留备用，不作为当前默认 |
 | 模型·图片/视频 | Agnes 已废弃不用；后续按实际平台另配 |
-| 模型·看图 | Hermes 统一 openai-codex / gpt-5.5，已验证可识图 |
+| 模型·看图 | auxiliary.vision=auto，跟随当前主模型；gpt-5.6-sol 原生像素识图已验证 |
 | 模型·TTS | Qwen3 TTS VoiceClone（付） |
 | ComfyUI | D:\\SDkecheng\\ComfyUI\\ 端口18188 |
 | API | http://172.26.112.1:18188/prompt |
 | ffmpeg | D:\\tools\\ffmpeg\\ffmpeg.exe（WSL 无） |
 | GPU | RTX 5080 Laptop 16GB |
-| Hermes Desktop | D:\\Hermes\\ | OpenAI Codex gpt-5.5 + Codex 视觉 |
+| Hermes Desktop | D:\\Hermes\\ | OpenAI Codex gpt-5.6-sol + 主模型原生视觉 |
 | Hermes 记忆仓库 | D:\\Hermes\\xiaonan-memory\\ |
 | 翻墙代理 | v2rayN v7.12.7，本地 mixed 端口 10808，TUN 已开 |
 | Windows 桌面 | D:\\Desktop |
