@@ -75,12 +75,12 @@
 
 ## 七、技术环境
 
-ComfyUI v0.27 · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端口18188
-更新方式：git + uv venv + uv sync
+ComfyUI v0.30.1 · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端口18188；2026-08-04 已修复损坏的 aiohttp，当前 3.14.3，HTTP 200 实测通过
+更新方式：git + uv venv + `uv pip install -r requirements.txt`（禁用 `uv sync`，避免清空插件依赖）
 Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随主模型，原生像素识图已验证；gpt-5.5 保留回滚，DeepSeek 保留备用，Agnes 废弃不用
 翻墙：v2rayN v7.12.7 · mixed:10808 · TUN 已开；Codex 当前可直连，失败再设 HTTP(S)_PROXY=127.0.0.1:10808
 双Agent同步：家+公司Git仓库；cron 已切到 openai-codex/gpt-5.5，但自动触发依赖 gateway/cron scheduler 运行
 
 ---
 
-> 📅 最后更新：2026-08-03 · 小南（Hermes）· gpt-5.6-sol 主脑/原生视觉已验证
+> 📅 最后更新：2026-08-04 · 小南（Hermes）· ComfyUI aiohttp 修复并启动验收通过

@@ -68,7 +68,7 @@
 | 模型·图片/视频 | Agnes 已废弃不用；后续按实际平台另配 |
 | 模型·看图 | auxiliary.vision=auto，跟随当前主模型；gpt-5.6-sol 原生像素识图已验证 |
 | 模型·TTS | Qwen3 TTS VoiceClone（付） |
-| ComfyUI | D:\\SDkecheng\\ComfyUI\\ 端口18188 |
+| ComfyUI | D:\\SDkecheng\\ComfyUI\\ · v0.30.1 · 端口18188；aiohttp 3.14.3 已修复并启动验收通过 |
 | API | http://172.26.112.1:18188/prompt |
 | ffmpeg | D:\\tools\\ffmpeg\\ffmpeg.exe（WSL 无） |
 | GPU | RTX 5080 Laptop 16GB |
