@@ -80,6 +80,7 @@ const DATA = {
           label: "38角色体系", icon: "👥", status: "progress",
           children: [
             {label:"角色总表",icon:"🏷️",status:"done",info:"10化灵+28人类",file:"world/38角色总表.md"},
+            {label:"角色名单版本核准",icon:"⚠️",status:"blocked",info:"影视对标表39名；角色总表38名·待凡哥核准"},
             {label:"关系网",icon:"🕸️",status:"progress",info:"血缘/婚姻/友谊/师徒·基本定",file:"world/关系网.md"},
             {label:"穿越共鸣12类分配",icon:"🔮",status:"progress",info:"待逐人确认"},
             {label:"各角色成长故事",icon:"📖",status:"progress",
@@ -119,6 +120,36 @@ const DATA = {
             {label:"38人各自穿越触发方式",icon:"🚪",status:"pending",file:"world/穿越机制.md"},
             {label:"海南时间线·57人会合",icon:"🤝",status:"pending"},
             {label:"时间错位戏剧设计",icon:"⏰",status:"pending",file:"world/穿越机制.md"}
+          ]
+        }
+      ]
+    },
+    {
+      label: "57角色参演剧本", icon: "🎭", status: "progress",
+      info: "固定虚拟演员参演独立AI漫剧·沿用原名·不改本传",
+      children: [
+        {
+          label: "现代都市剧", icon: "🏙️", status: "progress",
+          children: [
+            {
+              label: "豪门寻亲·家庭情感·爱情爽剧", icon: "🎬", status: "progress",
+              info: "未命名·齐白兰/齐镇海寻亲剧",
+              children: [
+                {label:"主演阵容",icon:"👥",status:"done",info:"齐镇海·齐白兰/顾蓝汐·沙栖辰·陨姊·顾芜安"},
+                {label:"女主双重姓名",icon:"💎",status:"done",info:"19岁顾蓝汐坚信顾芜安是生母·认亲后同时接纳齐白兰与顾蓝汐"},
+                {label:"顾芜安救助边界",icon:"🩺",status:"done",info:"入口售票长廊发现失温昏倒女童·先呼救送医·后来因怕失去隐瞒·有私心无害人初心"},
+                {label:"蓝宝石隐藏逻辑",icon:"🔷",status:"done",info:"齐镇海赠予3岁齐白兰·顾芜安始终知情·成年顾蓝汐私藏不公开佩戴·不解释未佩戴原因"},
+                {label:"原创与认亲双线",icon:"🧩",status:"done",info:"设计思路与实物分开·陨姊为讨好沙栖辰和齐镇海不知情窃稿·客观阻断认亲后反向暴露原创者"},
+                {label:"男一·沙栖辰",icon:"🌊",status:"done",info:"学生会主席·无意听蓝宝石故事→未见面先见原创→数月后齐镇海起疑→实验室偶见实物→查海滩记录"},
+                {label:"女二·陨姊",icon:"☄️",status:"progress",info:"能力普通·喜欢沙栖辰·凭大小姐光环·前期不知身份窃稿·后段才发现顾蓝汐威胁齐家位置·待现代演员底板"},
+                {label:"第二部伏笔·幕后大反派",icon:"🕶️",status:"pending",info:"第一部只留声音不露脸·与沉船失踪无关·结尾启动齐氏商业帝国阴谋"},
+                {label:"故事范围",icon:"📐",status:"done",info:"30集×1—2分钟·每集1—3场·文戏优先·沉船碎片化强动作"},
+                {label:"年龄与时间线",icon:"⏳",status:"done",info:"齐白兰3岁失踪→16年后顾蓝汐19岁·沙栖辰22岁·顾芜安40岁"},
+                {label:"寻亲证据链",icon:"🧬",status:"done",info:"故事→原创设计→冒名盗稿→实物→顾芜安旧记录→正式检测"},
+                {label:"整季体量",icon:"📺",status:"done",info:"30集完整初稿·每集1—2分钟"},
+                {label:"30集剧本初稿",icon:"📝",status:"done",info:"D:\\Documents\\我的文档\\齐白兰顾蓝汐寻亲剧_30集剧本.md·1293行·已完成全剧校验"}
+              ]
+            }
           ]
         }
       ]
@@ -207,7 +238,7 @@ function countNodes(node) {
 }
 
 document.getElementById('tree').appendChild(buildTree(DATA));
-document.getElementById('lastUpdate').textContent = '2026-08-04 · 小南（Hermes）· ComfyUI aiohttp修复并启动验收通过';
+document.getElementById('lastUpdate').textContent = '2026-08-05 · 小南（Hermes）· 锁定蓝宝石隐藏逻辑';
 document.getElementById('nodeCount').textContent = '共 ' + countNodes(DATA) + ' 个节点';
 </script>
 </body>
