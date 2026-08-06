@@ -40,11 +40,14 @@
 
 ## 四、技能体系
 
-> ✅ 2026-08-06 技能治理完成：120→60启用（62停用归档，可随时恢复）。重复入口合并（world-building→worldbuilding）、13个Seedance技能悬空引用修复、外语版Seedance/缺依赖通用技能全部停用、33个英文描述已补中文（60/60=100%中文触发覆盖）、新增**skill-router 技能总调度**（模糊需求→路由表拆解→逐项加载专项技能→自查清单防遗漏）。审计产物 skill-library-governance 已归档至 `D:\Hermes\skills_archive\`。
+> ✅ 2026-08-06 技能治理完成：120→60启用（62停用归档，可随时恢复）。重复入口合并（world-building→worldbuilding）、13个Seedance技能悬空引用修复、外语版Seedance/缺依赖通用技能全部停用、33个英文描述已补中文（60/60=100%中文触发覆盖）、新增**skill-router 技能总调度**（模糊需求→路由表拆解→逐项加载专项技能→自查清单防遗漏）、**curator 管家调为不限时**（归档线36500天/不碰内置/不合并）。审计产物 skill-library-governance 已归档至 `D:\Hermes\skills_archive\`。
+
+> 🔀 2026-08-06 技能维护技能：`skill-library-maintenance`（software-development）为唯一治理技能（后台Self-improvement review自动版+人工版合并，含 health_check.py 体检脚本）。**启动时自动体检**（SOUL.md规则）：git pull后跑 health_check.py，异常才向凡哥报告。发现技能打架→凡哥确认→按该技能流程整理。
 
 | 类别 | 技能 | 触发 |
 |------|------|------|
 | 🔀 总调度 | skill-router | 任何创作需求先加载（路由表拆解） |
+| 🛠 维护 | skill-library-maintenance | 说"清理技能/技能体检" |
 | 提示词 | prompt-interview | 说"给我镜N提示词" |
 | 提示词 | prompt-master-pipeline | 说"写提示词" |
 | 提示词 | ltx-video-prompt | LTX相关 |
