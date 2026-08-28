@@ -159,10 +159,23 @@ const DATA = {
       ]
     },
     {
+      label: "十二生肖AI漫剧 · 第一季", icon: "🐲", status: "progress",
+      info: "人性冲突开局·五人行动法已定稿·第1集动作链待审",
+      children: [
+        {label:"五人行动法正式档案",icon:"🐲",status:"done",info:"鼠贴墙找缝／牛顶缺口／猴换枝／狗守门／熊猫标路；V0.3当前角色源",file:"第一季首批五人短剧化身份_v0.3_行动法定稿.md"},
+        {label:"行动法体检·形成稿",icon:"🔎",status:"done",info:"动物资料、公共印象与原创转译的溯源；方向已确认",file:"第一季首批五人_动物行为原型与角色行动法体检_v0.1.md"},
+        {label:"首条因果锚点",icon:"🔗",status:"done",info:"客户被抢→现场压价→责任逼签→鼠牛站边；V0.2当前因果源",file:"第一季首条叙事锚点与因果链_v0.2_行动法版.md"},
+        {label:"连续入场链与季终共同体",icon:"🧭",status:"done",info:"十二个行动驱动单元；熊猫只提供公共条件，不收编四人",file:"第一季五人连续入场与季终共同体_v0.2_行动法版.md"},
+        {label:"第1集《客户不是你的》正式正文",icon:"📝",status:"progress",info:"鼠沿后通道把原服务清单放回客户资料袋；客户仍归关系户，鼠失去提成；关系户再从现场压钱。待凡哥审人物、冲突与台词。文件：D:\Documents\我的文档\第一季第01集_客户不是你的_剧本正式稿_v0.2.md"},
+        {label:"第2集《工资少了三成》",icon:"💰",status:"pending",info:"等待第1集动作链与正式正文通过后进入"},
+        {label:"十二生肖第一季剧本",icon:"📺",status:"progress",info:"第一季30集正文已全部写完待审；五人性别：鼠女牛女猴男已锁，狗女熊猫男待确认"}
+      ]
+    },
+    {
       label: "技术管线", icon: "🔧", status: "done",
       children: [
         {label:"三步法固化",icon:"🎥",status:"done",file:"tech/三步法.md"},
-        {label:"ComfyUI管线",icon:"🖥️",status:"done",info:"v0.30.1 · D:\\SDkecheng\\ComfyUI\\ · 端口18188 · aiohttp 3.14.3已修复"},
+        {label:"ComfyUI管线",icon:"🖥️",status:"done",info:"v0.30.2 · D:\\SDkecheng\\ComfyUI\\ · 端口18188 HTTP 200 · 正确H3 Director a148812 · Bernini误装版已删除 · TE-Speed hook正常"},
         {label:"LTX2.3工作流核查",icon:"🧪",status:"done",info:"本机5份MSR·1份Director·0份MSR+Director合流JSON·合流路线待原始发布文件或另行搭建"},
         {label:"视频制作8步流程",icon:"📋",status:"done"}
       ]
@@ -176,10 +189,12 @@ const DATA = {
       ]
     },
     {
-      label: "系统维护", icon: "⚙️", status: "done",
+      label: "系统维护", icon: "⚙️", status: "progress",
       children: [
         {label:"Git记忆同步",icon:"🔄",status:"done",info:"SOUL启动pull+下班push"},
         {label:"Hermes模型配置",icon:"🧠",status:"done",info:"Codex gpt-5.6-sol主脑；视觉auto跟随主模型；gpt-5.5回滚；DeepSeek备用；Agnes废弃"},
+        {label:"凡哥执行团队",icon:"👥",status:"done",info:"default总负责；researcher核证；storyworker创作；production制作；verifier质检；fange-execution Kanban"},
+        {label:"手机飞书入口",icon:"📱",status:"progress",info:"WebSocket已配置；App凭证已安全保存；Gateway运行中；待飞书发送首条消息做端到端验证"},
         {label:"v2rayN代理",icon:"🌐",status:"done",info:"mixed:10808 · TUN已开"},
         {label:"TTS中文语音",icon:"🎤",status:"done",info:"Edge·晓晓"}
       ]
@@ -243,7 +258,7 @@ function countNodes(node) {
 }
 
 document.getElementById('tree').appendChild(buildTree(DATA));
-document.getElementById('lastUpdate').textContent = '2026-08-05 · 小南（Hermes）· 锁定蓝宝石隐藏逻辑';
+document.getElementById('lastUpdate').textContent = '2026-08-13 · 小南（Hermes）· 第一季30集正文全部写完待审';
 document.getElementById('nodeCount').textContent = '共 ' + countNodes(DATA) + ' 个节点';
 </script>
 </body>
