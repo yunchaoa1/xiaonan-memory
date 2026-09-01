@@ -1,0 +1,244 @@
+{
+    "OTIO_SCHEMA": "Timeline.1",
+    "metadata": {
+        "project": "十二时辰 OPC MVP",
+        "rate": 24,
+        "schema": "opc.shots/0.1",
+        "scope": "chapter-1 three-shot timeline smoke test only",
+        "shot_count": 3,
+        "source_scene_id": "scene.S02"
+    },
+    "name": "十二时辰_第一章_OPC_MVP_3镜",
+    "global_start_time": null,
+    "tracks": {
+        "OTIO_SCHEMA": "Stack.1",
+        "metadata": {},
+        "name": "tracks",
+        "source_range": null,
+        "effects": [],
+        "markers": [],
+        "enabled": true,
+        "color": null,
+        "children": [
+            {
+                "OTIO_SCHEMA": "Track.1",
+                "metadata": {},
+                "name": "V1_storyboard",
+                "source_range": null,
+                "effects": [],
+                "markers": [],
+                "enabled": true,
+                "color": null,
+                "children": [
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "metadata": {
+                            "core_action": "王二伸手搜身，牛满挣扎但被麻绳压制。",
+                            "duration_seconds": 12.0,
+                            "end_state": "王二开始从牛满怀中取出私人物品。",
+                            "location": "scene.village-old-locust-tree",
+                            "narrative_objective": "王二借搜身进一步羞辱并控制牛满。",
+                            "opc": {
+                                "continuity": "continuous",
+                                "max_duration_seconds": 15,
+                                "status": "MVP"
+                            },
+                            "shot_id": "S02-01",
+                            "source_node_ids": [
+                                "n002",
+                                "n003",
+                                "n004",
+                                "n005"
+                            ],
+                            "source_scene_id": "scene.S02",
+                            "start_state": "牛满被麻绳捆缚在老槐树下。"
+                        },
+                        "name": "S02-01",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 24.0,
+                                "value": 288.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 24.0,
+                                "value": 0.0
+                            }
+                        },
+                        "effects": [],
+                        "markers": [],
+                        "enabled": true,
+                        "color": null,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "MissingReference.1",
+                                "metadata": {
+                                    "status": "pending_generation"
+                                },
+                                "name": "S02-01_pending_media",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 24.0,
+                                        "value": 288.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 24.0,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    },
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "metadata": {
+                            "core_action": "王二展示旧木簪后折断，并把断簪踩进土里。",
+                            "duration_seconds": 13.0,
+                            "end_state": "木簪断成两截并被踩入泥土。",
+                            "location": "scene.village-old-locust-tree",
+                            "narrative_objective": "让木簪被毁成为牛满绝望的直接触发。",
+                            "opc": {
+                                "continuity": "continuous",
+                                "max_duration_seconds": 15,
+                                "sound_event": "咔",
+                                "status": "MVP"
+                            },
+                            "shot_id": "S02-02",
+                            "source_node_ids": [
+                                "n006",
+                                "n007",
+                                "n008",
+                                "n009",
+                                "n010",
+                                "n011",
+                                "n012"
+                            ],
+                            "source_scene_id": "scene.S02",
+                            "start_state": "旧木簪和铜钱被王二搜出。"
+                        },
+                        "name": "S02-02",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 24.0,
+                                "value": 312.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 24.0,
+                                "value": 0.0
+                            }
+                        },
+                        "effects": [],
+                        "markers": [],
+                        "enabled": true,
+                        "color": null,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "MissingReference.1",
+                                "metadata": {
+                                    "status": "pending_generation"
+                                },
+                                "name": "S02-02_pending_media",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 24.0,
+                                        "value": 312.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 24.0,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    },
+                    {
+                        "OTIO_SCHEMA": "Clip.2",
+                        "metadata": {
+                            "core_action": "王二撒出铜钱踩入烂泥，牛满凝视断簪与铜钱，眼神熄灭。",
+                            "duration_seconds": 10.0,
+                            "end_state": "铜钱与断簪被污泥遮住，牛满失去希望。",
+                            "location": "scene.village-old-locust-tree",
+                            "narrative_objective": "以铜钱和断簪被泥水吞没落定牛满的绝望。",
+                            "opc": {
+                                "continuity": "continuous",
+                                "max_duration_seconds": 15,
+                                "sound_event": "哗啦",
+                                "status": "MVP"
+                            },
+                            "shot_id": "S02-03",
+                            "source_node_ids": [
+                                "n013",
+                                "n014",
+                                "n015",
+                                "n019",
+                                "n020",
+                                "n021",
+                                "n022"
+                            ],
+                            "source_scene_id": "scene.S02",
+                            "start_state": "铜钱仍在王二手中，断簪已落地。"
+                        },
+                        "name": "S02-03",
+                        "source_range": {
+                            "OTIO_SCHEMA": "TimeRange.1",
+                            "duration": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 24.0,
+                                "value": 240.0
+                            },
+                            "start_time": {
+                                "OTIO_SCHEMA": "RationalTime.1",
+                                "rate": 24.0,
+                                "value": 0.0
+                            }
+                        },
+                        "effects": [],
+                        "markers": [],
+                        "enabled": true,
+                        "color": null,
+                        "media_references": {
+                            "DEFAULT_MEDIA": {
+                                "OTIO_SCHEMA": "MissingReference.1",
+                                "metadata": {
+                                    "status": "pending_generation"
+                                },
+                                "name": "S02-03_pending_media",
+                                "available_range": {
+                                    "OTIO_SCHEMA": "TimeRange.1",
+                                    "duration": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 24.0,
+                                        "value": 240.0
+                                    },
+                                    "start_time": {
+                                        "OTIO_SCHEMA": "RationalTime.1",
+                                        "rate": 24.0,
+                                        "value": 0.0
+                                    }
+                                },
+                                "available_image_bounds": null
+                            }
+                        },
+                        "active_media_reference_key": "DEFAULT_MEDIA"
+                    }
+                ],
+                "kind": "Video"
+            }
+        ]
+    }
+}
