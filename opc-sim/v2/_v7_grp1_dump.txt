@@ -1,0 +1,176 @@
+### S01
+subject_definitions:
+<Subject 1> is Zhou Ye, the about-26-year-old Chinese man shown in <Picture 1>: an upright, slightly lean build of about 178 cm; a clear-cut, slightly long face with a defined jaw; straight, fairly thick eyebrows, calm restrained eyes, and neat short black hair; he wears a deep-navy simple zip jacket over a dark crew-neck top, dark straight trousers, and simple shoes. His appearance follows the sheet throughout.
+<Subject 2> is the single space of this shot: the dim stairwell landing outside the family home's closed front door at dusk, the corridor sensor lamp dark; the doorway and the closed door follow the home entrance shown in <Picture 2>.
+<Subject 3> is Zhou Ye's bag shown in <Picture 4>: a black canvas backpack with a zippered main compartment, a reinforced top handle, two shoulder straps, a front zipper pocket, and light signs of use.
+<Picture 3> is a storyboard reference for [Shot 1], defining its viewpoint, subject placement, and shot order.
+
+summary:
+[reference generation] Generate a video of Zhou Ye standing alone with his bag on the dim stairwell landing outside his family's front door at dusk: his raised hand hesitates in front of the door, then knocks twice, and he stands waiting for a reply. Zhou Ye's appearance follows <Picture 1>, the landing-and-door space follows <Picture 2>, the bag follows <Picture 4>, and the viewpoint, subject placement, and shot order follow <Picture 3>.
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - his neat short black hair, deep-navy jacket over the dark crew-neck top, dark trousers, upright lean build, and restrained expression are kept throughout.
+<Subject 2> (appears in [Shot 1]): fully_preserved - the single space of the dim landing outside the closed front door at dusk is kept throughout.
+<Subject 3> (appears in [Shot 1]): fully_preserved - the black canvas backpack appearance is kept throughout.
+<Picture 3> (appears in [Shot 1]): partially_preserved - its viewpoint, subject placement, and shot order are realized in the final frames.
+
+detailed_description:
+The target video uses a 3D animated film style with next-gen CG quality, dusk settling into night on a dim stairwell landing with the corridor sensor lamp dark.
+[Shot 1] The camera stays locked in this single continuous shot throughout, no cuts. The shot is a Static Shot at eye level in medium framing, with an extremely slow Push In of small amplitude, composed with the viewpoint, subject placement, and shot order of the storyboard reference <Picture 3>. The opening frame holds <Subject 1> Zhou Ye standing sideways to the camera on the dim landing of <Subject 2>, the closed front door to the left of the frame, his jaw set, his lips together, his gaze level on the door; <Subject 3> his black canvas bag hangs low from his hand at his side, held by its reinforced top handle. Through the first four seconds the hesitation builds: he raises his free hand toward the door and stops it in front of the door surface, his fingers curling into a fist and then loosening; he presses his knuckles lightly against the door, holds them there, and draws them back, his breath held for half a beat while his gaze blurs onto the seam of the door. By 00:05.500 his features settle as the hesitation resolves into decision. Between 00:05.500 and 00:07.500 he knocks twice, even and firm, with his knuckles meeting the door surface. From 00:07.500 his hand falls back to his side, he slowly releases the held breath, and he stands still on the landing, waiting for a reply, his gaze soft on the crack of the door, his bag still held low at his side, until the single take completes at 00:10.000.
+
+overall_soundscape:
+The faint electrical hum of the stairwell fades into quiet as the corridor stills, and then two clear, restrained knocks sound on the door.
+
+non_diegetic_music:
+N/A
+### S02
+subject_definitions:
+<Subject 1> (S1) is Zhou Ye, the about-26-year-old Chinese man shown in <Picture 1>: an upright, slightly lean build of about 178 cm; a clear-cut, slightly long face with a defined jaw; straight, fairly thick eyebrows, calm restrained eyes, and neat short black hair; he wears a deep-navy simple zip jacket over a dark crew-neck top, dark straight trousers, and simple shoes. His appearance follows the sheet throughout.
+<Subject 2> is Zhou Ye's mother, the about-52-year-old Chinese woman shown in <Picture 2>: a slim, upright figure of about 160 cm; a soft oval face with gently rounded eyes and fine lines at the corners, soft brows, and a warm restrained gaze; black hair with a few fine natural white strands gathered in a low bun at the nape; she wears a plain knit top, dark trousers, and a beige home apron over them. Her appearance follows the sheet throughout.
+<Subject 3> is the single space of this shot: the home's lamp-lit entry foyer at the front door at night, its warm light spilling out through the door; its furniture and homey fittings follow the entry foyer shown in <Picture 3>.
+<Picture 4> is a storyboard reference for [Shot 1], defining its viewpoint, subject placement, and shot order.
+
+summary:
+[reference generation] Generate a video of the front door opening a crack, the mother and Zhou Ye seeing each other for the first time through the gap, and Zhou Ye taking off his cap and calling her. Zhou Ye's appearance follows <Picture 1>, the mother's follows <Picture 2>, the entry foyer space follows <Picture 3>, and the viewpoint, subject placement, and shot order follow <Picture 4>.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - his neat short black hair, deep-navy jacket over the dark crew-neck top, dark trousers, upright lean build, and restrained expression are kept throughout.
+<Subject 2> (appears in [Shot 1]): fully_preserved - her low bun with a few white strands, plain knit top, dark trousers, and beige home apron are kept throughout.
+<Subject 3> (appears in [Shot 1]): fully_preserved - the single space of the lamp-lit entry foyer at the front door is kept throughout.
+<Picture 4> (appears in [Shot 1]): partially_preserved - its viewpoint, subject placement, and shot order are realized in the final frames.
+
+detailed_description:
+The target video uses a 3D animated film style with next-gen CG quality, warm lamplight from the entry foyer meeting the dim dusk of the landing through the cracked door.
+[Shot 1] The camera stays locked in this single continuous shot throughout, no cuts. The shot is a Static Shot at eye level in near framing, composed with the viewpoint, subject placement, and shot order of the storyboard reference <Picture 4>, the door seam running down the center of the frame with both figures turned toward it. During the first two seconds the front door opens a crack from inside: <Subject 3> the foyer's warm light spills through the gap onto the dim landing, <Subject 1> Zhou Ye standing on the dim side of the seam with his cap on his head and his bag held in one hand, <Subject 2> the mother on the warm side with her hand resting still on the door handle, silent, her lips closed, her face calm with effort. Between 00:02.000 and 00:05.000 the mother's gaze travels slowly down Zhou Ye's figure - first the brim of his cap, then his brow, then his shoulder, then the hand holding his bag - and recognition gathers in her eyes as the gaze descends, her hand on the door handle keeping still. Zhou Ye, who met her eyes through the gap for a beat and then lowered his own, lifts his free hand between 00:05.000 and 00:07.000, takes the cap off his head, and holds it low at his side while his other hand keeps holding the bag. The mother's gaze comes back up to his face and settles there; he draws half a deep breath, his throat tight, and calls to her in a low, restrained voice, the single word light and quiet (S1): <d>[Chinese] 妈。</d> He holds her eyes through the gap as the word lands, his cap held low in his free hand and his bag in the other; the mother stays silent, her lips closed, watching him, her hand resting on the door handle, until the single take completes at 00:10.000.
+
+overall_soundscape:
+A soft creak of the door hinge as the door opens a crack, then the low quiet of the lamp-lit foyer spilling toward the dim landing.
+
+non_diegetic_music:
+N/A
+### S03
+subject_definitions:
+<Subject 1> (S2) is Zhou Ye, the about-26-year-old Chinese man shown in <Picture 1>: an upright, slightly lean build of about 178 cm; a clear-cut, slightly long face with a defined jaw; straight, fairly thick eyebrows, calm restrained eyes, and neat short black hair; he wears a deep-navy simple zip jacket over a dark crew-neck top, dark straight trousers, and simple shoes. His appearance follows the sheet throughout.
+<Subject 2> (S1) is Zhou Ye's mother, the about-52-year-old Chinese woman shown in <Picture 2>: a slim, upright figure of about 160 cm; a soft oval face with gently rounded eyes and fine lines at the corners, soft brows, and a warm restrained gaze; black hair with a few fine natural white strands gathered in a low bun at the nape; she wears a plain knit top, dark trousers, and a beige home apron over them. Her appearance follows the sheet throughout.
+<Subject 3> is the single space of this shot: the home's entry foyer at night with the front door, the wall beside the entrance, and the shoe cabinet, warm lamplight on; its furniture and homey fittings follow the entry foyer shown in <Picture 3>.
+<Subject 4> is Zhou Ye's bag shown in <Picture 5>: a black canvas backpack with a zippered main compartment, a reinforced top handle, two shoulder straps, a front zipper pocket, and light signs of use.
+<Picture 4> is a storyboard reference for [Shot 1], defining its viewpoint, subject placement, and shot order.
+
+summary:
+[reference generation] Generate a video of Zhou Ye stepping into the entry foyer, putting his bag by the wall and taking off his shoes, the mother touching his arm to feel that he is really there, and the mother closing and bolting the door. Zhou Ye's appearance follows <Picture 1>, the mother's follows <Picture 2>, the foyer space follows <Picture 3>, the bag follows <Picture 5>, and the viewpoint, subject placement, and shot order follow <Picture 4>.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - his neat short black hair, deep-navy jacket over the dark crew-neck top, dark trousers, upright lean build, and restrained expression are kept throughout.
+<Subject 2> (appears in [Shot 1]): fully_preserved - her low bun with a few white strands, plain knit top, dark trousers, and beige home apron are kept throughout.
+<Subject 3> (appears in [Shot 1]): fully_preserved - the single space of the lamp-lit entry foyer with the door, the entrance wall, and the shoe cabinet is kept throughout.
+<Subject 4> (appears in [Shot 1]): fully_preserved - the black canvas backpack appearance is kept throughout.
+<Picture 4> (appears in [Shot 1]): partially_preserved - its viewpoint, subject placement, and shot order are realized in the final frames.
+
+detailed_description:
+The target video uses a 3D animated film style with next-gen CG quality, warm lamplight in the home's entry foyer at night.
+[Shot 1] The camera stays locked in this single continuous shot throughout, no cuts. The shot is a Tracking Shot with small amplitude at slow speed that follows Zhou Ye as he steps in from the landing and then settles in place, at eye level in medium framing, composed with the viewpoint, subject placement, and shot order of the storyboard reference <Picture 4>. During the first three seconds <Subject 2> the mother, her excitement held carefully in check behind a soft, careful calm on her face, pulls the front door fully open and steps to the side to let him in, her gaze on his shoulder and arm, her lips closed as the door swings wide; <Subject 1> Zhou Ye crosses the threshold into <Subject 3> the entry foyer, his expression quiet and low, <Subject 4> his black canvas bag carried in one hand. Between 00:03.000 and 00:07.000 he sets the bag against the wall beside the entrance, then bends to take off his shoes and places them neatly at the shoe cabinet; the mother waits by the open door, one hand resting on its edge, her gaze on his shoulder and arm. Between 00:07.000 and 00:10.000 she steps close to him, her hand reaching for his upper arm and pressing lightly through the fabric of his sleeve, and says in a low, warm voice kept carefully level (S1): <d>[Chinese] 回来啦。</d> Zhou Ye, head still lowered over his shoes, lets out the breath he has been holding and answers low and even, his shoulders easing (S2): <d>[Chinese] 嗯，回来了。</d> Between 00:10.000 and 00:13.000 her hand rests a moment on his arm; then, settled and eased, she turns back to the door, closes it fully, and pushes the bolt twice until it lines up and slides home. Behind her Zhou Ye straightens, his hands falling to his sides, and both of them let their breath out together, shoulders settling as the door is sealed, until the single take completes at 00:13.000.
+
+overall_soundscape:
+Two light sounds from the door, the latch and then the bolt sliding home; soft footsteps and fabric sounds in the foyer.
+
+non_diegetic_music:
+N/A
+### S04
+subject_definitions:
+<Subject 1> (S2) is Zhou Ye, the about-26-year-old Chinese man shown in <Picture 1>: an upright, slightly lean build of about 178 cm; a clear-cut, slightly long face with a defined jaw; straight, fairly thick eyebrows, calm restrained eyes, and neat short black hair; he wears a deep-navy simple zip jacket over a dark crew-neck top, dark straight trousers, and simple shoes. His appearance follows the sheet throughout.
+<Subject 2> (S1) is Zhou Ye's mother, the about-52-year-old Chinese woman shown in <Picture 2>: a slim, upright figure of about 160 cm; a soft oval face with gently rounded eyes and fine lines at the corners, soft brows, and a warm restrained gaze; black hair with a few fine natural white strands gathered in a low bun at the nape; she wears a plain knit top, dark trousers, and a beige home apron over them. Her appearance follows the sheet throughout.
+<Subject 3> is the single space of this shot: the home's living room at night with its rectangular wooden dining table where the two sit across from each other, warm lamplight, light-toned walls, and homey furniture; its furniture and fittings follow the living area shown in <Picture 3>.
+<Picture 4> is a storyboard reference for [Shot 1], defining its viewpoint, subject placement, and shot order.
+
+summary:
+[reference generation] Generate a video of the mother setting a cup of warm honey water down in front of Zhou Ye, sitting down across from him, keeping her eyes on him while they exchange a few words, and Zhou Ye taking one sip as he accepts the care. Zhou Ye's appearance follows <Picture 1>, the mother's follows <Picture 2>, the living-room space follows <Picture 3>, and the viewpoint, subject placement, and shot order follow <Picture 4>.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - his neat short black hair, deep-navy jacket over the dark crew-neck top, dark trousers, upright lean build, and restrained expression are kept throughout.
+<Subject 2> (appears in [Shot 1]): fully_preserved - her low bun with a few white strands, plain knit top, dark trousers, and beige home apron are kept throughout.
+<Subject 3> (appears in [Shot 1]): fully_preserved - the single space of the lamp-lit living room with the dining table is kept throughout.
+<Picture 4> (appears in [Shot 1]): partially_preserved - its viewpoint, subject placement, and shot order are realized in the final frames.
+
+detailed_description:
+The target video uses a 3D animated film style with next-gen CG quality, warm lamplight in the living room at night.
+[Shot 1] The camera stays locked in this single continuous shot throughout, no cuts. The shot is a Static Shot at eye level in medium framing with both of them in view across the dining table, composed with the viewpoint, subject placement, and shot order of the storyboard reference <Picture 4>. <Subject 1> Zhou Ye is already seated at the table of <Subject 3> the living room, his hands resting on the tabletop in front of him, his face quiet. During the first two seconds <Subject 2> the mother comes over to the table carrying a cup of warm honey water in both hands and sets it down in front of him, the cup's base meeting the tabletop with a soft tap. Between 00:02.000 and 00:04.000 she sits down across the table from him, folds her hands in front of her, and one thumb begins slowly rubbing the other's knuckle. Between 00:04.000 and 00:06.000, watching him with careful warmth and keeping her gaze steady on his face, she says gently, in an easy everyday tone (S1): <d>[Chinese] 坐一会儿。饭还没好。</d> Zhou Ye lets his gaze slide away from hers, down to the cup, and answers low and short, his face kept even (S2): <d>[Chinese] 我不饿。</d> Between 00:06.000 and 00:09.000 the mother answers at once, warm but decided, her thumb still slowly rubbing (S1): <d>[Chinese] 回来就得吃点。</d> Between 00:09.000 and 00:12.000 Zhou Ye pauses; then he picks up the cup, takes one sip, sets it down, and lets out a long breath, his shoulders easing with it; he lifts his eyes and meets hers, accepting the care, the set of his face softening as he does. The mother keeps watching him through it all, silent after her last words, her lips closed, her expression soft and warm, her thumb still turning slowly over the other, until the single take completes at 00:12.000.
+
+overall_soundscape:
+The soft tap of the cup's base on the tabletop; short silences held between the lines of dialogue; low room tone.
+
+non_diegetic_music:
+N/A
+### S05a
+subject_definitions:
+<Subject 1> (S2) is Zhou Ye, the about-26-year-old Chinese man shown in <Picture 1>: an upright, slightly lean build of about 178 cm; a clear-cut, slightly long face with a defined jaw; straight, fairly thick eyebrows, calm restrained eyes, and neat short black hair; he wears a deep-navy simple zip jacket over a dark crew-neck top, dark straight trousers, and simple shoes. His appearance follows the sheet throughout.
+<Subject 2> (S1) is Zhou Ye's mother, the about-52-year-old Chinese woman shown in <Picture 2>: a slim, upright figure of about 160 cm; a soft oval face with gently rounded eyes and fine lines at the corners, soft brows, and a warm restrained gaze; black hair with a few fine natural white strands gathered in a low bun at the nape; she wears a plain knit top, dark trousers, and a beige home apron over them. Her appearance follows the sheet throughout.
+<Subject 3> is the single space of this shot: the home's living room at night with its rectangular wooden dining table where the two sit across from each other, warm lamplight, light-toned walls, and homey furniture; its furniture and fittings follow the living area shown in <Picture 3>.
+<Picture 4> is a storyboard reference for [Shot 1], defining its viewpoint, subject placement, and shot order.
+
+summary:
+[reference generation] Generate a video of the mother carefully testing whether Zhou Ye is really staying, Zhou Ye pausing and then answering that he is settled, and the mother's eyes lighting up at the answer. Zhou Ye's appearance follows <Picture 1>, the mother's follows <Picture 2>, the living-room space follows <Picture 3>, and the viewpoint, subject placement, and shot order follow <Picture 4>.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - his neat short black hair, deep-navy jacket over the dark crew-neck top, dark trousers, upright lean build, and restrained expression are kept throughout.
+<Subject 2> (appears in [Shot 1]): fully_preserved - her low bun with a few white strands, plain knit top, dark trousers, and beige home apron are kept throughout.
+<Subject 3> (appears in [Shot 1]): fully_preserved - the single space of the lamp-lit living room with the dining table is kept throughout.
+<Picture 4> (appears in [Shot 1]): partially_preserved - its viewpoint, subject placement, and shot order are realized in the final frames.
+
+detailed_description:
+The target video uses a 3D animated film style with next-gen CG quality, warm lamplight in the living room at night.
+[Shot 1] The camera stays locked in this single continuous shot throughout, no cuts. The shot is a Static Shot at eye level in medium-close framing across the table with both of them in view, Zhou Ye on one side and the mother across from him, the cup on the tabletop between them, composed with the viewpoint, subject placement, and shot order of the storyboard reference <Picture 4>. During the first three seconds <Subject 2> the mother of <Subject 3> the living room looks into <Subject 1> Zhou Ye's eyes, her face careful and almost hesitant, her brows faintly lifted, her hands folded in front of her on the tabletop with one thumb slowly rubbing the other's knuckle, and asks in a soft, low voice, trailing the first words into a held pause before she goes on, the question rising at the end (S1): <d>[Chinese] 这次，算是定下来了？</d> At the pause her rubbing thumb stops. Between 00:03.000 and 00:04.500 Zhou Ye holds the half-beat silence, his thumb, which had been tracing the rim of the cup once slowly, coming to a stop on the rim as he draws a shallow breath. Between 00:04.500 and 00:08.500 he keeps his gaze lowered on the cup's rim and answers, measured and sincere, each sentence placed and grounded (S2): <d>[Chinese] 定下来了。手续办完了，先回来住。</d> Between 00:08.500 and 00:11.500 a quiet moment passes; then the mother's eyes light up once, bright and quick, while she stays silent, her lips closed, her hands still, her face warming as she holds the feeling in; Zhou Ye lifts his gaze from the cup's rim to her face and holds it quietly, his thumb resting still on the rim, until the single take completes at 00:12.000.
+
+overall_soundscape:
+Dialogue-led, with low room tone, a held silence at the hesitation, and a quiet beat after the answer.
+
+non_diegetic_music:
+N/A
+### S05b
+subject_definitions:
+<Subject 1> (S2) is Zhou Ye, the about-26-year-old Chinese man shown in <Picture 1>: an upright, slightly lean build of about 178 cm; a clear-cut, slightly long face with a defined jaw; straight, fairly thick eyebrows, calm restrained eyes, and neat short black hair; he wears a deep-navy simple zip jacket over a dark crew-neck top, dark straight trousers, and simple shoes. His appearance follows the sheet throughout.
+<Subject 2> (S1) is Zhou Ye's mother, the about-52-year-old Chinese woman shown in <Picture 2>: a slim, upright figure of about 160 cm; a soft oval face with gently rounded eyes and fine lines at the corners, soft brows, and a warm restrained gaze; black hair with a few fine natural white strands gathered in a low bun at the nape; she wears a plain knit top, dark trousers, and a beige home apron over them. Her appearance follows the sheet throughout.
+<Subject 3> is the single space of this shot: the home's living room at night with its rectangular wooden dining table where the two sit across from each other, warm lamplight, light-toned walls, and homey furniture; its furniture and fittings follow the living area shown in <Picture 3>.
+<Picture 4> is a storyboard reference for [Shot 1], defining its viewpoint, subject placement, and shot order.
+
+summary:
+[reference generation] Generate a video of the mother leaning forward to ask what comes after, Zhou Ye answering that he will take it slowly, and the mother pressing her unease back into routine by turning to the dumplings for today. Zhou Ye's appearance follows <Picture 1>, the mother's follows <Picture 2>, the living-room space follows <Picture 3>, and the viewpoint, subject placement, and shot order follow <Picture 4>.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - his neat short black hair, deep-navy jacket over the dark crew-neck top, dark trousers, upright lean build, and restrained expression are kept throughout.
+<Subject 2> (appears in [Shot 1]): fully_preserved - her low bun with a few white strands, plain knit top, dark trousers, and beige home apron are kept throughout.
+<Subject 3> (appears in [Shot 1]): fully_preserved - the single space of the lamp-lit living room with the dining table is kept throughout.
+<Picture 4> (appears in [Shot 1]): partially_preserved - its viewpoint, subject placement, and shot order are realized in the final frames.
+
+detailed_description:
+The target video uses a 3D animated film style with next-gen CG quality, warm lamplight in the living room at night.
+[Shot 1] The camera stays locked in this single continuous shot throughout, no cuts. The shot is a Static Shot at eye level in medium-close framing across the table with both of them in view, Zhou Ye on one side and the mother across from him, the cup still on the tabletop between them, composed with the viewpoint, subject placement, and shot order of the storyboard reference <Picture 4>. During the first two and a half seconds <Subject 2> the mother of <Subject 3> the living room holds <Subject 1> Zhou Ye's eyes, a small crease of unease between her brows, her hands folded in front of her on the tabletop; she leans forward slightly and presses on, the words coming quick and low, a held note of worry under the quiet tone (S1): <d>[Chinese] 先回来住。那以后呢？</d> Between 00:02.500 and 00:07.500 Zhou Ye meets her gaze and holds it steadily, his hands resting still on the tabletop, his voice settling into steadiness as he answers, honest and easy, giving her a way of going on rather than a promise (S2): <d>[Chinese] 以后慢慢想。找个合适的工作，或者学点东西。</d> Between 00:07.500 and 00:11.500 the mother listens, holding his gaze; then she draws the unease back in, sits upright again as the forward lean eases away, folds her hands in front of her once more, and closes the topic in a deliberately ordinary, warm voice, her face smoothing into easy everyday warmth (S1): <d>[Chinese] 今天包饺子。</d> Zhou Ye watches her, silent, his lips closed, his gaze steady, his hands resting still on the tabletop, until the single take completes at 00:12.000.
+
+overall_soundscape:
+Dialogue-led, with low room tone and a brief settling silence before the mother's closing line.
+
+non_diegetic_music:
+N/A
+### S06
+subject_definitions:
+<Subject 1> (S1) is Zhou Ye, the about-26-year-old Chinese man shown in <Picture 1>: an upright, slightly lean build of about 178 cm; a clear-cut, slightly long face with a defined jaw; straight, fairly thick eyebrows, calm restrained eyes, and neat short black hair; he wears a deep-navy simple zip jacket over a dark crew-neck top, dark straight trousers, and simple shoes. His appearance follows the sheet throughout.
+<Subject 2> (S2) is Zhou Ye's mother, the about-52-year-old Chinese woman shown in <Picture 2>: a slim, upright figure of about 160 cm; a soft oval face with gently rounded eyes and fine lines at the corners, soft brows, and a warm restrained gaze; black hair with a few fine natural white strands gathered in a low bun at the nape; she wears a plain knit top, dark trousers, and a beige home apron over them. Her appearance follows the sheet throughout.
+<Subject 3> is the single space of this shot: the open junction where the home's living room meets the kitchen at night, the dining table on the living side and the refrigerator with its countertop on the kitchen side, warm lamplight overhead; its furniture and fittings follow the home interior shown in <Picture 3>.
+<Picture 4> is a storyboard reference for [Shot 1], defining its viewpoint, subject placement, and shot order.
+
+summary:
+[reference generation] Generate a video of the mother rising from the table and going to the refrigerator for the flour and the minced meat, Zhou Ye asking about her back, and Zhou Ye rising to receive the mixing basin from her. Zhou Ye's appearance follows <Picture 1>, the mother's follows <Picture 2>, the living-room-to-kitchen junction follows <Picture 3>, and the viewpoint, subject placement, and shot order follow <Picture 4>.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - his neat short black hair, deep-navy jacket over the dark crew-neck top, dark trousers, upright lean build, and restrained expression are kept throughout.
+<Subject 2> (appears in [Shot 1]): fully_preserved - her low bun with a few white strands, plain knit top, dark trousers, and beige home apron are kept throughout.
+<Subject 3> (appears in [Shot 1]): fully_preserved - the single space of the lamp-lit living-room-to-kitchen junction with the dining table, the refrigerator, and the countertop is kept throughout.
+<Picture 4> (appears in [Shot 1]): partially_preserved - its viewpoint, subject placement, and shot order are realized in the final frames.
+
+detailed_description:
+The target video uses a 3D animated film style with next-gen CG quality, warm lamplight across the junction of the living room and the kitchen at night.
+[Shot 1] The camera stays locked in this single continuous shot throughout, no cuts. The shot is a Tracking Shot with small amplitude at slow speed that follows the mother as she moves from the dining table to the refrigerator and then settles at the junction, at eye level in medium framing, composed with the viewpoint, subject placement, and shot order of the storyboard reference <Picture 4>. The opening frame holds <Subject 3> the junction of the living room and the kitchen with <Subject 1> Zhou Ye seated at the dining table on the living side, his hands resting on the tabletop in front of him, his face quiet, watching <Subject 2> the mother as she rises from her chair during the first one and a half seconds, placing both palms on the table edge and pushing herself up. Between 00:01.500 and 00:04.500 her back view is held steady in frame as she crosses the junction to the refrigerator, opens the door, takes out the bag of flour and the wrapped minced meat, and closes the door again. Between 00:04.500 and 00:05.500 she turns back toward the living side, shifting the flour and the meat into one arm, and lightly presses the small of her back once with her free hand, then lowers the hand and walks back to the countertop at the junction with her face even. Zhou Ye, his gaze on her waist from the table, asks low, a held note of concern in his voice (S1): <d>[Chinese] 你不是说腰疼？</d> Between 00:06.000 and 00:07.000 the mother sets the flour bag and the wrapped meat down on the countertop and answers lightly, matter-of-fact, her pace steady (S2): <d>[Chinese] 擀几张皮，没事。</d> Between 00:07.000 and 00:09.000 Zhou Ye rises from the table, crosses to her, and reaches out with both hands; the mother takes up the mixing basin from the countertop and passes it to him, and he receives it, the basin settling into his hands. Between 00:09.000 and 00:10.000 she gathers up the flour bag and the meat again, and the two of them turn together and step into the kitchen side of the junction as the single take completes at 00:10.000.
+
+overall_soundscape:
+The refrigerator door opening and closing, a soft set-down on the countertop, the light sound of the mixing basin settling into Zhou Ye's hands, and quiet footsteps across the junction.
+
+non_diegetic_music:
+N/A
