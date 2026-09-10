@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>OPC 生视频节点 · 界面原型</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei", system-ui, sans-serif; background:#0f1115; color:#e8eaed; padding:32px; }
+  h1 { font-size:20px; margin-bottom:6px; }
+  .sub { color:#8b93a1; font-size:13px; margin-bottom:24px; }
+  .hint { background:#1a2029; border:1px dashed #3a4250; color:#9aa4b2; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:24px; }
+  .cols { display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; }
+  .card { background:#161a22; border:1px solid #2a313d; border-radius:12px; padding:20px; width:520px; }
+  .card h2 { font-size:15px; margin-bottom:14px; color:#fff; display:flex; align-items:center; gap:8px; }
+  .tag { font-size:11px; background:#2b3a55; color:#9cc3ff; padding:2px 8px; border-radius:10px; font-weight:normal; }
+  .field { margin-bottom:16px; }
+  .field label { display:block; font-size:12px; color:#9aa4b2; margin-bottom:6px; }
+  .field textarea, .field input[type=text] { width:100%; background:#0f1115; border:1px solid #2a313d; border-radius:8px; color:#e8eaed; padding:10px 12px; font-size:13px; font-family:inherit; resize:vertical; }
+  .field textarea { min-height:64px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { display:flex; align-items:center; gap:6px; background:#0f1115; border:1px solid #2a313d; border-radius:8px; padding:6px 10px; font-size:12px; }
+  .chip img { width:30px; height:30px; object-fit:cover; border-radius:4px; background:#333; }
+  .chip.on { border-color:#4c8dff; background:#16233a; }
+  .dim { color:#8b93a1; font-size:11px; }
+  select { background:#0f1115; border:1px solid #2a313d; color:#e8eaed; border-radius:8px; padding:8px 10px; font-size:13px; width:100%; }
+  .btn { background:#3b6fe0; color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:14px; cursor:pointer; margin-top:6px; }
+  .btn:active { background:#2f59b8; }
+  .right { width:520px; }
+  .out { background:#0d0f14; border:1px solid #2a313d; border-radius:12px; padding:20px; display:none; }
+  .out.show { display:block; }
+  .out h3 { font-size:13px; color:#9cc3ff; margin-bottom:10px; }
+  .out .badge { font-size:11px; color:#ffd28a; background:#3a3020; padding:2px 8px; border-radius:10px; }
+  .out pre { font-family:Consolas, monospace; font-size:11.5px; line-height:1.55; color:#b8c4d0; white-space:pre-wrap; word-break:break-all; background:#0a0c10; border:1px solid #222833; border-radius:8px; padding:12px; margin-bottom:12px; }
+  .arrow { font-size:26px; color:#4c8dff; align-self:center; }
+  .locked { font-size:11px; color:#7a8494; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<h1>OPC 生视频节点 · 界面原型（样例镜：S08 母亲独白）</h1>
+<div class="sub">左边 = 用户看到和编辑的「汉语镜头卡」｜右边 = 点【生成】后后台自动转换的内容（<b style="color:#ffd28a">客户不可见</b>）</div>
+<div class="hint">💡 设计原则：界面上只出现创作语言，不出现任何技术术语/模型名/英文格式。上游（分镜节点）传下来的内容自动填成汉语卡，用户可直接改文字、换参考图、选音色。</div>
+
+<div class="cols">
+
+  <!-- 左侧：汉语镜头卡 -->
+  <div class="card">
+    <h2>第 8 镜 · 厨房 · 时长 10 秒 <span class="tag">本镜由上一节点自动带入，可直接编辑</span></h2>
+
+    <div class="field">
+      <label>📝 这一镜拍什么（内容走向）</label>
+      <textarea id="f_action">母亲一边揉面一边说起儿子小时候的事，说到一半停下手，语气发沉。儿子站在旁边默默地听。</textarea>
+    </div>
+
+    <div class="field">
+      <label>💬 谁说话，说什么</label>
+      <textarea id="f_dialogue">母亲（低头揉面，语气平淡）：你小时候那双袜子，我留到现在。</textarea>
+    </div>
+
+    <div class="field">
+      <label>👤 出场人物（点击可换参考图）</label>
+      <div class="chips">
+        <div class="chip on"><img src="https://placehold.co/30x30/334/eee?text=母"><span>母亲</span><span class="dim">参考：长相·发型·围裙</span></div>
+        <div class="chip on"><img src="https://placehold.co/30x30/334/eee?text=周"><span>周野</span><span class="dim">参考：长相·服装</span></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>🏠 场景环境（自动带入）</label>
+      <div class="chips">
+        <div class="chip on"><img src="https://placehold.co/30x30/334/eee?text=厨"><span>厨房（案板/灯）</span><span class="dim">参考：空间布局·光线</span></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>🎵 说话声音参考</label>
+      <select id="f_audio">
+        <option>母亲声音参考 · 低沉温和.wav（推荐）</option>
+        <option>（不指定，用默认女声）</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>🎬 镜头怎么动</label>
+      <select id="f_cam">
+        <option>近景 · 固定机位，缓慢推近（推荐）</option>
+        <option>中景 · 固定机位</option>
+        <option>特写 · 手部</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>🌗 氛围基调</label>
+      <select id="f_mood">
+        <option>平静里带着一点心事（推荐）</option>
+        <option>轻松温暖</option>
+        <option>压抑克制</option>
+      </select>
+    </div>
+
+    <button class="btn" onclick="gen()">▶ 生成视频</button>
+    <div class="locked">点击后约 10 分钟出片，本镜已加入生成队列</div>
+  </div>
+
+  <div class="arrow">➜</div>
+
+  <!-- 右侧：后台转换结果 -->
+  <div class="right">
+    <div style="color:#8b93a1;font-size:13px;padding:60px 0;text-align:center" id="placeholder">点左侧【生成视频】看后台发生了什么<br><br>（这个预览只给产品负责人看，<br>真实产品中用户看不到）</div>
+    <div class="out" id="out">
+      <h3>① 汉语卡 → 六段结构（自动翻译+组装） <span class="badge">后台 · 客户不可见</span></h3>
+      <pre id="p1"></pre>
+      <h3>② 组装成模型可执行的完整请求 <span class="badge">后台 · 客户不可见</span></h3>
+      <pre id="p2"></pre>
+      <div class="locked">⚠️ 后台流程：读汉语卡 → 翻译/清洗（禁否定词、禁机位矛盾）→ 绑定参考图/音色 → 填入公共参数 → 提交。全程无人工，客户只点了【生成】。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function gen(){
+  var action = document.getElementById('f_action').value;
+  var dlg = document.getElementById('f_dialogue').value;
+  var audio = document.getElementById('f_audio').value;
+  var cam = document.getElementById('f_cam').value;
+  var mood = document.getElementById('f_mood').value;
+
+  document.getElementById('placeholder').style.display = 'none';
+  var out = document.getElementById('out');
+  out.classList.add('show');
+
+  var camEn = cam.includes('近景') ? 'close-up, slowly pushing in' : (cam.includes('特写') ? 'extreme close-up on hands' : 'medium shot, static');
+  var moodEn = mood.includes('心事') ? 'calm with a touch of heaviness' : mood.includes('温暖') ? 'warm and easy' : 'restrained, suppressed';
+
+  document.getElementById('p1').textContent =
+"【镜头信息】（汉语→结构化）\n" +
+"· 内容走向: " + action + "\n" +
+"· 台词: " + dlg + "\n" +
+"· 人物: 母亲(近景主体) + 周野(旁边倾听)\n" +
+"· 空间: 厨房(案板区) · 时间: 深夜 · 光: 厨房灯下\n" +
+"· 镜头: " + cam + " · 情绪: " + mood + "\n" +
+"· 音色: 母亲声音参考(低沉温和)\n" +
+"──────────────────────────\n" +
+"【六段结构】(自动翻译)\n" +
+"subject_definitions:\n" +
+"  <Subject 1> is the mother in <Picture 1> — her face, hair bun and apron from the reference.\n" +
+"  <Subject 2> is the son in <Picture 2>.\n" +
+"style: Chinese 3D animation film style, warm realistic kitchen interior.\n" +
+"space/time/light: kitchen counter area, late night, under kitchen light.\n" +
+"shot: close-up on the mother, camera slowly pushing in, no cuts.\n" +
+"dialogue: 母亲说 <d>你小时候那双袜子，我留到现在。</d> (音色: audio ref 1)\n" +
+"action: the mother kneads dough and pauses mid-sentence, tone drops.";
+
+  document.getElementById('p2').textContent =
+"POST /api/generate-video\n" +
+"{\n" +
+"  \"scene_card_id\": \"s08\",\n" +
+"  \"refs\": { \"subject1\": \"mother_4grid.png(长相/围裙)\",\n" +
+"            \"subject2\": \"zhouye_4grid.png(长相/服装)\",\n" +
+"            \"space\": \"kitchen.png\",\n" +
+"            \"audio_ref\": \"mother_voice_low.wav\" },\n" +
+"  \"prompt\": \"<subject_definitions>…<style>…<d>…</d>…(六段全英文,此处省略)\",\n" +
+"  \"params\": { \"duration\": 10, \"fps\": 24, \"seed\": 666 }\n" +
+"}";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+frames per shot: {"S01": 243, "S02": 243, "S03": 328, "S04": 294, "S05a1": 158, "S05a2": 158, "S05b1": 107, "S05b2": 158, "S05b3": 107, "S06": 243, "S07": 243, "S08a": 243, "S08b": 345, "S09a": 294, "S09b": 294, "S10a": 243, "S10b": 226, "S11a1": 158, "S11a2": 158, "S11b1": 175, "S11b2": 175, "S11c1": 124, "S11c2": 175, "S12": 192, "S13": 345, "S14": 345, "S15": 294, "S16": 294, "S17": 243}
+total frames: 6605 = 275.21s
+--- ISSUES ---
+S05a1: <d> ['ellipsis(will-be-purified)']: '这次……算是定下来了？'
+S09a: <d> ['ellipsis(will-be-purified)']: '有一次半夜停电……我以为是你回来了。'
+issues: 2 hard: 0
+batches: [(4, 1108), (5, 688), (4, 1074), (4, 1057), (5, 790), (4, 1057), (3, 831)]
+director node: 1201 | total_frames widget: 243
+batch_1.json saved: 4 segs, 1108 frames -> 46.17s
+batch_2.json saved: 5 segs, 688 frames -> 28.67s
+batch_3.json saved: 4 segs, 1074 frames -> 44.75s
+batch_4.json saved: 4 segs, 1057 frames -> 44.04s
+batch_5.json saved: 5 segs, 790 frames -> 32.92s
+batch_6.json saved: 4 segs, 1057 frames -> 44.04s
+batch_7.json saved: 3 segs, 831 frames -> 34.62s
+manifest: {"batch1": ["S01", "S02", "S03", "S04"], "batch2": ["S05a1", "S05a2", "S05b1", "S05b2", "S05b3"], "batch3": ["S06", "S07", "S08a", "S08b"], "batch4": ["S09a", "S09b", "S10a", "S10b"], "batch5": ["S11a1", "S11a2", "S11b1", "S11b2", "S11c1"], "batch6": ["S11c2", "S12", "S13", "S14"], "batch7": ["S15", "S16", "S17"]}
+OK

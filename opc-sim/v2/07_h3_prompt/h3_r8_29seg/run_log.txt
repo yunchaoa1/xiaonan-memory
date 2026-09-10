@@ -1,0 +1,11 @@
+[21:06:53] === batch1: 4 segs ['S01', 'S02', 'S03', 'S04'] frames=1108 ===
+[21:06:53] batch1 pre-free POST /free -> -1
+[21:06:53] batch1 pre-free ram_free=13374MB of 33673MB
+[21:06:53] batch1 pre-free vram_free=15799MB of 17094MB
+[21:06:56] batch1 submitted prompt_id=746e3a52-8023-4bfd-b7c4-c9e08ed3ab77
+[23:52:16] === batch1: 4 segs ['S01', 'S02', 'S03', 'S04'] frames=1108 ===
+[23:52:16] batch1 pre-free POST /free -> -1
+[23:52:16] batch1 pre-free ram_free=6130MB of 33673MB
+[23:52:16] batch1 pre-free vram_free=7488MB of 17094MB
+[23:52:19] batch1 submitted prompt_id=9cbaa9b5-1b10-4862-a454-99a81e25bc41
+[06:09:16] RUN STOPPED: batch timeout 6h
