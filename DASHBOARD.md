@@ -1,6 +1,6 @@
 # 🏗️ 工作总控台
 
-> 小南 2026-08-28 更新 · 每次工作变动同步
+> 小南 2026-09-10 更新 · 每次工作变动同步
 
 ---
 
@@ -210,5 +210,13 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 ② **二采崩溃根因+官方解法（CUDA 13 + cudaMallocAsync）**：崩点 `c10/cuda/CUDAMallocAsyncAllocator.cpp:207 free_impl`，`cuMemFreeAsync` 返回 `CUDA_ERROR_INVALID_VALUE`；前兆=`[cudaMallocAsync] recovered from an allocation failure by trimming the pool and retrying`（非系统 OOM：dmesg 空/内存 120G 仅用 0.9G）。根因=**ComfyUI 官方源码 `cuda_malloc.py` 中 `if cuda_version >= 130: args.cuda_malloc = True`（CUDA≥13 默认强制启用 cudaMallocAsync，非人为配置）**；官方 issue **Comfy-Org/ComfyUI#3099** 同款报错，workaround=启动加 **`--disable-cuda-malloc`** ✓ 实测生效（启动日志 Device 从 `cudaMallocAsync` 变 `native`），任务 success。
 
 ③ **实测耗时（15s 视频，一次性跑完）**：切片 221 duration=15 / 一采 960×544 / 二采 1920×1088 / 24fps=360 帧 → **总 303.08 秒（5 分 03 秒）**；分解：一采采样 1:00（6 步×10.03s/it）、二采采样 1:34（4 步×23.58s/it）、其余约 2:29（模型加载+VAE 解码+音视频合成）。`/history` 的 `execution_start`→`execution_success` 时间戳差 303,083ms 与日志 `Prompt executed in 303.08 seconds` 完全吻合。
+
+**H3 OPC 交接包已交付（2026-09-10）**：产出 `D:\数字资产\云电脑工作流\H3-OPC交接包-2026-09-10\`（+ 同名 `.zip`，20.6KB / 6 文件），**按凡哥要求不含工作流文件**（小何有云端操作权限，自行在界面「导出(API)」）。内容：`README.md`（总览+链路+5 分钟上手）/ `接口规格.md`（API 端点表+参数注入点+输入约束，依据 ComfyUI 官方服务端文档）/ `素材与提示词.md`（`media_state` 真实样本+`<Picture N>` 语法+标准模板全文）/ `运维与故障.md`（`--disable-cuda-malloc`、`POST /free`、故障速查、性能参考）/ `待确认清单.md`（**7 条未实测点的诚实标注 + 验证方法**）/ `examples/opc_client.py`（363 行全流程）。示例代码**已实测**：`--help` 正常 + 输入校验与注入逻辑 13 项单测全过；设计要点=**按 `class_type` 查节点、不硬编码数字 ID**（规避 API 导出 subgraph 铺平后 ID 变化）、`inject()` 只动 `media_state`/`duration`/`mode.scale` 三处且实测不污染其他参数。
+
+**两条旧结论被实测推翻（2026-09-10，已修正 skill）**：① **ComfyUI 双参数存储谁生效** —— 同一工作流 221 节点 `widgets_values` 的 duration=**15** 而 `widgets_values_named['duration']`=**9**，实际出片 **15.084s** → **生效的是数组 `widgets_values`**（此前"以 named 为准"是错的，named 只是元数据/缓存、可能残留旧值）；两处同改仍是保险做法，**API 格式只有一套参数、无此坑**。② **节点 ID 徽标位置** —— 在节点**右上角**（官方前端源码 `BadgePosition.TopRight`），不是左上角；该选项只有 `None` / `Show all` 两个值；**不需要重启 ComfyUI**（改设置自动触发画布重绘 `setDirty(true,true)`），不生效先 `Ctrl+Shift+R` 强刷 + 手点进 **LiteGraph → Node → Node ID badge mode**（设置搜索框有"搜不全"的已知 bug）；已知冲突=**ComfyUI-Manager** 自带徽标实现（官方 issue #9959）。**给凡哥指路优先报节点类型名，不报数字 ID。**
+
+**分辨率链路更正（2026-09-10）**：倍率 1.5 时成品实测 **1440×832**（=`960×544×1.5`，816 对齐 32 得 832）**并非 1920×1088** —— 根因 `221.size2`(1920×1088) **悬空未接线**，UP 标准版原样即如此。凡哥已自行把 `1317 MinimaxH3LatentUpscaler3D` 的 scale 改为 **2.0**（960×2=1920 / 544×2=1088），**待跑实测确认出片 1920×1088**。
+
+---
 
 **云端最终启动命令**（含防崩参数）：`cd /home/waas/h3-0300/ComfyUI && pkill -f "main.py --port 8188"; sleep 3; unset PYTHONPATH; nohup /home/waas/h3-0300/venv/bin/python main.py --port 8188 --listen 0.0.0.0 --disable-auto-launch --disable-cuda-malloc > /home/waas/h3-0300/comfyui.log 2>&1 &`
