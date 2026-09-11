@@ -229,3 +229,5 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 ---
 
 **云端最终启动命令**（含防崩参数）：`cd /home/waas/h3-0300/ComfyUI && pkill -f "main.py --port 8188"; sleep 3; unset PYTHONPATH; nohup /home/waas/h3-0300/venv/bin/python main.py --port 8188 --listen 0.0.0.0 --disable-auto-launch --disable-cuda-malloc > /home/waas/h3-0300/comfyui.log 2>&1 &`
+
+**2026-09-11 第六轮（凡哥给参照视频 → 学到「简约大气」正解）**：凡哥分享 B站 BV1ka411M7kV（墨壹logo设计《一个简约不简单的logo如何设计》51s），定性为「这就是我要的简约大气思路」。小南按 media-learning/video-learning 技能流程：yt-dlp 下载 → ffmpeg 抽帧28张(1.8s/帧) + 音频转写（faster-whisper medium CPU int8，HF_ENDPOINT=hf-mirror.com）→ 画面+讲解双线学完。**核心方法＝字母减法法**：取一个字母骨架 → 减去一笔 → 加一点细节 → 调一下空间 → 一个字母两重含义（特斯拉 logo 就是这么来的）。**已固化**：`logo-generator` 技能新增 `references/字母减法法.md`（含完整转写+四步法+歧义检查清单+落地参数）。**产出**：`letter\` 5 个「字母减法」方案锁标（标志+中文标准字+全大写letter-spaced英文副标，浅底/深底）→ `字母减法方向.html`。**推荐**：① A·双翼减法（A=Angel，两斜笔＝双翼，中横断开成羽隙）② 环·环中天使（圆环＝平台/社区，环内上升A）③ 天·字翼（天字撇捺外张成翼）。**淘汰**：OPC复型（实测被读成「停车P/©」，歧义不可用 —— 已把「路人测试」列为复型硬门禁）、框架上升柱（像柱状图）。**待凡哥选向 → 精修 + 中文字体设计 + 发光字实景效果图**。
