@@ -63,7 +63,7 @@
 | 世界 | worldbuilding | 南溟岛/世界观/反派设计 |
 | 🎨 设计 | logo-generator | 说"设计logo/品牌标志/App图标" |
 
-> 🎨 2026-09-11 新增 `logo-generator`（creative 类）：出处 op7418/logo-generator-skill，**2,091★**（专用 logo 技能星数第一；独立目录 Skillselion 安装量 1,402 居首），作者歸藏。产出**矢量 SVG**（可编辑/可缩放）+ ≥6 变体对比页 + 12 种高端展示背景（void/frosted/fluid/spotlight 等）。**本机适配（已实测）**：① SVG→PNG 用 `resvg-py`（cairosvg 缺 `libcairo-2.dll` 本机不可用）② 展示图走原生 `image_generate`（gpt-image-2）替代原版 Gemini ③ 原版 `generate_showcase.py` 保留备用不用 ④ SVG 里中文须写 `font-family="Microsoft YaHei"`（实测正常）⑤ 产物输出 `D:\数字资产\图片资产\logo-<品牌名>\`。适配说明已写入 SKILL.md「🀄 Hermes 环境适配」章节。技能库体检：97 启用 / 中文描述 71 / 悬空引用 0 / 疑似重复 0，✅ 健康。首个应用：**天使OPC数字社区** logo（进行中）。
+> 🎨 2026-09-11 新增 `logo-generator`（creative 类）：出处 op7418/logo-generator-skill，**2,091★**（专用 logo 技能星数第一；独立目录 Skillselion 安装量 1,402 居首），作者歸藏。产出**矢量 SVG**（可编辑/可缩放）+ ≥6 变体对比页 + 12 种高端展示背景（void/frosted/fluid/spotlight 等）。**本机适配（已实测）**：① SVG→PNG 用 `resvg-py`（cairosvg 缺 `libcairo-2.dll` 本机不可用）② 展示图走原生 `image_generate`（gpt-image-2）替代原版 Gemini ③ 原版 `generate_showcase.py` 保留备用不用 ④ SVG 里中文须写 `font-family="Microsoft YaHei"`（实测正常）⑤ 产物输出 `D:\数字资产\图片资产\logo-<品牌名>\`。适配说明已写入 SKILL.md「🀄 Hermes 环境适配」章节。技能库体检：97 启用 / 中文描述 71 / 悬空引用 0 / 疑似重复 0，✅ 健康。首个应用：**天使OPC数字社区** 图标 —— 2026-09-11 第一轮 7 方案已交付 `D:\数字资产\图片资产\logo-天使OPC数字社区\`（svg/ + png1024/ + scale16-32-64/ + showcase.html），规格：**只要图标·透明无背景·无文字·单色 #0052d9**，7 向为 V1双翼托举 / V2光环三节点 / V3负空间双翼圆盘 / V4接纳之环 / V5点阵双翼 / V6盾徽守护之翼 / V7圆角方形。**待凡哥选向 → 精修定稿**。
 
 ---
 
