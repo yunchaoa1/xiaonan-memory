@@ -61,6 +61,9 @@
 | 技术 | comfyui-update | 说"更新ComfyUI" |
 | 聊天 | barnum-effect | 说"帮我回复" |
 | 世界 | worldbuilding | 南溟岛/世界观/反派设计 |
+| 🎨 设计 | logo-generator | 说"设计logo/品牌标志/App图标" |
+
+> 🎨 2026-09-11 新增 `logo-generator`（creative 类）：出处 op7418/logo-generator-skill，**2,091★**（专用 logo 技能星数第一；独立目录 Skillselion 安装量 1,402 居首），作者歸藏。产出**矢量 SVG**（可编辑/可缩放）+ ≥6 变体对比页 + 12 种高端展示背景（void/frosted/fluid/spotlight 等）。**本机适配（已实测）**：① SVG→PNG 用 `resvg-py`（cairosvg 缺 `libcairo-2.dll` 本机不可用）② 展示图走原生 `image_generate`（gpt-image-2）替代原版 Gemini ③ 原版 `generate_showcase.py` 保留备用不用 ④ SVG 里中文须写 `font-family="Microsoft YaHei"`（实测正常）⑤ 产物输出 `D:\数字资产\图片资产\logo-<品牌名>\`。适配说明已写入 SKILL.md「🀄 Hermes 环境适配」章节。技能库体检：97 启用 / 中文描述 71 / 悬空引用 0 / 疑似重复 0，✅ 健康。首个应用：**天使OPC数字社区** logo（进行中）。
 
 ---
 
