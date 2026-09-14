@@ -158,7 +158,17 @@
 
 ## 九、技术环境
 
-ComfyUI v0.30.2 · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端口18188；2026-08-28 HTTP 200 实测通过
+ComfyUI **v0.35.0** · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端口18188 · Python 3.12.11（`.venv` 由 uv 建，**无 pip —— 装包用 `uv pip install --python D:/SDkecheng/ComfyUI/.venv/Scripts/python.exe`**）
+启动脚本 `D:/admin桌面/start_comfyui.bat`：**2026-09-14 起带 `--disable-cuda-malloc`**（云端必带，不带二采崩在显存分配；原文件备份 `.bak.20260914`）。⚠️ 原生 curl/程序**不认 MSYS 的 `/d/...` 路径**，给它们必须传 `D:/...` 原生路径（本机踩过：下载全空转）。
+
+**漫剧工作流本地部署（2026-09-14 · 目标＝复刻云电脑跑通版，工作流一字不改）**
+- 基准文件＝`D:/数字资产/云电脑工作流/4-MiniMaxH3-V4-本地提示词优化版(对齐标准).json`（**本地提示词版**，放大倍率 1.5；云端的 `5-MiniMaxH3-OPC交付版-1088P.json` 是它的后续版，只差倍率 1.5→2.0）。**UP 原版 V4-2 用的是 API 节点 `MiniMaxH3MultimodalChat`，A/B 两版都已换成 `QwenTE_*` 本地方案** —— 凡哥说的"改过一个节点"就是这个。
+- 补齐 4 插件：`oufeixinxinren/ComfyUI-MiniMax-ContextIR`（一包解决 5 个缺件节点）、`LBH-123-AI/Comfyui_Minimax_h3_latent_Upscaler`、`tl2012tl/comfyUI-llama-TE`、`chflame163/ComfyUI_LayerStyle`。
+- 依赖：`llama_cpp 0.3.49`（JamePeng fork 的 **cu130-cp312-win wheel**，`Qwen35ChatHandler` 已验证）+ `diskcache` + `blend_modes`。
+- 模型 6 件全部**逐字节校验通过**：w4a8_mixed 主模型(12,540,858,008)、ref2v_turbo LoRA(1,956,193,000)、CONSERVATIVE_v5 放大模型(690,593,160)、QwenTE 主模型(21,694,740,192)+mmproj(902,822,656)。
+- 目录名对齐：工作流引用 `MiniMax-H3\xxx`，用**硬链接**造出该目录（不占额外空间）。loRA 无前缀 → 必须放 `loras/` 根。
+- 复检：**节点 0 缺**（服务端 3015→3211 种）。仅 rgthree 的 `Fast Groups Bypasser`/`Fast Bypasser` 显示"缺"——它们是**前端 JS 节点**，不注册服务端，非缺件。
+- 实测结论：ComfyUI 0.35 对 combo 值**不做严格拦截**，工作流原写法（`MiniMax-H3\`、`Qwen/`）**不改即可解析**（Windows 路径不区分大小写、正反斜杠皆认）。⚠️ 唯一警告：LayerStyle `cv2.ximgproc.guidedFilter` 缺失（官方 issue #5），**不影响工作流要用的 `NumberCalculatorV2`**（在 `py/data_nodes.py`，只依赖 torch+imagefunc）。
 导演台插件：正确仓库 `AIMixer/ComfyUI_MiniMaxH3_Director` 已更新至 commit `a148812`，旧版完整备份；误装的 `ComfyUI_Bernini_Director` 已删除并保留完整回退副本。8个 H3 目标节点、`TESpeedMiniMaxH3` 和 H3 HTTP 路由均已验收；官方核心 `BerniniConditioning` 属于 ComfyUI 自带能力，正常保留。最新回退材料位于 `D:\SDkecheng\ComfyUI\update_backups\h3_director_20260828_121946`。
 更新方式：git + uv venv + `uv pip install -r requirements.txt`（禁用 `uv sync`，避免清空插件依赖）
 Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随主模型，原生像素识图已验证；gpt-5.5 保留回滚，DeepSeek 保留备用，Agnes 废弃不用
