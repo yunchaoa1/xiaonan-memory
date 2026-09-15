@@ -169,6 +169,15 @@ ComfyUI **v0.35.0** · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端�
 - 目录名对齐：工作流引用 `MiniMax-H3\xxx`，用**硬链接**造出该目录（不占额外空间）。loRA 无前缀 → 必须放 `loras/` 根。
 - 复检：**节点 0 缺**（服务端 3015→3211 种）。仅 rgthree 的 `Fast Groups Bypasser`/`Fast Bypasser` 显示"缺"——它们是**前端 JS 节点**，不注册服务端，非缺件。
 - 实测结论：ComfyUI 0.35 对 combo 值**不做严格拦截**，工作流原写法（`MiniMax-H3\`、`Qwen/`）**不改即可解析**（Windows 路径不区分大小写、正反斜杠皆认）。⚠️ 唯一警告：LayerStyle `cv2.ximgproc.guidedFilter` 缺失（官方 issue #5），**不影响工作流要用的 `NumberCalculatorV2`**（在 `py/data_nodes.py`，只依赖 torch+imagefunc）。
+
+**2026-09-15 本地 ComfyUI 大瘦身（凡哥定：本机只跑这一个工作流）**
+- **工作流改用 Singularity 版**：`D:/SDkecheng/ComfyUI/user/default/workflows/4-MiniMaxH3-V4-Singularity版.json`（原件 `4-MiniMaxH3-V4-本地提示词优化版(对齐标准).json` 保留未动）。两个主模型位（子图「模型加载」里的 `#127 一采UNet` / `#1221 二采UNet`）**都换成** `MiniMax-H3/Minimax-h3_Singularity_ref2va_Pruned_v1.3_int8.safetensors`（20,967,647,456 字节；HF `WarmBloodAban/Minimax-h3_Singularity`，**走 hf-mirror.com 下载**，仓库 14.1 万下载、9-12 更新）。该仓还顺手下了一份官方提示词规范 `MiniMax_H3_Singularity_Prompt_Writing_Specification_Enhanced_EN.md` → `D:/数字资产/云电脑工作流/Singularity资料/`。
+- **删主模型 4 个**（`hybrid_fl2va_ref2va_b25-49-int8` / `fl2va_pruned_w4a8_mixed` / `ref2va_pruned_int8_convrot` / `fl2va_pruned_int8_convrot`）→ `diffusion_models` 只剩 Singularity。想找回：hybrid 在 HF `smhfacct/Minimax-H3-fl2va-ref2va-hybrid-models`、w4a8 在 `Kijai/MiniMax-H3-experimental`、两个 int8 在 `Comfy-Org/MiniMax-H3`。
+- **插件包 52 → 11**：保留 `ComfyUI-Manager`（凡哥指定）+ 工作流需要的 10 个（`ComfyUI-MiniMax-ContextIR`/`ComfyUI_LayerStyle`/`Comfyui_Minimax_h3_latent_Upscaler`/`comfyUI-llama-TE`/`comfyui-custom-scripts`/`comfyui-easy-use`/`comfyui-kjnodes`/`comfyui-videohelpersuite`/`comfyui-vrgamedevgirl`/`rgthree-comfy`），其余 41 个已删。**注册节点 3211 → 1904**；磁盘 87G → **157G 可用**。
+- **验证**：`--quick-test-for-ci` 0 IMPORT FAILED；节点对差集 **0 缺**。⚠️ `Fast Bypasser (rgthree)`/`Fast Groups Bypasser (rgthree)` **不在服务端列表是正常的**（rgthree 的前端 JS 节点），但 `Any Switch (rgthree)` 在 → 所以 `rgthree-comfy` 必须留。`BlockSparseAttention` 属官方核心（`comfy_extras/nodes_sparse_attention.py`），删 SolAttn 安全。
+- **两个本机坑（已踩，务必记）**：① **原生程序（curl/pip…）不认 MSYS 的 `/d/...` 路径**，会当成 `D:\d\...` → curl 报 error 23 全空转，必须传 `D:/...` 原生路径；② **本机 `.venv` 是 uv 建的无 pip** → 装包用 `uv pip install --python D:/SDkecheng/ComfyUI/.venv/Scripts/python.exe`。
+- **网络**：**hf-mirror.com 可直连**（下模型走它）；**GitHub 本机不通**（直连 + ghproxy/ghfast/gh-proxy/moeyy/ghps 五镜像全挂 000/403/404/502）→ 装新插件须凡哥开 Clash Verge（7897）。
+- **待办**：装 CPU/GPU 状态监控插件 `crystian/ComfyUI-Crystools`（等代理）；`user/default/workflows/` 里 3 个旧工作流（H3长视频MV / 导演台全能 / 全能参考）引用的模型已删，已跑不了。
 导演台插件：正确仓库 `AIMixer/ComfyUI_MiniMaxH3_Director` 已更新至 commit `a148812`，旧版完整备份；误装的 `ComfyUI_Bernini_Director` 已删除并保留完整回退副本。8个 H3 目标节点、`TESpeedMiniMaxH3` 和 H3 HTTP 路由均已验收；官方核心 `BerniniConditioning` 属于 ComfyUI 自带能力，正常保留。最新回退材料位于 `D:\SDkecheng\ComfyUI\update_backups\h3_director_20260828_121946`。
 更新方式：git + uv venv + `uv pip install -r requirements.txt`（禁用 `uv sync`，避免清空插件依赖）
 Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随主模型，原生像素识图已验证；gpt-5.5 保留回滚，DeepSeek 保留备用，Agnes 废弃不用
