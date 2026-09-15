@@ -178,6 +178,7 @@ ComfyUI **v0.35.0** · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端�
 - **两个本机坑（已踩，务必记）**：① **原生程序（curl/pip…）不认 MSYS 的 `/d/...` 路径**，会当成 `D:\d\...` → curl 报 error 23 全空转，必须传 `D:/...` 原生路径；② **本机 `.venv` 是 uv 建的无 pip** → 装包用 `uv pip install --python D:/SDkecheng/ComfyUI/.venv/Scripts/python.exe`。
 - **网络**：**hf-mirror.com 可直连**（下模型走它）；**GitHub 本机不通**（直连 + ghproxy/ghfast/gh-proxy/moeyy/ghps 五镜像全挂 000/403/404/502）→ 装新插件须凡哥开 Clash Verge（7897）。
 - **待办**：装 CPU/GPU 状态监控插件 `crystian/ComfyUI-Crystools`（等代理）；`user/default/workflows/` 里 3 个旧工作流（H3长视频MV / 导演台全能 / 全能参考）引用的模型已删，已跑不了。
+- **2026-09-15 补漏 `taeh3.safetensors`**（TAE 轻量预览解码器，9,791,388 字节；HF `GuangyuanSD/minimax_h3_video_vae_int8_convrot`）→ `models/vae_approx/`。它是 `#1309 ModelPreviewOverrideKJ` 的**可选输入** `tiny_vae`（KJNodes 1.4.9；tooltip 原文「Tiny VAE decoder from models/vae_approx for true-RGB previews」），工作流里填的是它而非 `none`，**故属必需**；不影响出片画质，只影响采样中途预览。⚠️ **教训：扫工作流缺模型必须连 `input.optional` 与 `widgets_values_named` 一起扫，只扫 loader 类节点会漏**（本次就是这么漏的，重扫后才只揪出这一个）。
 导演台插件：正确仓库 `AIMixer/ComfyUI_MiniMaxH3_Director` 已更新至 commit `a148812`，旧版完整备份；误装的 `ComfyUI_Bernini_Director` 已删除并保留完整回退副本。8个 H3 目标节点、`TESpeedMiniMaxH3` 和 H3 HTTP 路由均已验收；官方核心 `BerniniConditioning` 属于 ComfyUI 自带能力，正常保留。最新回退材料位于 `D:\SDkecheng\ComfyUI\update_backups\h3_director_20260828_121946`。
 更新方式：git + uv venv + `uv pip install -r requirements.txt`（禁用 `uv sync`，避免清空插件依赖）
 Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随主模型，原生像素识图已验证；gpt-5.5 保留回滚，DeepSeek 保留备用，Agnes 废弃不用
