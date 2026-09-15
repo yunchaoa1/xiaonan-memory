@@ -179,6 +179,48 @@ ComfyUI **v0.35.0** · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端�
 - **网络**：**hf-mirror.com 可直连**（下模型走它）；**GitHub 本机不通**（直连 + ghproxy/ghfast/gh-proxy/moeyy/ghps 五镜像全挂 000/403/404/502）→ 装新插件须凡哥开 Clash Verge（7897）。
 - **待办**：装 CPU/GPU 状态监控插件 `crystian/ComfyUI-Crystools`（等代理）；`user/default/workflows/` 里 3 个旧工作流（H3长视频MV / 导演台全能 / 全能参考）引用的模型已删，已跑不了。
 - **2026-09-15 补漏 `taeh3.safetensors`**（TAE 轻量预览解码器，9,791,388 字节；HF `GuangyuanSD/minimax_h3_video_vae_int8_convrot`）→ `models/vae_approx/`。它是 `#1309 ModelPreviewOverrideKJ` 的**可选输入** `tiny_vae`（KJNodes 1.4.9；tooltip 原文「Tiny VAE decoder from models/vae_approx for true-RGB previews」），工作流里填的是它而非 `none`，**故属必需**；不影响出片画质，只影响采样中途预览。⚠️ **教训：扫工作流缺模型必须连 `input.optional` 与 `widgets_values_named` 一起扫，只扫 loader 类节点会漏**（本次就是这么漏的，重扫后才只揪出这一个）。
+
+---
+
+## 🎬 2026-09-15 本机首次端到端实跑（H3 + Singularity，音乐 MV 方向）
+
+### 已实现的自动化链路（小南可自主跑，不需凡哥点）
+- **GUI 两条路都不通**（预览面板无响应 / 桌面窗口枚举不可用）→ 改为**自己写 UI→API 转换器**
+  - `D:\Hermes\cache\mv-research\ui2api2.py` —— 拍平子图 / **bypass 节点做同类型直通重连** / 可达性剪枝 / **下拉值大小写归一化** / 手工覆盖
+  - `submit.py`（POST /prompt，`--nofree` 保留节点缓存）+ `monitor.py`（轮询 /queue + /history + 日志）
+- **提交前用 `/prompt` 的 node_errors 当校验器** —— 一次定位全部参数错，极高效
+
+### 转换器踩到的坑（通用，值得记）
+| 坑 | 现象 | 解法 |
+|---|---|---|
+| UI 格式不能直接提交 | HTTP 500 | 必须转 API 格式 |
+| **bypass 节点必须做同类型直通重连** | 直接删节点会断链（`#226` 的 `av_latent` 直接喂一采采样器 `#125.latent_image`） | 按声明类型匹配 input→output 重连 |
+| **下拉值大小写/斜杠不匹配** | `value_not_in_list`：工作流写 `MiniMax-H3\`，磁盘实际 `minimax-h3\` | 转换时归一化匹配 |
+| **widget 值损坏** | `VHS_VideoCombine` 的 widgets_values 被写成参数名（`frame_rate`/`loop_count`…） | 手工定死 |
+| VHS 版本差异 | 本机 VHS 比作者版少 4 个参数（pix_fmt/crf/save_metadata/trim_to_audio） | 手工定死 6 个参数 |
+| 云版旧节点缺必需输入 | `#221 MiniMaxH3ReferenceSplitter` 缺 `short_edge_max`/`align_to` | 补 0 / 16 |
+
+### 首次实跑结果（15 秒 / 齐白兰四视图 + 爱的记忆全曲 149.98s）
+- ✅ **一采成功**：`output\H3\MV-实测1-一采_00001-audio.mp4` = **960×544 / 15.083s / 24fps / AAC 32kHz 双声道 / 3.8MB**；**耗时约 4.5 分钟**
+- ✅ **20GB 模型在 16GB 显存可跑**（ComfyUI 动态装载 `19995MB Staged`，208 patches）
+- ✅ **"音频不切只切画面"实测成立**：整轨 149.98s 音频喂入 → 输出带对口型音频
+- ✅ 齐白兰 3D 形象参考图有效（3D 国漫风还原准）
+- ✅ Qwen 提示词优化支路可 bypass（省 21GB 显存，自动落到 raw 文本兜底）
+- ❌ **二采 OOM**：`aimdo: hostbuf_file_reader_read: device copy failed` → `CUDA error: out of memory`（12:10:58 装 20GB → 12:14:48 崩，撑 4 分钟）
+  - **根因**：`#1330 TiledSampler` 的 **`bypass_tiling=True`（不分块）** → 二采一次性跑 1440×816 全图，峰值显存爆炸（云端 32G 没事，16G 不行）
+  - **修法**：`bypass_tiling=False` + `n_tiles=2` + `tile_overlap=16` + `refine_seams=True` → 已改并重跑
+- ⚠️ **崩溃会杀死 `prompt_worker` 线程** → 之后 `got prompt` 也没人处理，队列卡死在"排队=1"；**CUDA 上下文坏掉无法热恢复 → 必须重启 ComfyUI**（重启命令：`cd /d D:\SDkecheng\ComfyUI` 后用 `.venv\Scripts\python.exe main.py --listen 0.0.0.0 --port 18188 --disable-cuda-malloc`）
+- 💡 **生产结论**：**一采先出片定稿（960×544 够审片）→ 全片统一做二采放大**。16G 机器也能做完整支 MV，不必每镜硬扛二采。
+
+### 凡哥 UI 那份工作流的问题（2026-09-15 11:27 存的那份）
+- `#127`/`#1221` 指向 **已被删除** 的 `hybrid_fl2va_ref2va_b25-49-int8` / `fl2va_pruned_w4a8_mixed` → 跑不了（应换 Singularity）
+- **5 条系统提示词（T2VA/I2VA/L2VA/FL2VA/REF2VA）全部 mode=4 被静音**（疑似误按 Ctrl+M）
+- `#1317` 放大倍率 2.0（云端只实测过 1.5）、`#221` duration=15
+- ⚠️ **`widgets_values`（数组）才是实际生效值**，`widgets_values_named` 会不一致（本例数组 15 / named 9）
+
+### 可运行工作流产物
+- `D:\SDkecheng\ComfyUI\user\default\workflows\4-MiniMaxH3-V4-Singularity版-实测1.json`（137KB = Singularity + 齐白兰四视图 + 爱的记忆全曲）
+- API 格式：`D:\Hermes\cache\mv-research\test1_api.json`
 导演台插件：正确仓库 `AIMixer/ComfyUI_MiniMaxH3_Director` 已更新至 commit `a148812`，旧版完整备份；误装的 `ComfyUI_Bernini_Director` 已删除并保留完整回退副本。8个 H3 目标节点、`TESpeedMiniMaxH3` 和 H3 HTTP 路由均已验收；官方核心 `BerniniConditioning` 属于 ComfyUI 自带能力，正常保留。最新回退材料位于 `D:\SDkecheng\ComfyUI\update_backups\h3_director_20260828_121946`。
 更新方式：git + uv venv + `uv pip install -r requirements.txt`（禁用 `uv sync`，避免清空插件依赖）
 Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随主模型，原生像素识图已验证；gpt-5.5 保留回滚，DeepSeek 保留备用，Agnes 废弃不用
