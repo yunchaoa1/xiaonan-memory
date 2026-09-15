@@ -38,7 +38,7 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0b0a0f;c
 <body>
 <div class="header">
   <h1>🏝️ 南溟岛 · 工作总控台</h1>
-  <div class="sub">最后更新：<span id="lastUpdate">—</span> · 公司小南 + 家里小南 共享</div>
+document.getElementById('lastUpdate').textContent = '2026-09-15 · 小南 · 新增「集团 · AI 业务技术板块」分支（三项目拓扑+模块清单）';
 </div>
 <div class="tree" id="tree"></div>
 <div class="footer">
@@ -54,6 +54,48 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0b0a0f;c
 const DATA = {
   label: "工作总控台", icon: "🏗️", status: "progress",
   children: [
+    {
+      label: "集团 · AI 业务技术板块（CTO）", icon: "🏢", status: "progress",
+      info: "2026-09 · 三项目并行 · 小何=框架+后端 / 小吴=前端+UI",
+      children: [
+        {
+          label: "① OPC 平台（含制剧工作流）", icon: "🎯", status: "progress",
+          info: "主项目 · 2026-08 初立项 · 第一版已完成可演示 · 结束=正式部署可用",
+          children: [
+            {label:"前端（页面 / 交互）",icon:"🖥️",status:"progress",info:"小吴"},
+            {label:"后端（框架 + 接口 + 数据）",icon:"⚙️",status:"progress",info:"小何"},
+            {label:"制剧工作流（素材→调度→生成→产出）",icon:"🎬",status:"progress"},
+            {label:"AI 能力接入（工作流 / 智能体）",icon:"🤖",status:"progress"},
+            {label:"各环节需求清单",icon:"📋",status:"blocked",info:"待定演示时间 · 听林总逐环节需求"},
+            {label:"资产与归档",icon:"💎",status:"pending"}
+          ]
+        },
+        {
+          label: "② 智提分（教育学习机）", icon: "📚", status: "progress",
+          info: "第一阶段演示目标 2026-09-18（周五）",
+          children: [
+            {label:"课堂录音接入",icon:"🎙️",status:"progress"},
+            {label:"智能体分析（每日学情）",icon:"🧠",status:"progress"},
+            {label:"专项出题考核",icon:"📝",status:"progress"},
+            {label:"薄弱点趣味补齐",icon:"💡",status:"progress"},
+            {label:"历年真题题库 · 间断出题巩固",icon:"🧩",status:"progress",info:"不是模拟考试"},
+            {label:"前端界面",icon:"🖥️",status:"progress",info:"小吴"}
+          ]
+        },
+        {label:"③ 漫剧发布平台",icon:"🚀",status:"pending",info:"未启动 · 前置=OPC 平台正式交付可用 · 可能跨月"},
+        {
+          label: "团队与考核（支撑）", icon: "👥", status: "progress",
+          children: [
+            {label:"定性考核标准 · 小何",icon:"📊",status:"done"},
+            {label:"定性考核标准 · 小吴",icon:"📊",status:"done"},
+            {label:"月度任务台账",icon:"🗓️",status:"progress",info:"下发即登记 · 月底冻结 · 按承诺与实际统计"},
+            {label:"归档规则 v1.1",icon:"📦",status:"done",info:"结束=正式部署可用；维护迭代也归档"},
+            {label:"项目归档文档模板",icon:"📄",status:"done"}
+          ]
+        },
+        {label:"项目进展拓扑与模块清单（给豆包）",icon:"🗺️",status:"progress",file:"集团/项目拓扑与模块清单.md"}
+      ]
+    },
     {
       label: "天南传媒 · 南溟岛IP", icon: "🏝️", status: "progress",
       children: [
