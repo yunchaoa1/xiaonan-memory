@@ -206,11 +206,18 @@ ComfyUI **v0.35.0** · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端�
 - ✅ **"音频不切只切画面"实测成立**：整轨 149.98s 音频喂入 → 输出带对口型音频
 - ✅ 齐白兰 3D 形象参考图有效（3D 国漫风还原准）
 - ✅ Qwen 提示词优化支路可 bypass（省 21GB 显存，自动落到 raw 文本兜底）
-- ❌ **二采 OOM**：`aimdo: hostbuf_file_reader_read: device copy failed` → `CUDA error: out of memory`（12:10:58 装 20GB → 12:14:48 崩，撑 4 分钟）
-  - **根因**：`#1330 TiledSampler` 的 **`bypass_tiling=True`（不分块）** → 二采一次性跑 1440×816 全图，峰值显存爆炸（云端 32G 没事，16G 不行）
-  - **修法**：`bypass_tiling=False` + `n_tiles=2` + `tile_overlap=16` + `refine_seams=True` → 已改并重跑
+- ❌ **二采 OOM**（前三次）：`aimdo: hostbuf_file_reader_read: device copy failed` → `CUDA error: out of memory`
+  - 试过无效：`bypass_tiling=False`+分块（分块降的是采样器激活，爆点在 aimdo 权重搬运）／摘掉 Sage 补丁（不是元凶）
+  - ✅ **最终解法（第 4 次成功）**：**放大倍率 1.5 → 1.25** + 分块 + 摘 Sage
+  - **一致性规律**：一采(960×544) 三次全过、二采(1440×816) 三次全崩 → **决定因素是激活值大小，不是模型/显存管理**
+  - ⚠️ **交付规格 1920×1088 需要倍率 2.0**，本机 16GB（云电脑 32GB 的一半）**先天不足**；1.25 是实测可行上限区（未测 1.35/1.5 单独变量）
+- ✅ **第 4 次全链条成功**：一采 + 二采 均出片，`Prompt executed in 00:16:22`
+  - 二采成品 `output\H3\MV-实测1-二采_00001-audio.mp4` = **1216×672 / 15.083s / 24fps / AAC 32kHz 双声道 / 4.64MB**
+  - 画质对比：1200×680 档明显优于 960×544（卡通感消失、纹理/发丝/皮肤质感出现）
+  - **生产工时（15 秒一镜）**：一采 ≈4.5 分钟 + 二采 ≈11.5 分钟 = **≈16.4 分钟/镜**；2.5 分钟 MV（约 10 镜）≈ **2.7 小时**
 - ⚠️ **崩溃会杀死 `prompt_worker` 线程** → 之后 `got prompt` 也没人处理，队列卡死在"排队=1"；**CUDA 上下文坏掉无法热恢复 → 必须重启 ComfyUI**（重启命令：`cd /d D:\SDkecheng\ComfyUI` 后用 `.venv\Scripts\python.exe main.py --listen 0.0.0.0 --port 18188 --disable-cuda-malloc`）
 - 💡 **生产结论**：**一采先出片定稿（960×544 够审片）→ 全片统一做二采放大**。16G 机器也能做完整支 MV，不必每镜硬扛二采。
+- 💡 **建议分工**：**本机 = 创作/试跑/审片**（960×544 一采 4.5 分钟/镜稳定）；**云电脑 = 正式 1088p 出片**（32GB，OPC 交接包与 `opc_client.py` 现成）
 
 ### 凡哥 UI 那份工作流的问题（2026-09-15 11:27 存的那份）
 - `#127`/`#1221` 指向 **已被删除** 的 `hybrid_fl2va_ref2va_b25-49-int8` / `fl2va_pruned_w4a8_mixed` → 跑不了（应换 Singularity）
