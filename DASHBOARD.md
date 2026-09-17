@@ -83,6 +83,28 @@
 
 ---
 
+### 🔄 跨端同步机制（2026-09-17 建成 · 凡哥要求"两台电脑完全同步"）
+
+两端都是 Hermes（家里是 WSL 版），经 GitHub 私有仓库 `xiaonan-memory` 同步。
+
+| 层 | 位置 | 说明 |
+|---|---|---|
+| 技能运行副本 | `D:\Hermes\skills\` | Hermes 实际加载，91 个 source=local 自建技能 |
+| **技能共享源** | `xiaonan-memory\shared-skills\` | Git 同步，含 `INDEX.md`（91 技能 / 77 启用 / 14 停用） |
+| **记忆与人格三件套** | `memories\MEMORY.md` · `memories\USER.md` · `SOUL.md` | 真相源＝运行时文件；仓库根目录同名文件为同步副本 |
+
+**命令**（脚本已随仓库同步到 `xiaonan-memory\scripts\`，路径自适应，两端同一套）：
+- `python scripts\sync_skills.py status|push|pull` —— 自建技能（只导 source=local）
+- `python scripts\sync_profile.py status|push|pull` —— 记忆/人格（pull 前自动备份到 `memories\.sync-backup\`）
+- **开工**：`git pull` → 两条 `pull` ｜ **收工**：两条 `push` → `git add -A` → 提交 → `git push`
+
+**自动兜底**：cron `40df234f060d` 每天 17:50 跑两条 push + 提交 + 推送（**Gateway 必须运行**，`hermes gateway status` 查）。
+**启动规则**：已写进 `SOUL.md`「🔽 启动同步 / 🔁 收工同步」。
+
+**已修的历史问题**：① `.gitignore` 里的 `skills/` 规则导致整个技能目录从未进过仓库 ② 技能名≠目录名（`writing-opc-entry-test` 里是 `writing-opc-entry`）导致漏扫 5 个技能，91→85 ③ 仓库里 MEMORY/USER/SOUL 是 6–8 月的废弃副本、与运行时漂移（旧版已重命名保留为 `*-手写版_*停更.md`、`SOUL-早期版_2026-06.md`）④ Gateway 未运行导致 cron 静默不触发（已启动，PID 9492）。
+
+**⏳ 待办**：家里电脑（WSL Hermes）的**技能目录实际路径**待凡哥确认 → 才能写家里端的 install 步骤并完成双向验收。
+
 ## 五、南溟岛57角色IP
 
 37正派+1龙+19反派=57人。六界六阶。心魔是世界bug。

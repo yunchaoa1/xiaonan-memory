@@ -104,9 +104,9 @@ xiaonan-memory\shared-skills\      唯一编辑源（Git 同步，含 INDEX.md �
 家里的技能目录                     运行副本
 ```
 
-两个脚本（配套工具）：
-- `python D:\Hermes\scripts\sync_skills.py status|push|pull` —— 技能，只导 source=local
-- `python D:\Hermes\scripts\sync_profile.py status|push|pull` —— 记忆与人格三件套
+两个脚本（配套工具，**已随仓库同步到 `xiaonan-memory\scripts\`**，放在 `<HERMES_HOME>/scripts/` 下即可，路径自适应不需要改代码 —— 家里端从仓库副本跑同一份）：
+- `python scripts\sync_skills.py status|push|pull` —— 技能，只导 source=local
+- `python scripts\sync_profile.py status|push|pull` —— 记忆与人格三件套
 
 **自动兜底**：cron `40df234f060d` 每天 17:50 跑两条 push + git 提交 + 推送（**需 Gateway 在运行**，`hermes gateway status` 查）。
 **开工安装**：SOUL.md 启动规则已写死 —— git pull 后跑两条 pull（profile 的 pull 会先备份到 `memories\.sync-backup\`）。
