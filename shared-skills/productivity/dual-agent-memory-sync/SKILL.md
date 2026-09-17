@@ -90,7 +90,33 @@ metadata:
 5. **加载验证**：在目标端用技能列表或明确加载命令验证技能可见；Hermes新增技能后使用`/reload-skills`或新会话重扫。
 6. **单一真相源**：只在Git共享源编辑，运行目录由安装/镜像步骤生成，避免两端各改一份后漂移。
 
-推荐只同步自建技能，不把Bundled、Hub安装和插件技能整体复制进记忆仓库。共享目录可采用`shared-skills/`加Markdown索引；目标端路径确认后再写适配步骤。
+推荐只同步自建技能，不把Bundled、Hub安装和插件技能整体复制进记忆仓库。共享目录采用`shared-skills/`加Markdown索引。
+
+### ✅ 本环境实际落地（2026-09-17 建成并验证）
+
+```text
+D:\Hermes\skills\                  运行副本（Hermes 实际加载，91 个 source=local 技能）
+        ↓ sync_skills.py push
+xiaonan-memory\shared-skills\      唯一编辑源（Git 同步，含 INDEX.md 索引）
+        ↓ git push / pull
+家里电脑（WSL Hermes）             待凡哥确认家里技能目录路径
+        ↓ sync_skills.py pull
+家里的技能目录                     运行副本
+```
+
+两个脚本（配套工具）：
+- `python D:\Hermes\scripts\sync_skills.py status|push|pull` —— 技能，只导 source=local
+- `python D:\Hermes\scripts\sync_profile.py status|push|pull` —— 记忆与人格三件套
+
+**自动兜底**：cron `40df234f060d` 每天 17:50 跑两条 push + git 提交 + 推送（**需 Gateway 在运行**，`hermes gateway status` 查）。
+**开工安装**：SOUL.md 启动规则已写死 —— git pull 后跑两条 pull（profile 的 pull 会先备份到 `memories\.sync-backup\`）。
+
+**踩过的 4 个坑（都能复现，别再踩）**：
+
+1. **`.gitignore` 里的 `skills/`** —— 标着"OpenClaw 系统文件"，按名字匹配**任意层级**的 skills 目录，导致整个技能目录从未进过仓库。`shared-skills` 名字不同所以不受影响。
+2. **技能名 ≠ 目录名** —— `creative/writing-opc-entry-test/` 里的技能名是 `writing-opc-entry`（Hermes 以 frontmatter 的 `name` 为准，不是目录名）。**用目录名扫描会漏 5 个技能**（91 变成 85）。扫描器必须读 frontmatter。
+3. **找错记忆文件** —— 真正在用、memory 工具在写的是 `D:\Hermes\memories\MEMORY.md`；`D:\Hermes\MEMORY.md` 是 6 月的废弃副本。找错就会以为"记忆在同步"其实两头各写各的。
+4. **builtin 混在同一批目录里** —— `creative/`、`software-development/` 等目录同时装着自建技能和 Hermes 自带技能，必须用 `hermes skills list` 的 Source 列筛 `local`，不能整目录复制。
 
 完整审计清单见`references/shared-skill-sync-audit.md`。
 
