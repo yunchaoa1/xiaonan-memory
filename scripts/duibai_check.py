@@ -1,66 +1,48 @@
 # -*- coding: utf-8 -*-
-"""对白型剧本自检：量化红果集剧本是否符合《对白型铁律》。
-指标：集数 / 每集台词字数(300-350) / △字数与非空段数 / 台词△比 / VO(应0) / OS(≤2/集) / 三要素 / 单次发言≤2句 / 场景行
-用法: python duibai_check.py <剧本.md>
-"""
-import re, sys, os, json
+"""对白型剧本自检 v2。正文范围 §3→§4 前；台词行含带/不带（神态）两种形态。
+用法: python duibai_check.py <剧本.md>"""
+import re, sys
 
-def analyze(path):
-    t = open(path, encoding="utf-8").read()
-    i = t.find("集剧本正文")
-    body = t[i:] if i > 0 else t
-    # 切集
-    eps = re.split(r"\n(?=#{2,4}\s*第\s*\d+\s*集)", body)
-    eps = [e for e in eps if re.match(r"#{2,4}\s*第\s*\d+\s*集", e.strip())]
-    rows = []
-    for e in eps:
-        title = e.strip().split("\n")[0].strip("# ").strip()
-        lines = [l.strip() for l in e.split("\n")]
-        dlg_chars = 0; dlg_lines = 0; act_chars = 0; act_lines = 0
-        os_n = 0; vo_n = 0; scene_n = 0
-        elem = sum(1 for k in ("人物线", "转折", "卡点") if k in e)
-        speakers = {}
-        for l in lines:
-            if not l or l.startswith("#"): continue
-            # 去 markdown 前缀（- / * / ** / - **）
-            raw = l
-            l = re.sub(r"^[-*•]+\s*", "", l).strip()
-            l = re.sub(r"^\*\*|\*\*$", "", l).strip()
-            if re.match(r"^\d+\s*[-－]\s*\d+", l): scene_n += 1; continue
-            if l.startswith("△") or raw.lstrip().startswith("△"):
-                act_lines += 1; act_chars += len(re.sub(r"[^\u4e00-\u9fa5]", "", l))
-                continue
-            if "VO" in l: vo_n += 1
-            if "OS" in l: os_n += 1
-            # 台词行：角色（神态）：内容  或  角色：内容
-            m = re.match(r"^[-*]?\s*([^：:（(]{1,12})[（(]?[^）)：:]*[）)]?\s*[：:]\s*(.+)$", l)
-            if m:
-                dlg_lines += 1
-                txt = m.group(2)
-                dlg_chars += len(re.sub(r"[^\u4e00-\u9fa5]", "", txt))
-                sp = m.group(1).strip()
-                speakers[sp] = speakers.get(sp, 0) + 1
-        rows.append(dict(ep=title, dlg_chars=dlg_chars, dlg_lines=dlg_lines,
-                         act_chars=act_chars, act_lines=act_lines, os=os_n, vo=vo_n,
-                         scenes=scene_n, elem=elem, speakers=len(speakers)))
-    return rows
-
-if __name__ == "__main__":
-    p = sys.argv[1]
-    rows = analyze(p)
-    print(f"file={os.path.basename(p)}  episodes={len(rows)}")
-    print(f"{'ep':<28}{'台词字':>7}{'台词句':>7}{'△字':>7}{'△段':>6}{'比T/△':>8}{'OS':>4}{'VO':>4}{'三要素':>7}{'场景':>5}")
-    for r in rows:
-        ratio = round(r['dlg_chars'] / r['act_chars'], 2) if r['act_chars'] else 0
-        print(f"{r['ep'][:26]:<28}{r['dlg_chars']:>7}{r['dlg_lines']:>7}{r['act_chars']:>7}{r['act_lines']:>6}{ratio:>8}{r['os']:>4}{r['vo']:>4}{r['elem']:>7}{r['scenes']:>5}")
-    n = len(rows)
-    if n:
-        import statistics as st
-        dc = [r['dlg_chars'] for r in rows]; ac = [r['act_chars'] for r in rows]
-        print("\n=== 汇总 ===")
-        print(f"集数 {n} | 台词字/集 平均 {st.mean(dc):.0f} 中位 {st.median(dc):.0f} 区间 {min(dc)}-{max(dc)}")
-        print(f"△字/集 平均 {st.mean(ac):.0f} | 台词/△ 总比 {sum(dc)/max(sum(ac),1):.2f}")
-        print(f"VO 总 {sum(r['vo'] for r in rows)}（应 0） | OS 总 {sum(r['os'] for r in rows)}（每集应 ≤2）")
-        print(f"三要素齐全集 {sum(1 for r in rows if r['elem']==3)}/{n} | 场景行总 {sum(r['scenes'] for r in rows)}")
-        inband = sum(1 for r in rows if 300 <= r['dlg_chars'] <= 350)
-        print(f"台词落在 300-350 字的集 {inband}/{n}")
+p = sys.argv[1]
+t = open(p, encoding="utf-8").read()
+body = t.split("## §3")[1].split("## §4")[0]
+parts = re.split(r"###\s*第(\d+)集", body)[1:]
+eps = [(int(parts[i]), parts[i+1]) for i in range(0, len(parts), 2)]
+print(f"file={p.split(chr(92))[-1]}  episodes={len(eps)}")
+print(f"{'ep':<6}{'台词字':>7}{'台词句':>7}{'△字':>7}{'△段':>5}{'T/△':>7}{'OS':>4}{'VO':>4}{'三要素':>6}{'场景':>5}")
+stats = []
+for n, seg in eps:
+    title = seg.strip().split("\n")[0][:14]
+    lines = [l.rstrip() for l in seg.split("\n")]
+    dlg_c = dlg_n = act_c = act_n = os_n = vo_n = scene_n = 0
+    tri = 0; run = 0; maxrun = 0; last_sp = None
+    for l in lines:
+        s = re.sub(r"^[-*\s]+", "", l).strip()
+        if not s or s.startswith("#"): continue
+        if re.match(r"^\d+\s*[-－]\s*\d+", s): scene_n += 1; continue
+        if s.startswith("【"): tri += 1; continue
+        if s.startswith("△"): act_n += 1; act_c += len(re.sub(r"[^\u4e00-\u9fa5]", "", s)); continue
+        if s.startswith("人物："): continue
+        if s.startswith("20-") or re.match(r"^\d+-\d+", s): scene_n += 1; continue
+        m = re.match(r"^([\u4e00-\u9fa5A-Za-z·]{1,10})(（[^）]*）)?：(.+)$", s)
+        if m:
+            txt = m.group(3); sp = m.group(1)
+            dlg_n += 1; dlg_c += len(re.sub(r"[^\u4e00-\u9fa5]", "", txt))
+            if "OS" in m.group(0): os_n += 1
+            if "VO" in m.group(0): vo_n += 1
+            if sp == last_sp: run += 1
+            else: run = 1; last_sp = sp
+            maxrun = max(maxrun, run)
+            continue
+        if "OS" in s: os_n += 1
+        if "VO" in s: vo_n += 1
+    ratio = round(dlg_c / act_c, 2) if act_c else 0
+    stats.append((n, dlg_c, dlg_n, act_c, act_n, ratio, os_n, vo_n, tri, scene_n, maxrun))
+    print(f"E{n:<5}{dlg_c:>7}{dlg_n:>7}{act_c:>7}{act_n:>5}{ratio:>7}{os_n:>4}{vo_n:>4}{tri:>6}{scene_n:>5}  {title}")
+d = [s[1] for s in stats]
+print("\n=== 汇总 ===")
+print(f"集数 {len(stats)} | 台词字/集 均值 {sum(d)//len(d)} 中位 {sorted(d)[len(d)//2]} 区间 {min(d)}-{max(d)}")
+print(f"台词 300-350 区间集数 {sum(1 for x in d if 300 <= x <= 350)}/{len(d)}")
+print(f"△字/集 均值 {sum(s[3] for s in stats)//len(stats)} | OS 总 {sum(s[6] for s in stats)} | VO 总 {sum(s[7] for s in stats)}")
+print(f"三要素齐全集 {sum(1 for s in stats if s[8] >= 3)}/{len(stats)} | 场景行总 {sum(s[9] for s in stats)}")
+print(f"单次发言>2句(连续同角色)总 {sum(1 for s in stats if s[10] > 2)} 集 | 最大连续发言 {max(s[10] for s in stats)} 句")

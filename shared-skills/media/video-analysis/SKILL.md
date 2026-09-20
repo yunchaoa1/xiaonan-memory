@@ -51,9 +51,22 @@ Batch-read multiple frames at once to save turns. Focus on frames likely to cont
 
 After reading all key frames, compile the extracted information into a structured document. Use the frame timestamps to reconstruct the video's logical structure (intro → steps → examples → summary).
 
+## Audio track analysis (transcript / dialogue density)
+
+For judging 节奏/dialogue density of 短剧·漫剧 (how much of the runtime is speech vs pure visuals), analyze the AUDIO, not frames:
+
+1. Download audio only: `yt-dlp -f worstaudio -o "name.%(ext)s" "<url>"` (or `-f "30016+30216"` when you also want a low-res video strip for subtitle-shape checks).
+2. Transcribe with faster-whisper (model `medium`, `device=cpu`, `compute_type=int8`; `vad_filter=True` → each returned segment is a speech window; gaps between segments = pure-visual/silent stretches).
+3. Metrics: speech coverage = Σsegment duration / total duration; density = chars per minute; line frequency = segments per minute; sentence length = split segment text on 。！？.
+4. Form check: ffmpeg `-vf "fps=1/14,scale=560:-1,tile=2x2"` → vision — one frame every ~14s as a 2x2 grid, read the subtitle text style (1st-person dialogue vs 3rd-person narration).
+
+Benchmark numbers + competitor-drama methodology: see `references/competitor-drama-lapian.md` (红果爆款漫剧实测: 93.2% speech coverage, 177 chars/min, ~1 line per 3.2s). Runnable scripts live at `D:\Hermes\xiaonan-memory\scripts\` (mangju_asr.py / mangju_analyze.py).
+
+**Pitfall:** native python does NOT translate MSYS paths — pass `D:/...` style paths to scripts (`/d/Hermes/...` becomes `D:\d\Hermes\...`).
+
 ## Pitfalls
 
-1. **B站/Douyin blocking** — yt-dlp may fail with 412 or SSL errors. Don't spend too long fighting it — ask the user to download locally.
+1. **B站/Douyin blocking** — search/listing endpoints may return 412, but direct downloads of public single videos (by av/BV id) usually work **without cookies or proxy**: use `--no-check-certificates`, and `--force-ipv4` if SSL issues persist. Only after direct download also fails, ask the user to download locally. (Verified 2026-09: B站 direct download of public 短剧/漫剧 audio+video OK.)
 2. **Vision paths** — must use full absolute paths like `D:\SDkecheng\...`, not `/d/...` MSYS paths or relative paths.
 3. **Frame rate** — `fps=1/N` means one frame every N seconds. For a 5-minute video, `fps=1/15` gives ~22 frames. For longer videos, increase N to avoid hundreds of frames.
 4. **Don't read every frame** — read the first few to understand structure, then skip to frames at logical breakpoints (where steps change, where examples are shown).

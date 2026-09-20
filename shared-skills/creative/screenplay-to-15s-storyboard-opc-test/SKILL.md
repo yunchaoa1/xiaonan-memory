@@ -245,6 +245,9 @@ A complex action is split into explicit playable steps at segmentation time inst
 11. Distributing shot time evenly across states (walk-through pacing).
 12. Two characters performing the same task in the same scene (e.g. both kneading dough — duplicate-labor contradiction).
 13. Writing a turn-around (front→back 180° flip) inside one segment — the model renders both views side by side as a split screen.
+14. Deleting, merging, or rewriting screenplay dialogue to fit the shot budget — every dialogue line of the episode must land in a shot's dialogue event. Violation instance (2026-09-18, 《十二时辰》E1): 8 lines ≈90 chars never landed (村民丙「管家，吊一宿了，别真把人吊死了。」、王二「死不了。死了，那两吊钱你出？」、牛满「你们……把我当成牲口。」「笑啊。」「你们刚才，笑得那么响。怎么不笑了。」、王二「牲口能拉磨。你呢？克爹克娘，就剩克人。」、村民甲「她、她能动了！」、村民乙「绳子！绳子是自己断的！」).
+15. Letting the package total duration drift far from the screenplay's own duration estimate (violation instance: screenplay E1 estimated 102–117s, package came out 172s ≈ +47%). Calibrate to ≤±15% before delivering.
+16. Averaging the episode's screen time across shots instead of deriving each shot from its action's natural duration + beat pauses — this is what makes totals inflate.
 
 ## Verification Checklist
 
@@ -254,4 +257,6 @@ A complex action is split into explicit playable steps at segmentation time inst
 - [ ] OTIO frame math is explicit where exchange is required.
 - [ ] Only the allowed Kitsu relationship is borrowed.
 - [ ] External result is exactly one of `SUCCESS`, `INPUT_ERROR`, or `ADAPTATION_FAIL`.
+- [ ] Every screenplay dialogue line of the episode lands in a shot dialogue event — zero deletion, merging, or rewriting (verify with a line-level diff against the source episode, not by eye).
+- [ ] Package total duration within ±15% of the screenplay's own episode duration estimate; each shot's duration derives from action natural duration + beat pauses, never from averaging.
 - [ ] No prompts, media, platform, database, or runner were fabricated.
