@@ -59,6 +59,8 @@ metadata:
 
 细节（三区协议原文、给豆包的指令、被否方案的复盘、协议文件落点）：`references/外部AI共享记忆文件.md`。
 
+> **豆包原来干的"画拓扑图"已交接给小南**（2026-09-20）：落地流程＝本地 python-pptx 生成 WPS 演示原生形状，模块字段/卡点三件套/图底待办等硬规则见 `project-topology-diagrams`。
+
 ## 仓库内容
 
 同步的核心文件：
@@ -150,6 +152,14 @@ git add -A && git commit -m "manual: 手动同步" && git push
 **改模型只能走 CLI**（`cronjob` 工具的 API 不暴露 model/provider）：
 `hermes cron edit <job_id> --model <model> --provider <provider>`
 **验证必须做**：`hermes cron run <job_id>` → `Ran now: succeeded` → `hermes cron list` 显示 `ok` → 读 `cron/output/<job_id>/<ts>.md` 的 `## Response`（同步类任务无变更时应为 `[SILENT]`）。
+
+**⚠️ 填模型名之前先核 provider 的真实模型列表（2026-09-20 实测踩坑）**：我凭记忆写成 `deepseek-v4-flash`（**这个型号根本不存在**，是把 "v4" 和 "flash" 拼在一起了），填进了 cron，也早躺在 `delegation.model` 里。DeepSeek 官方 `/v1/models` 实际只有**两个**：**`deepseek-flash`**（日常/固化执行）、**`deepseek-v4-pro`**（重活：试错/创作/定方法论）。
+
+- 核验：`set -a; . D:/Hermes/.env; set +a; curl -s "${DEEPSEEK_BASE_URL:-https://api.deepseek.com}/v1/models" -H "Authorization: Bearer $DEEPSEEK_API_KEY"`
+- 修 cron：`hermes cron edit <job_id> --model deepseek-flash --provider deepseek`
+- 修子代理：`hermes config set delegation.model deepseek-flash`（`config.yaml` 的 `delegation:` 段，约 141 行）
+- **症状辨识**：错模型名的表现与 provider 挂掉**一模一样**（cron 连续 `RuntimeError: Request timed out.`）→ 遇到"连不上"先核**名字**，再怀疑网络。
+- 铁律：**任何模型名一律先查再填，不凭记忆写**（凡哥对"我写的名字根本不存在"这件事很敏感，会直接反问"我之前不是调成 flash 了吗"）。
 
 ⚠️ **`schedule="30m"` 会落库成一次性任务（`once`/`repeat: once`）** —— 周期性必须用 cron 语法（`*/30 * * * *`）并复核 `repeat` 字段。
 
