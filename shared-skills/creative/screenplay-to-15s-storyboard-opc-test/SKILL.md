@@ -112,6 +112,12 @@ Use distance and movement for information: wider views establish spatial relatio
 
 **组接句式**：前进式（远→近）=情绪高涨；后退式（近→远）=情绪下沉。
 
+**开场镜选择（首镜 S01 写卡时直接满足，凡哥 2026-09-21 定）**：
+- 剧本开场是**冲突驱动型或人物塑造型**（第一句台词已落在冲突中段、或先声后人/延迟识别）→ 首镜用**中近景、特写或低机位仰拍**，**禁大全景/大远景平铺**。依据：好莱坞五公式要点页原文"**冲突型开场不建议一开始大量使用大全景**"，推荐中景/近景/特写/大特写/低机位仰拍。
+- 仅**世界观震撼型**开场（大远景＋渺小参照物＋一个反常细节）可用远景/大远景，且一个镜头内必须给足"未知感"，不得空镜铺城。
+- **反面实例（2026-09-18 第 1 集）**：剧本开场已是"村民吊人议论＋牛满被吊"的冲突中段（S01 前已有冲突在演），分镜却把 S01 写成"**全景｜建立→转说话场**"——首镜退化成环境介绍，与开场结构不符；此类情况首镜应改**中近景或低机位仰拍**切入冲突动作。
+- 与《全片景别弧线》配合：开场用中近景切入不等于全片无远景——世界观/落差需要在后续镜或终场释放（弧线照旧跟随情绪曲线）。
+
 ## Timing and First/Middle/Tail
 
 Use `first` for location, subject, orientation, and the initial abnormality. Use `middle` for trigger, playable action, resistance, and the key reveal. Use `tail` for reaction, result, changed state, and the next-shot interface.
