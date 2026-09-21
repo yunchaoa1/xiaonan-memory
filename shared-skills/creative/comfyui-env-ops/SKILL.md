@@ -42,6 +42,17 @@ Lightricks/ComfyUI-LTXVideo 首次安装后 IMPORT FAILED（其余插件正常�
 4. **模型/版本发布传闻只认官方源**：凡哥问"某新模型怎么切换"时，先跑官方 API 列表（`curl https://api.deepseek.com/models -H "Authorization: Bearer $KEY"`）+ 官方文档（api-docs.*）。第三方新闻站（groundtruth.day / byteiota.com / alextech.ai 这类）常是内容农场、互相转引，**不能当事实转述**。实例：所谓 "DeepSeek V4.1 Flash 今天12:00 上线并自动路由 v4-pro" 全是第三方站说法；实测官方 /models 只有 `deepseek-flash` / `deepseek-v4-pro` / `deepseek-v4-flash-vision-exp`，官方文档无 v4.1——传"今天几点自动切换"= 把传闻当事实，必被当场质疑。
 5. 一次只变一个变量；`退出 134 / Fatal Aborted` = C/CUDA 硬崩，Python 无 ERROR 行。
 6. **能从源码读出来的结论，别拿一次真跑去换**（一次 20GB 模型的试跑成本是十几分钟 GPU + 一轮上下文）。本次两个问题都是读 `custom_nodes/<插件>/*.py` 直接定论的：① 「整轨音频是条件还是只取前 N 秒」→ `h3_unified.py:531-537`；② 「生成时长谁说了算、输出音轨是谁的」→ `h3_unified.py:80-116`。**先 grep 节点源码，读不出再跑**；读出来的结论要标「已确认（源码）」而不是「已实测」。
+7. **★ 工作流身份与工作流故障：先查 UP 官方信息，不要自己推方案**（凡哥 2026-09-18 纠正：『你去看这个 up 主的官方信息，从那里找方案修，**不要自己瞎试**』；同一轮还纠正『**不是小黄瓜的**，我们的这个工作流的特点是有提示词优化功能的，你忘记了？』）。
+   - **身份（作者/版本）从工作流 json 的 `MarkdownNote` 节点读**（写死了 `【作者】`、教程链接、网盘），别凭印象、别信旧笔记：
+     ```python
+     import json
+     d = json.load(open(WORKFLOW, encoding="utf-8"))
+     for n in d["nodes"]:
+         if n["type"] == "MarkdownNote": print(n.get("title"), "|", str(n.get("widgets_values"))[:800])
+     ```
+   - 本项目所用 UP 工作流作者 = **Astral星芒**（space 176339505），**辨识特征＝带本地提示词优化（QwenTE / comfyUI-llama-TE）**；「啦啦啦的小黄瓜」= 另一套 LTX2.5 放大方案的作者（已被凡哥否掉），**两套不可混记**。
+   - **故障根因三源对齐**才给方案：① UP 视频教程 ② json Note / 作者主页 / 网盘说明 ③ 插件源码（参数定义与 tooltip）。自创结论只能标「待验证」。
+   - 反面教材：二采暴显存崩，曾自创「cudaMallocAsync 高压崩 → 加 `--disable-cuda-malloc`」，被凡哥打回；真根因是 UP 早讲过的 **`short_edge_max = 0`（参考图不缩放）**，见 `av-generation-troubleshooting/references/h3-refimage-scaling-vram-crash-2026-09.md`。
 
 ## LTX IC-guide 多参考图（官方源码核实）
 
@@ -128,7 +139,7 @@ for r in "<owner>/<repo>"; do n=$(echo $r | cut -d/ -f2); git clone "https://git
 - 节点自动适配 pruned 主模型；新 ComfyUI 原生处理视频+音频双时间表 → 少步数音频仍干净
 - ⚠️ 与旧记录（working-with-fange #87/#92/#93 的手动键名转换版、Ref2VA 架构不兼容）不是同一条路：v4 走官方节点包，**Ref2VA/全能参考兼容性尚未实测**——用时按"一次只变一个变量"验证
 
-### H3 融合主模型 / 量化件（UP 小黄瓜工作流常用，2026-09-10 核实）
+### H3 融合主模型 / 量化件（UP 工作流常用，2026-09-10 核实；**UP ＝ Astral星芒，不是小黄瓜**）
 - **Singularity 融合版**（UP 主称可有限缓解人物油腻、快速动作变形）：HF `WarmBloodAban/Minimax-h3_Singularity`
   - `Minimax-h3_Singularity_ref2va_Pruned_v1.3_int8.safetensors`（**19996MB ≈ 20GB**，常用）/ `Minimax-h3_Singularity_ref2va_v1.3_int8.safetensors`（32429MB 完整版）
   - **公模库 `/datasets/ComfyUI/models/diffusion_models/` 已有 pruned 版** → 软链即用，零下载

@@ -25,6 +25,8 @@ Use this skill when the user wants you to learn from a video (tutorial, lecture,
 - **B站 412 先升级 yt-dlp，别急着换工具**（2026-09-09 实测）：旧版 yt-dlp（2026.6.9）抓 B 站报 `HTTP Error 412: Precondition Failed`，`uv pip install -U yt-dlp` 到 2026.8.19+ 即直接下载成功（官方已修 B 站 412）。cookie 导出（`--cookies-from-browser edge/chrome`）在浏览器运行时锁库会失败，是绕路不是正解。
 - **PITFALL (Windows/MSYS 路径坑，2026-09-09 实测)**：yt-dlp 是 Windows 原生程序，`-o "/d/数字资产/..."` 这类 MSYS 路径会被当成相对路径解析（`\d\...`）→ 文件写错位到 `C:\d\...`。给原生程序传路径一律用 `C:/...` 形式，或先 `cd` 到目标目录再用相对文件名。
 - B站-specific: `bilix` may work when yt-dlp is blocked
+- **抖音（Douyin）：yt-dlp 走不通，改走 CDP 抓流（2026-09-21 全链跑通）**。抖音接口带反爬签名（a_bogus / X-Bogus + ttwid），yt-dlp 报 `HTTP Error 403: Forbidden` → `Fresh cookies (not necessarily logged in) are needed`；`--cookies-from-browser chrome` 在 Chrome 运行时锁库失败（`Could not copy Chrome cookie database`），Edge 能读出 cookie 但抖音照样 403——**这是签名问题，不是 cookie 问题，别在 cookie 上反复试**。另注：`douyin.com/jingxuan?modal_id=<id>`（精选页形态）yt-dlp 直接报 `Unsupported URL`，得换成 `douyin.com/video/<id>`。
+  **可行路径**：起一个带远程调试端口的 Chrome 实例 → playwright `connect_over_cdp` 驱动它打开视频页 → 从 network 记录里取**带签名的 CDN 直链** → curl 下载音/视频流 → ffmpeg `-c copy` 合流 → 之后照常 ASR + 抽帧。完整命令见 `references/douyin-capture.md`。
 - **IF multiple tools fail**: suggest the user install IDM (internetdownloadmanager.com) or download via app → transfer to PC
 - **PITFALL: Do NOT spend excessive time on download attempts.** If 2-3 tools fail, report the blocker and suggest alternatives.
 
@@ -53,6 +55,12 @@ ffmpeg -i "<video_path>" -vf "fps=1/15" -q:v 2 "<output_dir>/frames/frame_%03d.j
 
 **Method A: Audio Transcription (PREFERRED for tutorials/lectures)**
 For videos where the primary content is spoken — tutorials, lectures, courses — extract audio and transcribe:
+
+**⚠️ 先算时长再决定转不转全片（凡哥 2026-09-18 当场催问『这么长时间吗？』）**——medium int8 CPU 约 **0.6× 实时**（424s 音频 ≈ 265s 转写），**58 分钟音频 ≈ 36 分钟**，用户等不起、也不会告诉你他在等。
+1. **开跑前先 `ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 <file>` 拿到分钟数**，把预计耗时一句话告诉凡哥，别默默挂后台。
+2. **> 15 分钟的视频：先抽帧定位关键段，只转那一段**（本例 22 分钟教程，关键信息集中在 16:05–18:15；`ffmpeg -ss <起> -to <止> -i a.m4a seg.m4a` 后只转 seg）——比全片快一个数量级。**视频页的章节时间轴**（`inner_text("body")` 里的 `00:30 冲突驱动型开场 / 01:56 …`）就是现成的索引，先拿它定区间。
+3. **教程类优先读画面**：界面截图/参数表/下拉值往往比口播更精确——`抽帧 → ffmpeg xstack 拼宫格 → vision 逐字读`，几秒出结果（本次教学视频里"二采为什么会暴显存"的关键设置就是这么读出来的）。
+4. 必须后台跑就 `notify_on_complete=true`，并主动报「还要多久 / 当前到哪」。
 
 ```bash
 # Step 1: Extract audio to WAV
@@ -106,3 +114,6 @@ Use when the video is primarily visual (UI demos, ComfyUI workflows, drawing tut
 2. **Subtitle tunnel vision**: Don't waste time trying to extract CC/subtitles. Vision_analyze on frames is more reliable.
 3. **Path formats**: vision_analyze requires Windows absolute paths. MSYS `/d/...` paths will fail with "Invalid image source".
 4. **B站 anti-bot**: B站 frequently blocks CLI downloaders and API calls. Browser-based IDM is more reliable.
+5. **抖音不要用 yt-dlp 硬碰**：403 是**签名**问题，补 cookie 解决不了（Chrome 运行时 cookie 库还锁着）。直接走 CDP 抓流，见 `references/douyin-capture.md`。
+6. **先读页面文本再抽帧**：视频页 `inner_text("body")` 常自带简介 + 章节时间轴；拿它对时间点抽"要点页"，比等间隔狂抽省几倍 vision 调用。接触表拼图注意 `xstack` 与 `-vf scale` 不能混用（详见 reference）。
+7. **别把整部长教程丢给 ASR**：先报 ETA、或只转关键段（见 Method A 的时长纪律）。凡哥会直接问『这么长时间吗？』——**沉默的长任务＝体验失败**，不是"后台在跑就行"。

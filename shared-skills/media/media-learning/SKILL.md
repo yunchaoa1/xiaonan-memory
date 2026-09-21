@@ -63,12 +63,6 @@ for s in segs: print(f'[{s.start:.1f}-{s.end:.1f}] {s.text}')
 
 **抽帧密度**：短教学片（<2 分钟）用 `fps=1/1.8`（约 1.8s 一帧）；长片先 `fps=1/10` 粗扫定位章节，再对目标段落加密。
 
-# 下载
-yt-dlp -o "下载路径/%(title)s.%(ext)s" "视频链接"
-```
-
-下载后用 `vision_analyze` 逐帧/关键帧分析。
-
 ### 3. 输出：应用到管线
 
 学习完不是"总结一下"，而是：
@@ -76,8 +70,13 @@ yt-dlp -o "下载路径/%(title)s.%(ext)s" "视频链接"
 - 写入对应的管线文件或 memory 日志
 - 更新 DASHBOARD 进度
 
-## 注意事项
+## 平台取流对照（2026-09-18 更新）
 
-- 国内视频平台（B站、抖音）可能遇到反爬/验证码，B站会弹登录窗 → 备选下载方案
-- YouTube 在公司网络可能被墙
+| 平台 | 取流方式 |
+|---|---|
+| B站 | ✅ yt-dlp 直取（提取器成熟、无需签名参数；代理被拒时改走国内直连） |
+| YouTube | ⚠️ 公司网络可能被墙 |
+| **抖音** | ❌ yt-dlp 直取必 403（需 fresh cookies ＋ 页面会话态）→ **改走 CDP 路线**：起带 `--remote-debugging-port` 的独立 Chrome → Playwright `connect_over_cdp` → 抓 network 里的**签名 CDN 直链**（`<video>` 只有 blob:） → curl ＋ Referer 下载 → ffmpeg 合流。完整的抓取全链（失败路清单、双流下载、ASR 字段名、抽帧接触表坑、同音错字校验）见 **`video-learning` skill 的 `references/douyin-capture.md`** |
+
+- 抖音三条别再试的路：`web_extract` 抓页面（JS 渲染无正文）、yt-dlp 传 `jingxuan?modal_id=` 形态（Unsupported URL）、`--cookies-from-browser chrome`（Chrome 运行时 cookie 库被独占）。
 - yt-dlp 用 `uv pip install` 安装，不要用系统 pip（可能不在 PATH）

@@ -23,6 +23,10 @@ AI 生成视频/音频出现异常时（杂音、低频嗡、爆音、画面重�
 3. **证据优先**：诊断结论要有客观数据（频谱、日志、时间戳、文件对比），不靠"听感+推测"下结论。
 4. **别拿推测当结论**：因果链没做对照验证前，明确区分"实锤的事实"和"待验证的推测"。
 5. **测试阶段只跑一采/最低成本路径**：能判定的最小产出（如一采带音频的 seg mp4）就够，不跑完整流程。
+6. **工作流类故障：先去该工作流的 UP 主官方信息里找方案，再动手**（凡哥 2026-09-18 纠正：『你去看这个 up 主的官方信息，从那里找方案修，**不要自己瞎试**』）。
+   - 「官方信息」三处优先级：① **UP 的视频教程**（讲工作原理与参数取舍）② **工作流 json 里的 MarkdownNote / 作者 B 站主页 / 网盘说明** ③ **插件源码**（节点参数定义、tooltip）。
+   - 本次反面教材：在未看教程时自行推断出「cudaMallocAsync 分配器高压崩 → 加 `--disable-cuda-malloc`」，写进 skill 后被凡哥当场打回——真根因是 UP 早就讲过的「参考图不缩放会暴显存」。
+   - **自创方案只能标"待验证"**，不得当结论写进 skill 或交付；**工作流身份也别凭印象**——从 json 的 MarkdownNote 读作者（本次实录：一直记成"小黄瓜"，实际是 **Astral星芒**）。
 
 ## 音频异常诊断：频谱法
 
@@ -93,6 +97,9 @@ AI 生成视频/音频出现异常时（杂音、低频嗡、爆音、画面重�
 - **RTX VSR**（Nvidia_RTX_Nodes_ComfyUI + pip nvidia-vfx）：2× 放大 11.2s/362帧；**quality 必须 HIGHBITRATE_HIGH**（原版下拉只有 LOW/MED/HIGH/ULTRA=删扩散纹理→比原糊，需一行补丁加档，见 reference）；纯超分无角色参考 → 救不回小脸/远景脸（凡哥实测质疑成立）。
 - **LTX2.5 放大**（凡哥选定路线）：Spatial Upscaler 2× + IC-LoRA ingredients(0.9) 多图参考 + 音频引导 + 3步 denoise 0.25 → 去模糊保脸；5090 8s 2× 放大 3分14s、10s→1080p 3分43s 显存 25.9GB；模型 6 文件全在官方 HF 仓库（Lightricks/LTX-2.5 + Lightricks/LTX-2.3-22b-IC-LoRA-Ingredients），云上下载走 `HF_ENDPOINT=https://hf-mirror.com`。
 - **纯超分/跨模型放大的共同边界（凡哥 2026-09-09 纠正）**：放大救不回"源就没拍清"的脸（无中生有=脑补=变脸）；脸要保真靠生成时脸够大（写 close-up）+ 参考图注入，不是靠放大环节。
+- **★ 二采/放大前必须先处理参考图尺寸（2026-09-18 实证，UP Astral星芒 官方方案）**：`MiniMaxH3ReferenceSplitter.short_edge_max` 的 **`0` = 不缩放**（插件源码 tooltip 原文 `Short edge max pixels; 0 = no scaling.`）→ 大参考图（本例 1440×2560 / 3.7MP）**原样参与二采** → **32GB 也暴显存**，症状是 `cuMemFreeAsync` 报 `CUDA_ERROR_INVALID_VALUE` + `Fatal Python error: Aborted`（崩在 tensor 析构/释放路径，**别误判成"分配器 bug 要加启动参数"**）。
+  UP 原话：「你传入的图片如果是 2K 的，参考的图片就是 2K 的，这个时候就很容易暴显存」。
+  **正解**：把 `short_edge_max` 设成 **544（≈一采短边，最省）/ 816 / 1088**（`align_to` 保持 16），或喂之前先缩放参考图文件。完整因果链、被否定的自创方案、工作流作者归因法见 `references/h3-refimage-scaling-vram-crash-2026-09.md`。
 
 ## ComfyUI 内核升级 → 插件崩溃排查（2026-09-09 云 0.30→0.35 实测）
 
@@ -150,5 +157,6 @@ GUI 驱动不可用（预览面板无响应 / 窗口枚举不可用）时的可�
 - `references/h3-official-r2v-template-notes-2026-09.md` — **H3 官方原生 R2V 模板云上可复用资产**：官方节点结构速查、凡哥验证的官方格式提示词模板、/datasets 公模库路径清单、Director 480P→2K 各版工作流 json 位置与实测结论（2MP refine 32GB OOM 放弃）
 - `references/h3-official-r2v-native-prompts.md` — **官方原生 r2v 模板可直接粘贴的提示词样例**（8s 回家入门镜已通过音频验证 + 15s 长镜压测版 + 写作要点：单段自然语言格式、<Picture N> 引用、<d> 台词、17n+5 帧数）
 - `references/h3-2k-upscale-vsr-ltx25-2026-09.md` — **高清成片三期**：社区 5090 实测数据（wan2-7 31.8GB/时间档、ai-muninn 2K 悬崖 3.5h）、RTX VSR 部署+quality 补丁、纯超分保真边界、LTX2.5 跨模型放大完整方案（6 模型清单+HF 仓库+hf-mirror 下载+UP 工作流参数）、UP 视频/转写/工作流本地位置；**第五节含 2026-09-09 落地实证**：HF gated 仓库下载实测（hf-mirror 不转发 gated、comfyicu 非 gated 镜像、Read token 流程）、UP 工作流两插件依赖（ComfyUI-LTXVideo+VHS）、IC-guide 多参考图源码接法 + 3 参考 json 交付（未实测标注）
+- `references/h3-refimage-scaling-vram-crash-2026-09.md` — **H3 二采崩（`cuMemFreeAsync` CUDA_ERROR_INVALID_VALUE + `Fatal Python error: Aborted`）根因＝参考图未缩放**：`MiniMaxH3ReferenceSplitter.short_edge_max = 0`（0=不缩放）＋3.7MP 参考图硬喂 → 显存压爆；正解＝按 UP 官方把 `short_edge_max` 设 544/816/1088 或预缩放参考图（工作流作者＝**Astral星芒**）；含**被凡哥否定的自创方案**（`--disable-cuda-malloc`）与工作流作者归因法
 - `references/comfyui-upgrade-crash-2026-09.md` — **0.30→0.35 内核升级崩溃排查全链**：崩溃取证命令（awk 取栈顶）、exit 134/Fatal Abort 特征判别、SolAttn/TE-Speed 第三方加速插件 vs 内核重构根因链、官方 --use-sage-attention 加速、LTX-2.5 需 ≥0.32.0 版本对应表、VAE size mismatch 非文件错判别、torch cu130 升级坑（-U 必须/三件套同源/版本号体系）、云 git tag 升级命令
 - `scripts/audio_spectrum_check.py` — 音频分段频谱诊断脚本

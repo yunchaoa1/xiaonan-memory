@@ -1,4 +1,9 @@
-# UP 小黄瓜 H3「全能生视频」工作流结构解剖（2026-09-10，源码+文件双证据）
+# UP Astral星芒 H3「全能生视频」工作流结构解剖（2026-09-10，源码+文件双证据）
+
+> ⚠️ **作者归因（凡哥 2026-09-18 纠正：『**不是小黄瓜的**，我们的这个工作流的特点是有提示词优化功能的，你忘记了？』）**
+> 这套工作流（`MiniMaxh-H3-全能生视频工作流 V3/V4` / `4-MiniMaxH3-V4-本地提示词优化版(对齐标准).json`）的作者是 **Astral星芒**（B站 space **176339505**），**不是「啦啦啦的小黄瓜」**——后者是**另一套 LTX2.5 放大方案**的作者，那套已被凡哥否掉，两套不可混记。
+> **辨识特征（一眼区分）= 带本地提示词优化**（`QwenTE_*` / `comfyUI-llama-TE` 反推提示词，替代 MiniMaxH3MultimodalChat 云 API 节点）。
+> **归因方法（别凭印象）**：读工作流 json 的 **MarkdownNote** 节点——里面写死了作者、教程链接、网盘地址。本例原话：`【AI视频】MiniMax-H3 全能生视频V4 工作流 latent分块二采版 (可直出2K)`／`【特点】文生、图生、参考生三合一；官方skill自动提示词；音频锁定；低显存二次采样；远景不崩脸`／`【作者】Astral星芒`／`【工作流使用讲解】https://space.bilibili.com/176339505`。
 
 用于凡哥的 `MiniMaxh-H3-全能生视频工作流 V3/V4`。V3 = 本地提示词版（UP 原版参考），V4 = 新版（turbo + 潜空间放大 + 3 参考图）。
 
@@ -21,6 +26,9 @@
 - `picture_1..3` = 索引 0/1/2 → 接「图片/图片2/图片3」
 - `audio_1` = 索引 15 → 兼作参考音频（接 UnifiedToVideo 的 `ref_audios.ref_audio_0` 与音频锁）
 - `width_1/height_1`(21/22) = 一采尺寸；`width_2/height_2`(23/24) = 二采/放大后尺寸
+- **`short_edge_max`（★ 放大/二采的显存命门）**：源码 tooltip 原文 `Short edge max pixels; 0 = no scaling`——**`0` = 参考图完全不缩放**（只缩不放）。本项目那份工作流取的就是 **0**，喂 1440×2560（3.7MP）参考图 → 二采时**32GB 也暴显存**（症状 `cuMemFreeAsync CUDA_ERROR_INVALID_VALUE` + `Fatal Python error: Aborted`）。
+  UP 官方教程原话：「你传入的图片如果是 2K 的，参考的图片就是 2K 的，这个时候就很容易暴显存」→ 解法：按目标短边设上限（**544 ≈ 一采短边最省 / 816 / 1088 按显存微调**），或喂之前先缩放参考图文件。→ 完整因果链见 `av-generation-troubleshooting/references/h3-refimage-scaling-vram-crash-2026-09.md`
+- `align_to`(16) = 缩放后像素对齐，一般不动
 
 ## 2. 本地提示词组（QwenTE / comfyUI-llama-TE）
 
