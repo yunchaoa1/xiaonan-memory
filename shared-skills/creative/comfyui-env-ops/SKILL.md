@@ -77,6 +77,8 @@ ls -la <目录>   # 第一个文件到齐后脚本才会开始下第二个 → m
 ```
 多文件串行下载（`curl A && curl B`）时，**后一个文件没出现就是前一个没下完**，这是最快的判断信号。下完再 `grep` 一下无 `IMPORT FAILED` 后重启实例让新件被扫到。
 
+**下完必须做完整性终检（字节 + 文件头），不能以「大小看着对」收尾**：`python scripts/verify_model_files.py --hf <repo> --local-dir <目录>`。它同时验两件事——① 本地字节 == 官方 LFS 精确字节；② safetensors 头能解析出张量表。20GB 级文件下完后**一次报全表**给凡哥比逐条试跑便宜得多（本机 2026-09-23 实测一次过：融合模型 20,970,379,632B/932 张量、nvfp4 编码器 15,687,142,551B/2053 张量、video VAE int8 3,171,670,912B/850 张量、turbo resized LoRA 314,878,200B/416 张量、Combat LoRA 155,110,280B/416 张量）。⚠️ **HF 上的第三方仓库偶有本身损坏的文件**（本次调研时另一变体 `b15-49` 的 blob 曾报 `SafetensorParseError`）——所以「头解不出来」先怀疑文件，别急着怀疑自己的下载。
+
 **公模库没有 → 先溯源发布源再下**（不要只在 Manager 界面点下载）：
 
 1. 搜 HF 仓库：`curl -s "https://hf-mirror.com/api/models?search=<关键词>" | python -c "import sys,json;[print(m['modelId']) for m in json.load(sys.stdin)[:20]]"`
@@ -527,6 +529,7 @@ CUDA OOM 会**打死 `prompt_worker` 线程**（日志 `Exception in thread Thre
 - `scripts/ui2api.py` — **UI 格式 → API 格式转换器（+ `--submit` 直接无头提交）**。GUI 够不着又要真跑工作流时用它；bypass 直通、子图拍平、可达性剪枝、下拉归一化都内置。手改过 `OVERRIDES` 才能覆盖「widget 值损坏」与「节点代次不同」两类节点（脚本头部有说明）。
 - `scripts/watch_prompt.py` — **盯任务的看门狗**（`<port> --comfyui <ComfyUI 目录> [--prompt-id <id>]`）：区分三种结局 —— **正常结束**（打印产物路径 + 实际字节）、**崩溃**（打印日志尾部，含 `CUDA`/`aimdo`/`prompt_worker` 标记）、**⚠️ 队列卡死**（`pending≥1` 但 `running=0` 且日志不增长 → 直接给出重启命令）。**别用「sleep 一段时间再 tail 日志」代替它**：卡死与「还在算」看起来一样（第三方节点不上报进度时日志本来就安静），看门狗靠「日志是否增长」区分，且卡死必须重启、等不来。
 - `scripts/dl_model_resumable.sh` — **断点续传 + 逐字节校验 + 自动重试**的模型下载器（`<url> <目标D:/路径> <期望字节> "<名称>"`）。下任何 GB 级模型都用它，**别手写单发 curl**（单发版会在网络抖动时留半截文件就跳去下一个，只打一行 ⚠️ 就继续）。判「在跑还是死了」的两个信号见 `references/windows-local-env-install.md`。
+- `scripts/verify_model_files.py` — **下载后的完整性终检（字节 + safetensors 头）**。`--hf <repo> --local-dir <目录>` 对 HF 官方精确字节核对；`--header-only <目录>` 只扫文件头。**`ls -la` / `du -h` / 纯字节比对都证明不了「能加载」**——0 字节、半截、或"字节数对但头坏"的文件只有解析 safetensors 头（前 8 字节小端 uint64 = 头长度 → JSON 张量表）才兜得住。凡是"下完就报可用"之前，先跑它。
 - `scripts/audit_workflow_missing_nodes.py` — 工作流缺件体检（运行实例 `/object_info` 为权威源，自动排掉前端节点 / 子图 uuid / 加载器枚举值三类假阳性，模型按 basename 归一比对）。凡哥说"帮我补齐工作流节点"时**先跑它**，别手工拼命令。
 - `scripts/audit_node_pack_collision.py` — 装第三方节点包前的同名节点撞车体检（跨包重名清单 + 参数表是否同代）。装 H3 / LTX 系插件前先跑它。
 - `scripts/scan_missing_node_imports.py` — 扫描自定义节点目录，一次列出真正缺失的第三方模块（自动排除 ComfyUI 运行时虚报项）。装插件依赖 / 排查 IMPORT FAILED 前先跑它。

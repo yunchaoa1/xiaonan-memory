@@ -1,4 +1,4 @@
-总控台:DASHBOARD.md树=真相源改DATA更新,git同步;婚姻亲情同市县,他情可跨市县。
+总控台:DASHBOARD.md树=真相源改DATA更新,git同步。
 §
 MV:弃自摸LTX版,学方法论Treatment先行;云API≠本地限制,凡哥截图优先
 §
@@ -8,15 +8,15 @@ LTX铁律:全正向禁否定/近音替换(虚拟→须你/Oi→哦诶)/参考图
 §
 齐白兰vlog:清纯甜美20岁声线;台词格式'齐白兰说:{台词}',15s。
 §
-提示词管线:interview→master→ltx→词库→避坑+seedance-director。H3六段/直出=一条提示词禁拆5s拼/去故事板版删绑定句,见minimax-h3-shot-prompt skill。材料需求≠代跑测试。
+提示词管线:interview→master→ltx→词库→避坑+seedance-director。H3六段/直出=一条提示词禁挔5s拼/去故事板版删绑定句,见minimax-h3-shot-prompt skill。
 §
-南溟岛:六界六阶/38角色/19反派/57心魔,DASHBOARD+world/。
+南凕岛:六界六阶/57角色体系,DASHBOARD+world/。
 §
 复刻铁律见sparkart-clone skill。
 §
 生图:z-image中文纯文本/Qwen2511多图融合/Seedream5.0Pro/NanoBanana=nanobananana.ai。齐白兰:韩式舞台妆/监听耳机。
 §
-十二生肖IP:玄幻爽文,十二时辰神贬转世,三层真相失序→猫神陷害→窃天者,龙神困时间外=主悬念;爽文:前3秒冲突/憋屈≤30秒。
+十二生肖IP:玄幻爽文,十二时辰神贬转世,龙神困时间外=主悬念;前3秒冲突/憋屈≤30秒。
 §
 OPC下游Skill=单一生成黑匣子:只读正式上游+固定规则出唯一产物;禁自查筛选重试改图锁版判失败;节点skill禁写检查/pre-flight/gate/QC形态→改生成规则形态;测试验收在节点外;写作节点=冻结源头,下游矛盾只改下游(帽案例)。
 §
@@ -28,21 +28,21 @@ OPC下游Skill=单一生成黑匣子:只读正式上游+固定规则出唯一产
 §
 铁律(最高):一切必须走skill,没skill不动手;动手前先确认哪个skill哪条规则驱动,找不到→停下补skill/问凡哥;检查发现的问题必须回流skill固化规则。做事前倒推三问(目标→哪节点哪规则→skill有无),答不上就停。
 §
-3D CG动漫画风=国漫风(凡人修仙传/雄狮少年质感),凡哥否决过:2次元/写实CG/皮克斯欧美风;锁风措辞在主体资产+故事板skill。
+3D CG动漫画风=国漫风(凡人修仙传质感),否决:2次元/写实CG/皮克斯欧美;锁风见主体资产+故事板skill。
 §
-工作流改版铁律:以官方/UP标准版为底稿完全对齐,凡哥要'云电脑跑通那版原样';本机环境不符→改环境(装插件/造目录/下模型)不改工作流;唯一差异须凡哥明示
+工作流改版铁律:以官方/UP标准版为底稿对齐,要'云电脐跑通原样';本机环境不符→改环境(装插件/下模型)不改工作流;差异须凡哥明示
 §
-H3实测(本机16G):一采960×544/15s/带音频4.5分钟稳过;二采≤1.25倍(1216×672)可行、1.5倍(1440×816)必OOM;分块/摘sage无效。全链16.4分钟/镜。本机只测,商用云电脑1920×1088/32G;云按时间租→本地定稿再上云。崩后杀prompt_worker→重启ComfyUI;任务前POST /free;全链见av-generation-troubleshooting
+H3实测(本机16G):一采960×544/15s/带音频4.5分钟稳过;二采≤1.25倍可行、1.5倍OOM。本机只测,商用云胵脑1920×1088/32G;本地定稿再上云。崩后杀prompt_worker→重启ComfyUI;任务前POST /free;全链见av-generation-troubleshooting
 §
 凡哥证据分级:实测>官方>传闻(标未核实);称'最新'先按pushed_at核验,星多≠最新;遇障碍须去官方权威源找根本解法
 §
-装自定义节点:requirements常不全→扫.py import对比stdlib找缺包(comfy/folder_paths/nodes属自带)。找模型先查公模库/datasets→软链免下载。H3加速=larryvrh H3-Turbo+v4 LoRA(4-8步/simple/自带音频)。
+装自定义节点:requirements常不全→扫.py import对比stdlib找缺包(comfy/folder_paths/nodes属自带)。H3加速=larryvrh H3-Turbo+v4 LoRA(4-8步/simple/自带音频)。
 §
 sageattention Linux解法见comfyui-env-ops skill
 §
-天使OPC社区:一人公司入驻接单平台,色#0052D9+#5CB8FF
+诺镜=Angel大模型·Novin ai1.0(影剧工坊)·Novin agent(小李/小唐);帧格=浪浪椰APP(=漫剧发布平台)
 §
-凡哥=集团技术项目主管(低调,CTO为目标);小何=何锦波(框架+后端),小吴=吴伟俊(前端+UI);组织/团队/考核见DASHBOARD。
+凡哥=集团技术项目主管(低调,CTO为目标);小何=何锦波(后端框架),小吴=吴伟俊(前端UI),小李=李林(大模型上下文溢出·LangGraph全局+子图),小唐=唐光辉(多agent体系);考核见DASHBOARD。
 §
 凡哥要带他走(一问一答),不要成文攻略,说人话;考核尺度/权重上级定、具体项目执行者填;不为了打分加记录、验收只看产物;跨部门只给素材不定制度。
 §
@@ -50,6 +50,10 @@ sageattention Linux解法见comfyui-env-ops skill
 §
 漫剧对白型铁律(凡哥定调):禁旁白VO,信息全对白化,OS≤2/集只表情绪;节奏按时间口径(每3秒一句/单次≤2句)不设字数硬限;每集300-350字,△只做奇观不载信息;见opc-sim/research/漫剧节奏研究。
 §
-日报=凡哥发飞书日报截图→小南读图更新拓扑图;出图为WPS演示pptx(脚本gen_topology_pptx.py)
+日报=凡哥发截图→小南读图更新拓扑图(WPS pptx脚本gen_topology_pptx.py);台账/日报统计/月底汇总/归档审核均小南维护
 §
-云电脑取证类命令分开单条给(每条独立、路径写全),部署类给一整块(凡哥'分开给我')
+云电脑:取证命令单条给(路径写全),部署整块给
+§
+日报:小吴当日18:00交/小何次日上午补交前一日→拓扑图按工作日期归档(非提交日期)。
+§
+凡哥'只是告知情况'→只记录理解,不出方案。

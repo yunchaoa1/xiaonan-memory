@@ -37,10 +37,13 @@ A well-formed DASHBOARD.md has:
 凡哥定的项目跟踪方式：**每天发小何/小吴的飞书工作日报截图 → 小南读图 → 更新拓扑图**（豆包已不续费，绘图工作由小南接手）。
 
 **四件套流程：**
-1. **读图**：逐字读日报截图（姓名 / 提交时间 / 今日完成项 / 卡点 / 解决方法），人名对应：**小何=何锦波**（框架+后端）、**小吴=吴伟俊**（前端+UI）。
-2. **改数据**：更新生成脚本 `D:\Hermes\scripts\gen_topology_pptx.py` 的卡片内容与待办段（第 1 页=拓扑总览，第 2 页=日报明细）。
+1. **读图**：逐字读日报截图（姓名 / 提交时间 / 今日完成项 / 卡点 / 解决方法），人名对应：**小何=何锦波**（框架+后端）、**小吴=吴伟俊**（前端+UI）、**小李=李林**（大模型上下文治理）、**小唐=唐光辉**（多 agent 体系）。
+   ⚠️ **按「工作日期」归档，不按提交日期**（2026-09-23 凡哥纠正）：小吴当日 18:00 交（内容＝当日）；**小何次日上午补交前一日**（标题写"09-23 提交"的、内容其实是 09-22）。一次发多份（4 份＝2 天×2 人）时先按工作日期分组；**看着像"重复"的那份先问，别直接丢**。
+2. **改数据**：更新生成脚本 `D:\Hermes\scripts\gen_topology_pptx.py` 的卡片内容与待办段（**第 1 页=拓扑总览，第 2 页=日报明细，第 3 页=集团产业闭环·我们的位置**）。
 3. **出图**：`python D:\Hermes\scripts\gen_topology_pptx.py "D:\Documents\我的文档\拓扑图\项目拓扑图_<YYYYMMDD>_v<N>.pptx"`
-4. **校验+交付**：用 python-pptx 遍历形状做**越界自检**（两页都要），再用 `wpp.exe` 打开并截图给凡哥；同步把变化写进 DASHBOARD 与共享文件 A 区。
+4. **校验+交付**：用 python-pptx 遍历形状做**越界自检**（**三页都要**），再用 `wpp.exe` 打开并截图给凡哥（截图可用 `computer_use capture app=wps.exe`；注意 PPT 状态栏会显示"幻灯片 N/3"）；同步把变化写进 DASHBOARD 与共享文件 A 区。
+
+**日报口径（凡哥 2026-09-23 定，写通知/收日报都按这个）：** 渠道＝飞书「工作台 → 日报」应用；提交窗口＝**当天 18:00 之后 → 次日 08:00 之前**；**三栏**＝今日工作完成情况 / 遇到的工作卡点 / 解决方法（**没有「明日计划」栏**）。
 
 **字段规则（凡哥 2026-09-20 定，长期有效）：** 每个项目拆功能模块 → 先框架后逐个实现；模块必须写**开始时间 / 预计交付时间 / 状态**；超出预计交付 → 必须写**卡点在哪 / 解决方案 / 再次交付时间**；**图的最下方 = 待办事项**。
 
@@ -62,3 +65,5 @@ For high-load creative production, split work into a small validated sample befo
 - Don't search the filesystem for project context when DASHBOARD.md exists — it's the single source of truth.
 - After platform migrations, check that the dashboard path hasn't changed and that all referenced paths still resolve.
 - When multiple dashboard copies exist (`D:\Hermes\DASHBOARD.md` vs `D:\Hermes\xiaonan-memory\DASHBOARD.md`), treat the git-synced `xiaonan-memory` copy as the durable cross-agent source unless the user explicitly says otherwise.
+- **写 DASHBOARD 必须验证落地（2026-09-23 实测踩坑）**：用脚本 `s.replace(锚点, 新块)` 更新时，**锚点字符串对不上会静默什么都不做**——脚本照样打印"已更新"，但 git 会告诉你 `nothing to commit`。三步防呆：① 写入前 `assert 锚点 in s` ② 写入后**读回并逐条检查新章节标题是否存在**（`{标题: 标题 in now}`）③ commit 时看输出——**`nothing to commit` ＝ 你的写入没生效**，回去查锚点，别当成功。
+- DASHBOARD 的章节锚点会随历史改动漂移（如 `### 10.14` 可能并不存在）；不确定时先 `search_files(pattern='^### ', path=DASHBOARD)` 列表头，再挑一个**当前确实存在**的锚点插入。

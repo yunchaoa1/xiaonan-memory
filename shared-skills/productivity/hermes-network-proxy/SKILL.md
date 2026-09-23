@@ -172,6 +172,22 @@ cdxai.cn 提供 OpenAI 兼容 API 中转，支持 GPT-5.6 Sol/Terra/Luna。定�
 
 **切换命令**：`hermes config set model '{"default": "deepseek-flash", "provider": "deepseek"}'`，重启生效；会话内 `/model <模型名>` 即时切。
 
+**改主模型/provider 的完整流程（2026-09-23 本机实操：中转站 → 官方直连）**：凡哥的配置一度是 `provider: "Yue88 中转站"` + `base_url: https://api-yue88.xyz/v1` + 该站自己的 `api_key`（**自定义 provider 名可以是中文**）。换成官方 provider 时**只改 default/provider 不够 —— 旧 base_url + api_key 会继续把请求送去中转站**（与上文「旧 endpoint 残留」同一条坑，只是这次发生在**主模型层**）：
+
+```bash
+cd D:/Hermes
+cp config.yaml "config.yaml.bak-$(date +%Y%m%d_%H%M%S)"   # 先备份，可回滚
+hermes config set model.default deepseek-flash
+hermes config set model.provider deepseek
+hermes config unset model.base_url        # ← 必须清，否则仍走旧 endpoint
+hermes config unset model.api_key         # ← key 改用 .env 里的 DEEPSEEK_API_KEY
+hermes config                             # 复核：Model: {'default': 'deepseek-flash', 'provider': 'deepseek', ...}
+```
+
+- `hermes config` 子命令 = `show / edit / get / set / unset / path / env-path / check / migrate`。**清字段用 `unset`，不要用 `set ""`**；`hermes config get model.base_url` 回 `Config key not set: model.base_url` = 真清干净了。
+- 改完**新会话生效**；要让网关里立刻生效需 `hermes gateway restart`（会话内 `/restart`）。
+- 顺手核 `delegation.model` 与 cron 的 `model_snapshot`（同下文「填模型名前的核验纪律」），避免只改了主模型、子代理和定时任务还在用旧 provider。
+
 **填模型名前的核验纪律（2026-09-15 教训：从记忆里抄名字 → 写出无效名）**：任何地方要写模型名（`model.default` / `delegation.model` / cron `--model` / 给外部 AI 的稿子），先核一次官方目录：
 
 ```bash
@@ -224,6 +240,22 @@ hermes chat -q "只根据像素识别图中文字" --image "D:/path/test.png" --
 ---
 
 ## 常见诊断
+
+### GitHub 直连被墙 → 装软件走另一条路（2026-09-23 实测）
+
+本机实测**只挡主域**：`github.com` 超时（000），但 `api.github.com` 200、`apps.microsoft.com` 302、`objects.githubusercontent.com` 可连、`www.yworks.com` 200 → **换通道即可，不必先折腾代理**。先分域探测再下结论：
+
+```bash
+for h in github.com api.github.com apps.microsoft.com; do printf "%s -> " "$h"; \
+  curl -s -o /dev/null -w "%{http_code} (%{time_total}s)\n" --max-time 8 "https://$h"; done
+```
+
+- ⚠️ `winget install <包>` 的**默认源清单 URL 常常就是 GitHub 直链** → 被墙时报 `InternetOpenUrl() failed. 0x80072efd`（本次 `JGraph.Draw` 即此坑）→ 改走 **`--source msstore`**（微软商店源、Store CDN）实测成功。
+- 镜像前缀 `https://gh-proxy.com/<原 GitHub 直链>` 可下（HTTP 206）；**第三方通道下载件必须核验**：`size` + `sha256`（对比 GitHub API `assets[].digest`）+ `Get-AuthenticodeSignature`。
+- 代理只读排查：**`clash-verge-service.exe` 在跑 ≠ 代理可用**（服务≠内核监听）→ 查 `%APPDATA%\io.github.clash-verge-rev.clash-verge-rev\*.yaml` 的 `mixed-port`，再用 `netstat | grep LISTENING` 确认；**凡哥的代理不擅自改、不擅自起**。
+- 装完要**实测一次真实用途**再宣布成功；随后删掉下载包（清理铁律）。
+
+完整配方（分域探测 / 四条通道 / 核验三连 / 代理只读排查）见 `references/blocked-github-downloads.md`。
 
 ### web_search / 搜索工具老是说"受限"
 
