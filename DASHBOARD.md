@@ -381,6 +381,17 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 
 ## 十、集团架构与项目管理攻略（定位：项目主管 → 目标 CTO）（2026-09-13 建档）
 
+### 10.26 拓扑图迁到 draw.io（凡哥 2026-09-23 问 → 小南当天落地）
+- **软件**：**draw.io Desktop**（微软商店官方版 31.4.5 · 发布方 draw.io Ltd · 免费离线 · 中文）→ 解决"一张纸塞不下、字太小看不清"
+- **产物**：`D:\Documents\我的文档\拓扑图\项目拓扑图_20260923.drawio` —— **4 页**：① 总览 ② 各项目模块 ③ 日报明细 ④ 集团版图
+- **出图（关键）**：官方 CLI 逐页导 PNG，**不用开窗口手点**
+  `& '<store路径>\app\draw.io.exe' --export --format png --page-index N --scale 2 --output 拓扑图_pN.png 项目拓扑图_xxx.drawio`
+  → 已出 `拓扑图_p1~p4.png`（1.1–1.4MB/张，可直接发飞书/公众号）
+- **生成脚本**：`D:\Hermes\scripts\gen_topology_drawio.py`（改 DATA 重跑即更新；wps 版 `gen_topology_pptx.py` 保留为备选）
+- **依据（以后照这个来）**：drawio 官方规范+14条校验清单 https://www.drawio.com/docs/reference/diagram-generation/style-reference/ ；官方 XML 参考 jgraph/drawio-mcp `/shared/xml-reference.md`
+- ⚠ **教训（凡哥 2026-09-23 批评，已回流 `project-topology-diagrams` 技能）**：文件其实一直是**对的**，我却在交互窗口里"改一个变量→开一次窗→截一次图"试了十几轮（还因为自己用正则剪坏 XML 得到两次**假失败**）。凡哥："**你这样毫无根据的瞎试，试错成本很高，不知道的情况下第一时间找依据**"。正确姿势＝**先读官方规范 + 用官方 CLI 验证（CLI 能导出＝文件合法）**。
+
+
 ### 10.25 公司级 Agent 项目（凡哥 2026-09-23 告知 · **仅记录，小南不设计**）
 - **凡哥构想**：把 **OA 系统 + OPC 平台 + Agent 三合一**，做一款适合本公司的 Agent —— 覆盖**办公所接触的所有平台/应用** → 随时**索引用户相关信息** → **每日信息量汇总** → 依 agent 能力**区分待办事项主次** → 由 **agent 数字员工执行团队**把待办**执行落地** → **客户/用户只做「对不对、合不合格」的评判**
 - **小唐 demo 现状（凡哥原话）**：初步实现 **多应用索引 → 给出客户想要的答案**
