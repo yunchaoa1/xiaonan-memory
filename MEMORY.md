@@ -22,7 +22,7 @@ OPC下游Skill=单一生成黑匣子:只读正式上游+固定规则出唯一产
 §
 。
 §
-模型:凡哥手动切;2026-09起deepseek flash强于pro不再提醒;仅flash/v4-pro+子代理flash
+模型:默认deepseek-flash(provider deepseek);凡哥可手动切;仅flash/v4-pro+子代理flash
 §
 清理铁律(环境级):生图/生视频前①核资产台账②删作废旧图旧视频(换版即清)③POST/free;整剧跑完打包。
 §
@@ -50,7 +50,7 @@ sageattention Linux解法见comfyui-env-ops skill
 §
 漫剧对白型铁律(凡哥定调):禁旁白VO,信息全对白化,OS≤2/集只表情绪;节奏按时间口径(每3秒一句/单次≤2句)不设字数硬限;每集300-350字,△只做奇观不载信息;见opc-sim/research/漫剧节奏研究。
 §
-日报=凡哥发截图→小南读图更新拓扑图(WPS pptx脚本gen_topology_pptx.py);台账/日报统计/月底汇总/归档审核均小南维护
+日报=凡哥发截图→小南读图更新拓扑图(draw.io WBS树,每节点标负责人);台账/日报统计/月底汇总/归档审核均小南维护
 §
 云电脑:取证命令单条给(路径写全),部署整块给
 §

@@ -10,10 +10,15 @@ metadata:
     related_skills: [dashboard-tree, project-dashboard, dual-agent-memory-sync]
 ---
 
-# 项目拓扑图（本地生成 · WPS 演示原生形状）
+# 项目拓扑图（本地生成 · 树形 / WBS）
 
-凡哥的项目进展拓扑图：**在本地画、按日报更新、图最下方是待办事项**。
+凡哥的项目进展拓扑图：**本地画、按日报更新、最下方是待办事项**。
 豆包（飞书）不再负责画图（2026-09-20 起工作交接给小南）。
+
+**路线现状（2026-09-23 定，别再搞混）**：
+- **现役**：`gen_topology_tree.py` → **draw.io 单页树形图**（WBS 编号 + 内置树布局 + 正交连线）→ 出 PNG/SVG/PDF。规则见「拓扑图到底是什么」「WBS 成熟画法」两节，命令与格式细节见 `references/drawio-cli-and-format.md`。
+- **备选**：`gen_topology_pptx.py` → WPS 演示 `.pptx`（老路线，字会缩，仅备用）。
+- **已废**：曾做过的「draw.io 四页版」（总览/模块/日报/版图）＝ PPT 分页思路，**凡哥 2026-09-23 否决**，脚本与产物已删；别再走这条路。
 
 ## When to Use
 - 凡哥说"画拓扑图 / 更新拓扑图 / 把豆包的工作接过来 / 补齐 WPS 拓扑图功能"
@@ -24,15 +29,16 @@ metadata:
 1. **WPS 桌面版没有独立的本地流程图组件**。`D:\Program Files\WPS Office\<ver>\office6\addons` 里与本话题相关的是 `kpromeprocesson`（＝WPS × ProcessOn，**在线**版，要会员）等 `kproME*` 应用 → **"去 WPS 官网下载流程图板块"这条路不存在**，不要去找安装包。
 2. 因此本地方案 = **python-pptx 生成 `.pptx`**，图里全部是**原生形状**（圆角矩形/箭头/文本框）→ 在 WPS 演示里双击就能改字、拖框、连线；**本地、离线、免登录**。
 
-## 路线二（2026-09-23 起 · 首选）：draw.io Desktop 本地版
+## 路线二（2026-09-23）：draw.io Desktop 本地版
+（CLI 用法与官方依据本节仍然有效；**生成脚本已换成树形版**，见「拓扑图到底是什么」「WBS 成熟画法」；命令细节见 `references/drawio-cli-and-format.md`）
 
 **为什么换**：WPS 演示一张纸塞不下、字缩得看不清 → 换 **draw.io Desktop**（免费、开源、完全离线、中文界面、无限画布、多页、字号自选）。
 软件：**微软商店官方版「draw.io Diagrams」**（发布方 draw.io Ltd，`9MVVSZK43QQW`），程序在 `C:\Program Files\WindowsApps\draw.io.draw.ioDiagrams_31.4.5.0_x64__1zh33159kp73c\app\draw.io.exe`（**PowerShell 能调它的 CLI**，bash 受 ACL 限制调不了）。
 
 | 项 | 内容 |
 |---|---|
-| 生成脚本 | `D:\Hermes\scripts\gen_topology_drawio.py`（改数据重跑即出图） |
-| 产物 | `D:\Documents\我的文档\拓扑图\项目拓扑图_<YYYYMMDD>.drawio`（4 页：① 总览 ② 各项目模块 ③ 日报明细 ④ 集团版图） |
+| 生成脚本 | **现役** `D:\Hermes\scripts\gen_topology_tree.py`（树形，单页）｜旧 4 页脚本 `gen_topology_drawio.py` **已废**（PPT 分页思路，凡哥 2026-09-23 否决） |
+| 产物 | `D:\Documents\我的文档\拓扑图\项目拓扑图_WBS.{drawio,png,svg,pdf}` |
 | 出图命令 | `& $EXE --export --format png --page-index 1 --scale 2 --output 拓扑图_p1.png 项目拓扑图_xxx.drawio`（逐页导） |
 | 常用参数 | `--size page` 导整页 / `--format png|svg|pdf` / `--all-pages`（只对 PDF、HTML 有效） |
 
@@ -54,11 +60,47 @@ metadata:
 2. **模块卡必须写**：`开始时间 / 预计交付时间 / 状态`。
 3. **超出预计交付时间 → 必须写**：`⚠卡点在哪 / 解决方案 / 再次交付时间`（三件套缺一不可）。
 4. **图的最下方固定「待办事项」区**（编号列，写明谁做）。
-5. **更新源 = 小何、小吴的每日日报**。
+5. **更新源 = 四人的每日日报**（小何 / 小吴 / 小李 / 小唐；2026-09-23 起四人当日 18:00 后交齐）→ 读图后按「工作日期」入台账与树。
 6. **状态四色图例**：✅已完成（绿）/ ▶进行中（蓝）/ ⚠卡点（橙）/ ○未开始（灰）。
 7. **易混口径必须显式区分**，例：`OPC 平台的应用需求未定` ≠ `影剧工坊的卡点`；**已独立的项目必须独立成卡**，不能继续挂在原父节点下（影剧工坊就是这样从 OPC 里拆出来的）。
 
-## 图的分页结构（2026-09-21 升级为 3 页）
+## 拓扑图到底是什么（凡哥 2026-09-23 纠正 · 最高优先）
+
+**拓扑图 ＝ 一个大领域不断往下拆分成模块的「树」**，不是 PPT 内容分页，也不是把日报原文堆成段落框。
+
+- **一张画布、一棵树**：根（技术部 · 项目主管）→ 项目 → 功能模块 → 子模块/节点，统一往同一方向展开。
+- **每个框只写短标签**：`模块名 + 状态`（例：`用户与社区 ✅ 已完成`）。**卡点也只是一句短语**，不写段落（段落＝内容页，已否决）。
+- **状态四色**：✅已完成 / ▶进行中 / ⚠卡点 / ○未开始。
+- **每个节点必须标负责人**（凡哥 2026-09-24 要求）：标签末尾统一加 `｜ 责任人`（多人写 `｜ 小何 · 小吴`）；**没人认领的写 `｜ 待指派`**；图例里放人名对照 `小何＝何锦波 · 小吴＝吴伟俊 · 小李＝李林 · 小唐＝唐光辉`。**归属以日报署名为准**（凡哥 2026-09-24：「日报是谁写的就是谁做的」）——谁在日报里写了这项，责任人就是他；**不要按岗位去推**（别拿「后端=小何 / 前端=小吴」套）。日报没写到的节点＝「待指派」；项目主干只用凡哥亲口说过的分工。
+- **待办事项 = 树最下面的一个分支**（凡哥原规则：图最下方放待办）。
+- **生成脚本**：`D:\Hermes\scripts\gen_topology_tree.py`（树数据写在脚本顶部 `TREE` 里，改数据重跑）。
+- **零重叠是硬指标**：脚本自算「整齐树」布局后**必须通过两两重叠断言**（打印 `重叠对数 0`）才允许出图 —— 根治"内容被盖住"。
+- **层间距必须 > 上一层框宽**（否则父子框会横向压住，2026-09-23 被断言查出来）。
+- **交付格式**：`.drawio`（可编辑源）+ **PNG**（发飞书/聊天）+ **SVG / PDF**（矢量，放大不糊，给外部看/打印）。
+
+### WBS 成熟画法（凡哥 2026-09-23 要我"查成熟做法"后落地）
+
+| 规范 | 来源 | 落地方式 |
+|---|---|---|
+| **层级编号（账目编码）** 1 / 1.1 / 1.1.1 | Microsoft Project / Dynamics 365 WBS 文档 | 每个框前加编号 → **层级靠编号就能读，不必死盯连线** |
+| **100% 原则**；**支路不必对称**；层级 4–6 层够用（>20 层过度） | PMI / WBS 权威词条 | 拆到能估准的层级即停 |
+| **同级对齐 + 颜色区分分支/状态** | WBS 绘制指南（ProcessOn / Atlassian） | 同级同列；状态四色 |
+| **正交折线 + 无箭头**（分解关系不是流程） | WBS 图惯例 | `edgeStyle=orthogonalEdgeStyle;endArrow=none;strokeColor=#909090;strokeWidth=1.2` |
+| **连线交给布局引擎，不手画** | draw.io 官方布局文档（ELK 在大/深嵌套图上正交连线更整洁） | `--layout horizontalTree` |
+
+**一键流程（2026-09-23 实测通过）**
+```
+python D:\Hermes\scripts\gen_topology_tree.py --layout
+# 骨架 .drawio（含零重叠断言）→ 内置树布局重排 → 导出 PNG / SVG / PDF
+```
+
+**实测坑**
+- ⚠ **ELK（elkLayered）是联网加载的**：本机 GitHub/CDN 不通时 `--layout` 会**卡死**（不是慢）→ 离线只用内置预设 `horizontalTree / verticalTree / organic / radialTree`。
+- 跑 CLI 前先 `Stop-Process -Name draw.io`（已开的实例会让 CLI 挂住）。
+- 布局引擎会**重排坐标** → 布局后要**再跑一次重叠断言**（脚本两步都验）。
+- `--size diagram` 按内容裁剪，不留白；PNG 加 `-s 2` 出 2 倍图。
+
+### （历史）旧分页做法 —— 仅作参照，已被上面替代
 
 | 页 | 内容 | 何时更新 |
 |---|---|---|
@@ -66,7 +108,7 @@ metadata:
 | **2 · 日报明细** | 当天各人日报的原文要点（今日完成 / 卡点 / 解决方法）+ 处理说明；**逐日累积** | 每次日报 |
 | **3 · 集团版图 · 我们的位置** | 集团产业闭环（企业介绍）+「我们的活落在哪一格」映射表 + 今后重点 + 待确认口径 | 口径变化时 |
 
-- 分页不是凑数：**第 1 页给外部看全貌**，**第 2 页是验收/追溯的证据**，**第 3 页回答"我们为什么要做这些"**。
+- 日报明细/集团版图**不再作为拓扑图的页**：日报明细归台账（`任务台账_2026-09.xlsx`），集团背景留在 DASHBOARD 10.17 与 `references/`。
 - **集团背景是必读层**：画图、排优先级、判断"这活值不值得做"之前先对齐集团版图 → 详见 `references/group-context-and-report-parsing.md`。
 - 新增页不要在旧脚本上手画：在生成脚本里 `prs.slides.add_slide(...)` 追加，helper 全部带 `s=` 参数（默认首页），**每页都要跑一次越界自检**。
 
@@ -104,7 +146,8 @@ metadata:
 → 对比表、迁移做法与画布规则见 `references/diagram-tooling-upgrade.md`。
 
 ## 标准做法（照做即可，别手画）
-1. **改脚本数据，不手画**：`D:\Hermes\scripts\gen_topology_pptx.py`（顶部注释含全部规则与版本变更史；`DATA`/`box()`/`arrow()` 结构，改数据重跑 3 秒出图）。
+0. **现役＝树形脚本**：`D:\Hermes\scripts\gen_topology_tree.py` → 改顶部 `TREE` 数据 → `python gen_topology_tree.py --layout` → 一条命令走完（骨架＋重叠断言＋内置树布局＋画布重设＋PNG/SVG/PDF）。命令与坑见 `references/drawio-cli-and-format.md`。
+1. **旧脚本（仅备用）**：`D:\Hermes\scripts\gen_topology_pptx.py`（WPS 版；顶部注释含全部规则与版本变更史；`DATA`/`box()`/`arrow()` 结构，改数据重跑 3 秒出图）。
    - 新机器/新环境：用 `templates/topology_slide_skeleton.py` 起手（同结构的最小骨架）
 2. 输出到 `D:\Documents\我的文档\拓扑图\项目拓扑图_YYYYMMDD[_vN].pptx`。
 3. **校验**：跑形状越界检查（脚本内会打印"形状数/越界数"；判据＝每个形状 `x≥0 && y≥0 && x+w≤画布宽 && y+h≤画布高`）。
@@ -135,17 +178,19 @@ metadata:
 ## 三个产物的分工（别搞混）
 | 产物 | 用途 | 载体 |
 |---|---|---|
-| **项目拓扑图**（本技能） | 项目全貌/模块/卡点/待办，给外部看 | WPS 演示 .pptx（本地） |
+| **项目拓扑图**（本技能） | 项目全貌/模块/卡点/待办/**负责人**，给外部看 | **draw.io 树形（WBS）**：`项目拓扑图_WBS.drawio` + PNG/SVG/PDF（本地） |
 | 树形总控台 | 我自己的知识总览 | `dashboard-tree.html`（git 同步） |
 | 工作总控台 | 真相源/长期条款 | `DASHBOARD.md` |
 
 ## 支撑文件
+- `references/drawio-cli-and-format.md` — **现役路线必读**：CLI 命令（PowerShell 调商店版）、离线布局预设（ELK 会卡死）、布局后画布重设、格式要点与三层验证配方
+- `scripts/drawio_verify.py` — 一条命令校验：节点/连边计数 + 零重叠断言 + 画布包含 + SVG 关键词核对
 - `templates/topology_slide_skeleton.py` — 最小可跑骨架（换机器/新环境起手用：四色图例 + 模块卡 + 卡点三件套 + 待办区）
 - `references/wps-feishu-facts.md` — 现场实测事实：WPS 组件清单（为什么没有本地流程图）、pptx 打开命令、生成/验收固定套路、飞书读取与点击现状、卡点排查四步
 - `references/group-context-and-report-parsing.md` — **集团版图（企业介绍要点）+「我们的活落在哪一格」映射表 + 日报三段式解析 + 人名/术语口径 + 挂着的待确认口径**（画图前必读）
 - 关联技能：**multi-agent-architecture** — 团队镜像 agent / LangGraph 全局图·子图 / 上下文溢出治理（影剧工坊卡点的技术方案、李林/唐光辉两位新同事的方向都记在那）
 
 ## 验证
-- `python gen_topology_pptx.py <out> ` 输出 `形状数/越界数=0`
-- WPS 打开截图无错位；待办区、卡点三件套、模块时间行都在
+- **树形（现役）**：`python gen_topology_tree.py --layout` 先打 `骨架重叠对数 0`、布局后再验一次；或 `python scripts/drawio_verify.py <布局后.drawio> --svg <导出.svg> --expect "关键词,…"` → `PASS`
+- 旧 WPS 版：`python gen_topology_pptx.py <out>` 输出 `形状数/越界数=0`；WPS 打开截图无错位；待办区、卡点三件套、模块时间行都在
 - `DASHBOARD.md` 与共享文件 A 区已同步同一条口径
