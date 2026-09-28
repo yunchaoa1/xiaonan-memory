@@ -110,6 +110,8 @@ OPC 采用分层信息边界，不能把“唯一入口的客户想法”和“�
 
 详细规则见 `references/evidence-and-validation.md`。本轮写作入口、GPT Image主体资产与委派验收的可复用细节见 `references/opc-regression-lessons-2026-08-31.md`。硬期限下的MVP收缩、成熟底座复用、媒体Provider隔离和截断批次恢复见 `references/emergency-mvp-and-reuse.md`。
 
+节点 Skill 交接包（只含 7 个节点 skill、交付给平台团队）的「更新 → 引用自洽校验 → 打包」维护流程见 `references/handoff-package-maintenance.md`。
+
 ## Cross-Node Rules
 
 ### Story and screenplay

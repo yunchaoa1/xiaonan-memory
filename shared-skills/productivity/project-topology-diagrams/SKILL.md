@@ -1,6 +1,6 @@
 ---
 name: project-topology-diagrams
-description: 凡哥要画/更新项目拓扑图时用。本地 draw.io 生成 + 官方 CLI 出图（WPS pptx 备选）。
+description: 凡哥要画/更新项目拓扑图或思维导图时用。draw.io 树形图 + XMind 脑图（md 导入）。
 version: 1.0.0
 author: 小南
 license: internal
@@ -33,7 +33,8 @@ metadata:
 （CLI 用法与官方依据本节仍然有效；**生成脚本已换成树形版**，见「拓扑图到底是什么」「WBS 成熟画法」；命令细节见 `references/drawio-cli-and-format.md`）
 
 **为什么换**：WPS 演示一张纸塞不下、字缩得看不清 → 换 **draw.io Desktop**（免费、开源、完全离线、中文界面、无限画布、多页、字号自选）。
-软件：**微软商店官方版「draw.io Diagrams」**（发布方 draw.io Ltd，`9MVVSZK43QQW`），程序在 `C:\Program Files\WindowsApps\draw.io.draw.ioDiagrams_31.4.5.0_x64__1zh33159kp73c\app\draw.io.exe`（**PowerShell 能调它的 CLI**，bash 受 ACL 限制调不了）。
+软件：**微软商店官方版「draw.io Diagrams」**（发布方 draw.io Ltd，`9MVVSZK43QQW`；**PowerShell 能调它的 CLI**，bash 受 ACL 限制调不了）。
+⚠ **可执行文件路径不能写死**：商店版会**自动升级**、`WindowsApps` 目录名带版本号 —— 实测 2026-09-28 从 `..._31.4.5.0_x64__1zh33159kp73c` 变成 `..._31.5.3.0_...`，写死的路径让 CLI 报 `is not recognized as the name of a cmdlet`（出图全废）。**动态取**：`powershell -NoProfile -Command "(Get-AppxPackage -Name '*draw.io*' | Select-Object -First 1).InstallLocation"` → 拼 `\app\draw.io.exe`。生成脚本已内置 `_find_drawio_exe()`，**别再改回写死**。
 
 | 项 | 内容 |
 |---|---|
@@ -63,6 +64,25 @@ metadata:
 5. **更新源 = 四人的每日日报**（小何 / 小吴 / 小李 / 小唐；2026-09-23 起四人当日 18:00 后交齐）→ 读图后按「工作日期」入台账与树。
 6. **状态四色图例**：✅已完成（绿）/ ▶进行中（蓝）/ ⚠卡点（橙）/ ○未开始（灰）。
 7. **易混口径必须显式区分**，例：`OPC 平台的应用需求未定` ≠ `影剧工坊的卡点`；**已独立的项目必须独立成卡**，不能继续挂在原父节点下（影剧工坊就是这样从 OPC 里拆出来的）。
+
+## 思维导图 ≠ 拓扑图（凡哥 2026-09-28 澄清 · 别做错东西）
+
+| | 拓扑图（WBS 式） | **思维导图（凡哥真正要的）** |
+|---|---|---|
+| 形态 | 方框树，正交折线 | **中心主题发散**，**曲线分支** |
+| 视觉 | 统一细灰线 | **一线一色**（每条主分支一色）、靠中心线粗字大、往外递减 |
+| 内容 | 模块名 + 状态 + 负责人 | **关键词式**（一句一节点）、图标标状态 |
+| 工具 | draw.io（脚本 `gen_topology_tree.py`） | **XMind**（专业软件，凡哥 2026-09-28 定） |
+
+**XMind 路线（2026-09-28 落地）**
+- 安装包：`D:\Hermes\cache\downloads\Xmind-windows-x64.exe`（官方 dl3.xmind.cn）；安装弹窗**由凡哥本人点**
+- **不手打节点**：用 `python D:\Hermes\scripts\gen_mindmap_md.py` 生成 `D:\Documents\我的文档\思维导图\技术部项目思维导图.md` → XMind 里 **文件 > 导入 > Markdown**（官方支持；第一行＝中心主题，缩进＝父子层级）→ 自动成图
+- 数据源：`D:\Hermes\scripts\project_tree_data.py`（**唯一数据源**，拓扑图与思维导图共用）
+- **实测导入法（最省事，2026-09-28 验证）**：`Start-Process 'C:\Users\bobby\AppData\Local\Programs\Xmind\Xmind.exe' -ArgumentList '"D:\...\技术部项目思维导图.md"'` → XMind 自动导入成图（74 主题）；再用 **Ctrl+S** 存成 `.xmind`
+  - ⚠ Electron 窗口**后台点击无效**，按键要 `delivery_mode='foreground'`
+  - `.xmind` ＝ zip：`content.json`（rootTopic → children.attached）+ `content.xml` + `metadata.json` + `Thumbnails/` → **可直接程序化生成/更新，无需手工导入**
+- 导出：文件 > 导出（PNG/SVG/PDF）；免费版**带水印**，要去水印需 Pro（￥380/年）
+- 免费版 vs Pro（官方 2026-09-28）：免费可导 PNG/PDF 但**带水印**；**Pro ￥380/年 无水印** + SVG/Markdown/Office 导出 + 按主分支自动拆分；官网可开票、年付 7 天无理由退款
 
 ## 拓扑图到底是什么（凡哥 2026-09-23 纠正 · 最高优先）
 
@@ -119,14 +139,21 @@ python D:\Hermes\scripts\gen_topology_tree.py --layout
    - 小吴：**当日 18:00 左右提交**（内容＝当日）；小何：**次日上午补交前一日**（例：标题写"09-23 09:56 提交"的那份，内容其实是 **09-22** 的工作）。
    - 图 / 台账 / 第 2 页一律按**内容工作日**归，不按提交日期归。
    - 凡哥一次会发**多份（两天的量，如 4 份 = 2 天 × 2 人）**→ 先按工作日分组，再逐人核对；**看着像"重复"的那份往往不是重复，先问再丢**。
+   - **跨周末/节假日照此推 —— 先扣节假日**：周一上午补交的＝**上一个工作日**的活，而「上一个工作日」**必须先扣掉节假日**。实测 2026-09-28（周一）10:43 提交 → 归 **09-24**（因 **09-25~09-27 中秋放假 3 天**，09-24 才是节前最后一个工作日）；深夜（09-25 01:43）提交的＝**前一日（09-24）**的活。⚠️ **这里归错过一次**（把节后补交归到假期当天 09-25），凡哥纠正「**25 日是中秋节休息了，今天是休息了三天后第一天上班**」→ 铁律：**节后补交一律归节前最后一个工作日**；判不准就问一句，别自己挪日期。
+   - **漏交＝记例外、不定性**：缺交当日日报时，按凡哥的处理落台账 `_例外`（实例：2026-09-25 小李/小唐提前下班漏交 → **凡哥原谅 · 给一次机会，本次不按缺交扣分**）——**绝不把漏交写进考核扣分项**。
 3. **人名口径**：小何＝**何锦波**（后端 · 整体框架/接口/数据）；小吴＝**吴伟俊**（前端/UI）；小李＝**李林**（大模型上下文 · LangGraph）；小唐＝**唐光辉**（多 agent 体系；凡哥 2026-09-23 明确「**是姓唐，我打错了**」——他此前打成"堂光辉"，**以"唐"为准**）。图与台账统一用"小何/小吴"。
 4. **术语纠偏**（按凡哥口径写，不照抄日报）：智题分→**智提分**；影视工坊→**影剧工坊**；产品名 **浪浪椰 APP**（集团介绍里可能印成"浪浪耶"，**以"椰"为准**）。
 5. **卡点会换**：新日报的卡点与图上旧卡点不一致时，**先问"是同一问题的不同说法，还是变成了新问题"**，别默默替换。
 6. 日报没给的字段写 `待定` / `待更新`，并在回复里列出"还差你一句话"的清单（凡哥要看缺什么，不要含糊过去）。
+7. **日常流水线（读完日报固定按这个顺序落，别跳步）**：① 台账主数据 `D:\Hermes\xiaonan-memory\集团\台账数据.json` 追加/改行（字段 `work_date / 人 / 项目 / 节点 / 内容 / 状态 / 承诺 / 实际 / 卡点 / 解决`，另可用 `_例外` 记漏交等特例）→ ② `python D:\Hermes\scripts\gen_taikuan.py` 重出 `D:\Documents\我的文档\CTO攻略\任务台账_2026-09.xlsx` → ③ 改 `gen_topology_tree.py` 顶部 `TREE`（新节点 / 状态 / 负责人）→ ④ `python gen_topology_tree.py --layout` 出图（PNG/SVG/PDF）→ ⑤ DASHBOARD 记口径与进展 + git 提交推送。
 
-## computer_use 实操（打开 WPS 验收、读飞书）
+## computer_use 实操（打开 WPS 验收、读飞书、驱动 XMind/draw.io）
 
 - **click 之前必须先 capture**：否则直接报 `No active window — call capture() first`。
+- **Electron 类应用（XMind / draw.io Desktop / 新版飞书）后台投递会被丢**：报 `Background delivery is not available for target window class 'Chrome_WidgetWin_1' ...` → 改用 `delivery_mode='foreground'`（会**短暂切走凡哥的窗口**，动手前在回复里说明）。实测 XMind `keys='ctrl+s'` 前台 SendInput 成功。
+- **`coordinate` 按「截图空间」传**（工具自动按窗口偏移+缩放换算到 native）；按 native 坐标自己硬算会点空。拿不准：从 `capture(mode='som')` 的元素 native bounds 反算截图坐标，或先点一次再 `capture_after=true` 复核落点。
+- **裸 `element_index` 会被拒**（要求 `element_token` 或 `snapshot_id`+`element_index`，二者都不在工具入参里）→ 退回 `coordinate`；仍要读标签文字时用响应里的 `elements_file` JSON（比截图 OCR 可靠）。
+- XMind 全链实测（文件参数自动导入 / Ctrl+S 存档位置坑 / zipfile 校验 / `.xmind`＝zip 可程序化生成）见 `references/mindmap-and-xmind.md` §7–9。
 - capture 的 `element bounds` 是 **native desktop 坐标**（WPS 窗口实测约 1.76× 截图像素）→ **能读就别点**；必须点就先 `mode='som'` 拿元素、点完**再 capture 复核**是否落地。
 - **多页目视验收**：点左侧幻灯片缩略图切页，capture 后从状态栏 `幻灯片 N / M` 确认当前页，再核对版面。
 - 文件被 WPS 打开时锁着删不掉 → 让凡哥**关掉标签页**再清旧版本。
@@ -184,6 +211,7 @@ python D:\Hermes\scripts\gen_topology_tree.py --layout
 
 ## 支撑文件
 - `references/drawio-cli-and-format.md` — **现役路线必读**：CLI 命令（PowerShell 调商店版）、离线布局预设（ELK 会卡死）、布局后画布重设、格式要点与三层验证配方
+- `references/mindmap-and-xmind.md` — **思维导图路线**：拓扑图/思维导图区别、博赞规范 8 条、XMind 官方事实（版本/价格/水印/开票/退款）、Markdown 导入映射表（第一行＝中心主题）、`gen_mindmap_md.py` 用法与备选工具对比、**实测全链（文件参数自动导入／Ctrl+S 存档位置坑／zipfile 校验／`.xmind`＝zip 可程序化生成）＋ Electron 驱动硬规则（§7–9）**
 - `scripts/drawio_verify.py` — 一条命令校验：节点/连边计数 + 零重叠断言 + 画布包含 + SVG 关键词核对
 - `templates/topology_slide_skeleton.py` — 最小可跑骨架（换机器/新环境起手用：四色图例 + 模块卡 + 卡点三件套 + 待办区）
 - `references/wps-feishu-facts.md` — 现场实测事实：WPS 组件清单（为什么没有本地流程图）、pptx 打开命令、生成/验收固定套路、飞书读取与点击现状、卡点排查四步

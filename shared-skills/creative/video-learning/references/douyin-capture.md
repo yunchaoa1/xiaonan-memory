@@ -110,7 +110,7 @@ ASR 转写（`Method A`）→ 抽帧 / 要点页 vision（`Method B`）。
 抓视频时把"这个人是谁、数据多少"一起带走：
 
 - **作者**：监听里的 `aweme/v1/web/aweme/detail/` 响应 → `aweme_detail.author`：`nickname` 昵称 / `unique_id` 抖音号 / `signature` 简介 / `follower_count` 粉丝 / `total_favorited` 获赞。页面文本还会带"作者声明：内容由 AI 生成"（接口对应 `risk_infos`）。
-- **主页作品列表**：`douyin.com/user/<sec_uid>`（sec_uid 从视频页 `a[href*="/user/"]` 拿）→ 打开后 `mouse.wheel` 滚动 3–5 次 → `inner_text` 抓作品标题（含 `#` 的行）+ "共创"标记。
+- **主页作品列表**：`douyin.com/user/<sec_uid>`（sec_uid 从视频页 `a[href*="/user/"]` 拿；**PITFALL 2026-09-24：第一条匹配常是导航栏 `/user/self`（"我的"入口）——直接取第一条会抓到登录引导页，过滤只取 `/user/MS4` 开头（sec_uid 特征前缀）才是作者主页**）→ 打开后 `mouse.wheel` 滚动 3–5 次 → `inner_text` 抓作品标题（含 `#` 的行）+ "共创"标记。
 - **元数据速查表**（`aweme_detail` 常用字段）：
 
   | 字段 | 用途 |

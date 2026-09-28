@@ -22,15 +22,17 @@ python D:\Hermes\scripts\gen_topology_tree.py --layout
 
 程序路径（微软商店版，**bash 因 ACL 调不了，PowerShell 可以**）：
 
-```
-C:\Program Files\WindowsApps\draw.io.draw.ioDiagrams_31.4.5.0_x64__1zh33159kp73c\app\draw.io.exe
-```
-
 ```powershell
-$exe = "C:\Program Files\WindowsApps\draw.io.draw.ioDiagrams_31.4.5.0_x64__1zh33159kp73c\app\draw.io.exe"
+# 动态取 —— 商店版会自动升级、目录名带版本号，写死必失效
+# 实测 2026-09-28：31.4.5.0 → 31.5.3.0 后旧路径直接报 "is not recognized as the name of a cmdlet"
+$loc = (Get-AppxPackage -Name '*draw.io*' | Select-Object -First 1).InstallLocation
+$exe = Join-Path $loc 'app\draw.io.exe'
+
 & $exe --export --format png --scale 2 --size diagram --output out.png in.drawio
 & $exe -x -f xml -u --layout horizontalTree -o laid.drawio in.drawio    # 布局 + 未压缩 XML 输出
 ```
+
+`gen_topology_tree.py` 已内置 `_find_drawio_exe()`（同一套动态查询）→ **不要把路径改回写死**。
 
 常用参数（官方 `--help` 实测）：`--format png|svg|pdf|xml|html|jpg`、`--scale N`、
 `--size diagram|page`、`--page-index N`（1 起）、`--all-pages`（**只对 PDF/HTML 有效**）、
@@ -82,3 +84,6 @@ $exe = "C:\Program Files\WindowsApps\draw.io.draw.ioDiagrams_31.4.5.0_x64__1zh33
 - **禁止用正则从 `.drawio` 里剪 `<mxCell>`**：非贪婪 `.*?` 会在 `<mxGeometry ... />` 处截断，产出坏 XML → 得到"解析失败"的**假失败**。用 `xml.etree.ElementTree` 解析。
 - 别在窗口里"改一个变量→开一次窗→截一次图"试错（凡哥：试错成本很高）；先读官方规范 + 用官方 CLI 一次定论。
 - Python 写文件时 `open(..., "w", encoding="utf-8", newline="\n")`；`re.sub` 的**替换串里 `\n` 会被解释成真换行**（要写 `\n` 字面量得用 lambda 或字符串拼接）。
+- **改生成脚本后先 `ast.parse()` 再跑**：往 `TREE` 里插节点最容易**漏一个 `]`／`)`**（多嵌一层括号），错误要到运行时才暴露成 `'(' was never closed`。做法：改完立刻 `import ast; ast.parse(open(p, encoding="utf-8").read())` 自检，通过再跑 `--layout`。
+- **批量改 `TREE` 一律"先断言、再替换、后回读"**：`assert old in s` → `replace` → 重新打开文件确认新文本在（本次一次替换漏了配对括号，靠 `ast.parse` 才拦下）。
+- **标签变长（加 `｜ 负责人`）不用手动调宽**：框宽按字符数自动算、画布自动变大；但仍要**抽查一次真实渲染**（PIL 按坐标 `im.crop(...)` 裁一块看），确认字没挤出框。
