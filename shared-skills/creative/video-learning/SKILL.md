@@ -96,6 +96,8 @@ Use when the video is primarily visual (UI demos, ComfyUI workflows, drawing tut
 
 **Note:** `vision_analyze` needs absolute Windows paths (`D:\...`), NOT MSYS paths (`/d/...`).
 
+**学"AI 像真人"的参考片（表演/自然感拆解）**：走 `references/reference-film-teardown.md` 专项方法（等间隔扫描 → ASR 统计 → 关键段 6fps `tile` 宫格逐帧 → 判读原则）。**两条判读铁律（凡哥 2026-09-24 纠正）**：① "对焦听者"=叙事驱动（只在需要交代听者反应时用，不是有听者就拍听者）；② 微表情=准确对应当下情绪（不是一律克制）。
+
 ### 4. SYNTHESIZE
 
 - Identify structure: problem → steps → examples → summary

@@ -70,6 +70,20 @@ with sync_playwright() as p:
 
 **整条 URL（含 query 签名）原样使用，不要截断**。签名有时效（分钟级），抓到即刻下载。
 
+**格式覆盖要全（2026-09-24 补）**：视频流有两种编码变体——`media-video-avc1`（H.264）与 **`media-video-hvc1`（H.265）**；音频为 `media-audio-und-mp4a`。**自家过滤脚本只匹配 avc1 时会漏掉 hvc1**（实测报 `video_url_ok: False` 而音频正常）→ 别放弃，从 network.json 手动正则提取即可：
+
+```python
+import json, re
+d = json.load(open('network.json', encoding='utf-8'))   # 顶层是 list，元素形如 [200, "xhr", "url"]
+s = json.dumps(d, ensure_ascii=False)
+urls = re.findall(r'https?://[^"\\ ]+', s)
+vid = next(u for u in urls if 'media-video' in u)   # avc1 / hvc1 都能命中
+aud = next(u for u in urls if 'media-audio' in u)
+# 再 curl -L 下载（URL 含完整签名参数，原样使用）
+```
+
+另：页面里 `<video>` 的 `src` 显示为 `blob:`（MSE 流式播放）属正常——直链不在 DOM 里，只在 network 记录里，不要去页面里找。
+
 ### 4. 下载 + 合流
 
 ```bash
@@ -89,9 +103,28 @@ ASR 转写（`Method A`）→ 抽帧 / 要点页 vision（`Method B`）。
 
 **同音错字要当心**：口播转写会有同音误字（实测「冲突驱动型」→「一度驱动性」、「盗梦空间」→「逗梦空间」、「延迟揭示」→「延迟街市」）。这类教学视频常带中英双语硬字幕——**关键术语的写法用抽帧读字幕交叉校验**，别直接采信 ASR 的错字再转述给人。
 
+### 6. 顺手挖作者/团队/元数据（2026-09-24 增补：拉片/调研一体）
+
+抓视频时把"这个人是谁、数据多少"一起带走：
+
+- **作者**：监听里的 `aweme/v1/web/aweme/detail/` 响应 → `aweme_detail.author`：`nickname` 昵称 / `unique_id` 抖音号 / `signature` 简介 / `follower_count` 粉丝 / `total_favorited` 获赞。页面文本还会带"作者声明：内容由 AI 生成"（接口对应 `risk_infos`）。
+- **主页作品列表**：`douyin.com/user/<sec_uid>`（sec_uid 从视频页 `a[href*="/user/"]` 拿）→ 打开后 `mouse.wheel` 滚动 3–5 次 → `inner_text` 抓作品标题（含 `#` 的行）+ "共创"标记。
+- **元数据速查表**（`aweme_detail` 常用字段）：
+
+  | 字段 | 用途 |
+  |---|---|
+  | `mix_info` | 合集名 + `current_episode`/`updated_to_episode`（确认系列集数） |
+  | `statistics` | digg / comment / collect / share（`play_count` 常为 0 不给） |
+  | `risk_infos` | "内容由 AI 生成"声明 |
+  | `suggest_words` | 观众搜索词（= 真实观众认知线索，如"XX短剧演员表"） |
+  | `author.ip_location` | 属地（接口可能为 None，页面文本有） |
+
+- **评论**：`aweme/v1/web/comment/list/` 响应里拿前几条（完整翻页需签名，别硬啃）。
+- **已知边界**：搜索页（`/search/`）未登录弹扫码框，不能无登录搜站内；找到的线索用 web_search 到站外补。
+
 ---
 
-## 抽帧与接触表（本次踩过的两个坑）
+## 抽帧与接触表（这次踩过的两个坑）
 
 - **要点页要按段落口播时间点定位再去抽**：先转写拿时间戳，再在"公式/提示词讲到的那一秒"抽帧，比等间隔狂抽省一大半 vision 调用。本次 7 分钟视频只抽 5 张要点页就覆盖了五种开场。
 - **多帧拼一张接触表**：
@@ -106,6 +139,21 @@ ffmpeg -loglevel error \
   **PITFALL**：`xstack` 和独立的 `-vf scale` 不能同时用，会报
   `Filtergraph 'scale=...' was specified for a stream fed from a complex filtergraph. Simple and complex filtering cannot be used together`。
   把 `scale` 写进**同一个** `filter_complex`（接在 xstack 后面，用 `[o]…[o2]` 链接）即可。
+
+- **更省事的替代（2026-09-24）：`tile` 一步拼宫格**——连续帧/关键段直接出拼图，免 xstack：
+
+```bash
+ffmpeg -ss <起始秒> -i in.mp4 -t 3 -vf "fps=6,scale=480:-1,tile=6x3" -frames:v 1 sheet.jpg -y
+```
+
+- **场景切换统计（剪辑节奏）**：`scdet` 的阈值选项实测不触发，改用 select+showinfo：
+
+```bash
+ffmpeg -loglevel info -i in.mp4 -vf "select=gt(scene\,0.2),showinfo" -vsync 0 -f null - 2>&1 \
+  | grep -o "pts_time:[0-9.]*" | sed 's/pts_time://'
+```
+
+  计数 = 镜头切换数；均值镜头时长 = 总时长 ÷ （切换数 + 1）。
 
 ---
 
