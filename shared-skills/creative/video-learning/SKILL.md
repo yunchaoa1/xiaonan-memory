@@ -104,6 +104,12 @@ Use when the video is primarily visual (UI demos, ComfyUI workflows, drawing tut
 - Extract actionable rules, checklists, templates
 - Map to existing pipeline stages
 
+**教程类（方法/提示词公开型）学习纪律（2026-09-24 三连实测：AI角色真实感／空间拓扑账本／好莱坞开场）**：
+1. **先读页面文本再抽帧**：方法常直接写在标题+简介里（如"空间拓扑账本写5层：固定地标、相对方位、通行路径、镜头轴线、出入口状态"）——页面文本+口播+画面三件套都要，别一上来狂抽帧。
+2. **界面里的提示词逐字抠**：抽高清帧放大读界面文字；分页面板**每页都读**（01/03…03/03、"EXACT PROMPT"这类尾页常是完整版）；BEFORE/AFTER 改写板照抄全文进笔记。
+3. **与自家 skill 逐条对比**，分三类："真新／半新／已有（互相印证）"——凡哥固定会问"和我们之前的 skill 比，新学了什么"。
+4. **落地先报批**：改哪个 skill、加什么内容，先报方案、等凡哥批准再动手；凡哥说"你只需要学习X"时，把范围收在 X 内，不发散。
+
 ### 5. DOCUMENT & UPDATE
 
 - Write structured documentation to the appropriate pipeline directory

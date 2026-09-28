@@ -96,6 +96,8 @@ ffmpeg -loglevel error -i dy_video.mp4 -i dy_audio.mp4 -c copy dy_full.mp4 -y
 
 抖音的音轨和视频轨是**两个独立流**——只下 video 拿到的文件没有声音。
 
+**PITFALL：403 先查请求头，再怀疑签名过期（2026-09-24 实测）。** 裸 `curl`（不带 UA/Referer）对 `v26-web.douyinvod.com` 的直链**即使签名新鲜也会 403**（此前 `v11-weba.douyinvod.com` 域名裸 curl 能过——**不同 CDN 节点校验策略不同**）。补上 `-A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36" -e "https://www.douyin.com/"` 后实测 rc=200。**下载统一带 UA+Referer，最稳。**
+
 ### 5. 之后照常走本 skill 主流程
 
 ASR 转写（`Method A`）→ 抽帧 / 要点页 vision（`Method B`）。

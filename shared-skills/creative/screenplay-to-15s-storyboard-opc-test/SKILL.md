@@ -168,6 +168,19 @@ Describe world layout from the main subject or spatial core's own up/down/left/r
 4. **灯光锁定**：全片统一灯光基调写进 project_defaults（如「warm home lighting at night」），每镜不另起灯光描述；特殊镜（S01 楼道）单独声明。
 5. **正反打=真切镜，必须拆镜**：两人对话的正反打机位切换是真切镜动机，拆成独立镜（每镜一个机位），禁止在单镜里写「镜头在两人之间切换」。拆镜按说话轮次/情感动机，每镜≥4s 有完整台词落点；拆镜后总数与时长重新记账。
 
+## 空间拓扑账本（5 层，2026-09-24 增，凡哥批准；来源：空间一致性教程）
+同一场景的多镜**共用一份地标账本**——写卡前先建账，每镜按账本写，转镜后逐项核对。原理："**模型记忆的是关系，不是每件家具的形容词**"（"宏大/电影感"救不了空间，关系句才救）。地标**只选 3-4 个"能持续看见"的锚点**（跨镜可见、不被遮挡）。
+
+1. **固定地标**：列锚点＋"**唯一**"＋数量形状朝向锁定——"北墙中央**唯一**铜门、中轴**唯一**长桌、左墙**唯一**窄雨窗、右前**唯一**火盆；四者**数量、形状和朝向全程不变**"。
+2. **相对方位**：所有方位挂同一锚点——"铜门在长桌**正后方**，雨窗**始终**在长桌**左侧**，火盆**始终**在长桌**右前方**"。
+3. **通行路径**：动线写死＋禁穿越——"从铜门入场，**只**沿长桌右侧一条通道走向火盆，**不穿过桌面，不绕到窗侧**"。
+4. **镜头轴线**：机位写死＋不越轴——"摄影机**始终位于长桌左侧**，**不跨越中轴，不突然反打**"。
+5. **出入口状态**：门窗道具状态全程锁定——"铜门**全程半开**，窗**全程关闭**，火盆**全程不位移**；人物停稳后**四个地标仍可复原原位**"。
+
+**字面技巧**：①"**唯一**"排除歧义（不写会冒出两扇门）②"**始终/全程**"声明跨镜不变 ③"**不+动词**"列禁止清单 ④ 收尾写**校验句**（"四个地标仍可复原原位"）。
+**改写原则**：从"房间形容词"→"能复原方向的空间账本"——"好提示词写的是可见因果，不是形容词数量"。
+（示范全文与来源：`opc-sim/research/学习笔记_空间拓扑账本_野生小四.md`）
+
 Establish the spatial core's facing direction, axis, eyelines, subject positions, camera position, and movement paths. Preserve axis and eyeline matching unless disorientation is an intentional, traced decision.
 
 Each shot includes a separate top-view dispatch diagram specification. It uses symbols and geometry only: red circle protagonist, blue circle supporting subject, purple triangle opponent, yellow diamond prop, gray spatial core, black triangle camera. Use distinct line colors for subject movement, prop movement, camera movement, and eyeline.
