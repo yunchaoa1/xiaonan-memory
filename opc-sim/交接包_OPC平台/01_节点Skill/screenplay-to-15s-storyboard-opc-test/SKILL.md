@@ -94,6 +94,15 @@ Use distance and movement for information: wider views establish spatial relatio
 
 **景别六档**：远景（人物极小，疏离/开场）｜全景（全身+背景，登场/动作展示）｜中景（膝上，日常对话最常用）｜近景（胸上，内心/情绪交流）｜特写（肩上，情感爆发/悬念）｜大特写（局部器官，极致强调）。
 
+**景别写成"可核验的占框"（2026-09-24 增，凡哥批准；只写"远景/近景"会失控——人物突然贴满、手和道具被切）。写卡时按 5 槽位量化**：
+1. **被摄主体**：谁＋道具（"全片只有一名 X，右手只持一枚 Y；身份/衣服/站位/道具数量不变"——"唯一"锁对象）
+2. **占框比例**：高/宽百分比（"人物高度约占画面 30%"）
+3. **可见范围**：身体露到哪（"完整全身"/"膝上"/"腰上中近景"；锁"脸、双肩、右手和整枚道具始终同框"）
+4. **画面位置**：坐标（"位于右侧三分之一，中心横坐标 68%"）
+5. **终点构图**：停在哪＋**停止上限**（"终点保持横坐标 68%，不超过 58% 的占高"）
+
+**规则**：五槽**按顺序写全**（模型才知道从哪开始、保留什么、到哪必须停）；**一次只保留一个占框变化**（推近就别同时变构图）；"数字把景别量出来，模型就不会拿'中景'两个字随便猜"。（来源：@野生小四～～《AI视频景别总拍错？先写主体占框比例》；笔记 `opc-sim/research/学习笔记_主体占框_野生小四.md`）
+
 **情感→景别速查（写卡必用）**：
 - 孤独渺小→远景；日常对话→中景正反打；内心思考→近景；**喜悦感动→近景→特写（柔光推镜）**；悬念紧张→特写（浅景深）；亲密爱恋→特写近景。
 - 情绪峰值镜（落泪/碰脸/关键道具落点）必须特写或大特写，不允许中景带过。
@@ -111,6 +120,20 @@ Use distance and movement for information: wider views establish spatial relatio
 **全片景别弧线**：开场建立（中景/全景）→对白段（中景+正反打中近景）→情绪爆发段（特写递进）→回落（中景）→终场收束（中景或远景）——景别曲线跟随情绪曲线，禁止全程一条平线。
 
 **组接句式**：前进式（远→近）=情绪高涨；后退式（近→远）=情绪下沉。
+
+**对话戏焦点策略（叙事驱动，2026-09-24 增）**：
+- 镜头对谁，取决于"此刻观众需要看到什么"——**需要交代听者的反应时**，把镜头/焦点给听者（说话者置前景虚焦亦可）；否则不拍听者。无信息量的反应镜头是废镜。
+- 对话戏常规覆盖：说话者镜头 + 听者反应镜头交替；听者反应"有戏/有信息/有反转"时才给反应镜头。
+
+**生活化动作（"手上有事做"，2026-09-24 增）**：
+- 对话戏给人物配生活动作（端杯喝茶/夹菜吃饭/边走边说/整理衣摆）——两人干坐着说台词=假。
+- 动作从场景里找：餐厅→餐具吃喝，走廊→行走，家里→家务；写卡时把生活动作写进场面调度。
+
+**开场镜选择（首镜 S01 写卡时直接满足，凡哥 2026-09-21 定）**：
+- 剧本开场是**冲突驱动型或人物塑造型**（第一句台词已落在冲突中段、或先声后人/延迟识别）→ 首镜用**中近景、特写或低机位仰拍**，**禁大全景/大远景平铺**。依据：好莱坞五公式要点页原文"**冲突型开场不建议一开始大量使用大全景**"，推荐中景/近景/特写/大特写/低机位仰拍。
+- 仅**世界观震撼型**开场（大远景＋渺小参照物＋一个反常细节）可用远景/大远景，且一个镜头内必须给足"未知感"，不得空镜铺城。
+- **反面实例（2026-09-18 第 1 集）**：剧本开场已是"村民吊人议论＋牛满被吊"的冲突中段（S01 前已有冲突在演），分镜却把 S01 写成"**全景｜建立→转说话场**"——首镜退化成环境介绍，与开场结构不符；此类情况首镜应改**中近景或低机位仰拍**切入冲突动作。
+- 与《全片景别弧线》配合：开场用中近景切入不等于全片无远景——世界观/落差需要在后续镜或终场释放（弧线照旧跟随情绪曲线）。
 
 ## Timing and First/Middle/Tail
 
@@ -153,6 +176,19 @@ Describe world layout from the main subject or spatial core's own up/down/left/r
 3. **空间衔接**：相邻镜空间关系写死（S02 门外=与 S01 同一楼道，S02 门内=玄关）；禁止笼统「连续空间」。
 4. **灯光锁定**：全片统一灯光基调写进 project_defaults（如「warm home lighting at night」），每镜不另起灯光描述；特殊镜（S01 楼道）单独声明。
 5. **正反打=真切镜，必须拆镜**：两人对话的正反打机位切换是真切镜动机，拆成独立镜（每镜一个机位），禁止在单镜里写「镜头在两人之间切换」。拆镜按说话轮次/情感动机，每镜≥4s 有完整台词落点；拆镜后总数与时长重新记账。
+
+## 空间拓扑账本（5 层，2026-09-24 增，凡哥批准；来源：空间一致性教程）
+同一场景的多镜**共用一份地标账本**——写卡前先建账，每镜按账本写，转镜后逐项核对。原理："**模型记忆的是关系，不是每件家具的形容词**"（"宏大/电影感"救不了空间，关系句才救）。地标**只选 3-4 个"能持续看见"的锚点**（跨镜可见、不被遮挡）。
+
+1. **固定地标**：列锚点＋"**唯一**"＋数量形状朝向锁定——"北墙中央**唯一**铜门、中轴**唯一**长桌、左墙**唯一**窄雨窗、右前**唯一**火盆；四者**数量、形状和朝向全程不变**"。
+2. **相对方位**：所有方位挂同一锚点——"铜门在长桌**正后方**，雨窗**始终**在长桌**左侧**，火盆**始终**在长桌**右前方**"。
+3. **通行路径**：动线写死＋禁穿越——"从铜门入场，**只**沿长桌右侧一条通道走向火盆，**不穿过桌面，不绕到窗侧**"。
+4. **镜头轴线**：机位写死＋不越轴——"摄影机**始终位于长桌左侧**，**不跨越中轴，不突然反打**"。
+5. **出入口状态**：门窗道具状态全程锁定——"铜门**全程半开**，窗**全程关闭**，火盆**全程不位移**；人物停稳后**四个地标仍可复原原位**"。
+
+**字面技巧**：①"**唯一**"排除歧义（不写会冒出两扇门）②"**始终/全程**"声明跨镜不变 ③"**不+动词**"列禁止清单 ④ 收尾写**校验句**（"四个地标仍可复原原位"）。
+**改写原则**：从"房间形容词"→"能复原方向的空间账本"——"好提示词写的是可见因果，不是形容词数量"。
+（示范全文与来源：`opc-sim/research/学习笔记_空间拓扑账本_野生小四.md`）
 
 Establish the spatial core's facing direction, axis, eyelines, subject positions, camera position, and movement paths. Preserve axis and eyeline matching unless disorientation is an intentional, traced decision.
 
@@ -245,6 +281,9 @@ A complex action is split into explicit playable steps at segmentation time inst
 11. Distributing shot time evenly across states (walk-through pacing).
 12. Two characters performing the same task in the same scene (e.g. both kneading dough — duplicate-labor contradiction).
 13. Writing a turn-around (front→back 180° flip) inside one segment — the model renders both views side by side as a split screen.
+14. Deleting, merging, or rewriting screenplay dialogue to fit the shot budget — every dialogue line of the episode must land in a shot's dialogue event. Violation instance (2026-09-18, 《十二时辰》E1): 8 lines ≈90 chars never landed (村民丙「管家，吊一宿了，别真把人吊死了。」、王二「死不了。死了，那两吊钱你出？」、牛满「你们……把我当成牲口。」「笑啊。」「你们刚才，笑得那么响。怎么不笑了。」、王二「牲口能拉磨。你呢？克爹克娘，就剩克人。」、村民甲「她、她能动了！」、村民乙「绳子！绳子是自己断的！」).
+15. Letting the package total duration drift far from the screenplay's own duration estimate (violation instance: screenplay E1 estimated 102–117s, package came out 172s ≈ +47%). Calibrate to ≤±15% before delivering.
+16. Averaging the episode's screen time across shots instead of deriving each shot from its action's natural duration + beat pauses — this is what makes totals inflate.
 
 ## Verification Checklist
 
@@ -254,4 +293,6 @@ A complex action is split into explicit playable steps at segmentation time inst
 - [ ] OTIO frame math is explicit where exchange is required.
 - [ ] Only the allowed Kitsu relationship is borrowed.
 - [ ] External result is exactly one of `SUCCESS`, `INPUT_ERROR`, or `ADAPTATION_FAIL`.
+- [ ] Every screenplay dialogue line of the episode lands in a shot dialogue event — zero deletion, merging, or rewriting (verify with a line-level diff against the source episode, not by eye).
+- [ ] Package total duration within ±15% of the screenplay's own episode duration estimate; each shot's duration derives from action natural duration + beat pauses, never from averaging.
 - [ ] No prompts, media, platform, database, or runner were fabricated.

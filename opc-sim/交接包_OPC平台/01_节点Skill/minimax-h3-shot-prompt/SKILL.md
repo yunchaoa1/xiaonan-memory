@@ -14,6 +14,25 @@ metadata:
 ## When to Use
 Use when an approved OPC shot needs a MiniMax H3 prompt and asset-binding package.
 
+## 官方规范（Singularity 模型自带，2026-09-15 取得）
+`references/MiniMax_H3_Singularity_Prompt_Writing_Specification_Enhanced_EN.md` —— 来自 HF `WarmBloodAban/Minimax-h3_Singularity`，是 H3「**全参考图生视频**」的官方写作规范。与下文六段硬检查表互补，**冲突时以本规范 + 项目锁定口径为准**。四个最易漏的点：
+1. **`<Subject N>` 与 `<Picture N>` 必须区分**：参考图**不自动等于第一帧**。只提供外貌/身份/服装/环境/风格关系的 → 一律写进 Subject 定义；只有真当首帧/关键帧/构图锚时才用 `<Picture N>`。
+2. **retention 词汇表**：画面 = `fully_preserved`／`partially_preserved`／`attribute_transfer`／`weak_reference`／`newly_generated`；音频 = `fully_copy`／`partially_copy`／`reference`／`weak_reference`。
+3. **多镜从第 2 镜起带时间戳**：`[Shot 2] At 00:03.000, ...`；第 1 镜不带。
+4. **台词用稳定说话人号**：`(S1) speaks: "..."`／`(S2) replies: "..."`，跨镜保持一致。
+
+另：动作要写**因果链**（准备→触发→加速→主动作→接触→反应→恢复→终态），运镜要写**五要素**（机位+运动+方向+速度/幅度+跟随对象），情绪要落到**可观察微动作**（眼/脸/呼吸/姿态/手/注意力）；禁 `cinematic`／`dynamic camera`／`cool VFX` 这类空词。
+
+## Pre-Output Hard Checklist（每次输出前逐条核对 — 2026-09-09 云电脑首测教训，漏过一条就返工）
+
+1. **每个 `<Subject N>` 定义必须点名来源参考图槽位**：写 `defined by <Picture N>` / `supplies her appearance from <Picture N>`。漏点名 = 参考图不绑定（实测事故：Director 公共参考图已上传，prompt 未点名槽位，模型不跟参考图）。
+2. **六段字段名裸写开头**：`subject_definitions:` 直接起行；**禁止**用 `<subject_definitions>`…`</subject_definitions>` XML 包裹整段。尖括号只用于 `<Subject N>` / `<Picture N>` / `<d>` 三种标签。
+3. **六段顺序与字段名固定**：subject_definitions → summary → retention_analysis → detailed_description → overall_soundscape → non_diegetic_music（summary 必须带 `[reference generation]` 前缀；retention 用 `fully_preserved - ` 官方标记）。
+4. **`<d>` 格式**：`<d>[Chinese] 台词</d>`——`[Chinese]` 后必须带一个空格；台词句末有 `。？！`；禁装饰标点/emoji/重复符号。
+5. **单镜声明**：全镜只有一个 `[Shot N]` 时必须写 `The camera stays locked in this single continuous shot throughout, no cuts.`
+6. **方位锚点**：画面方向以主体自身方向为参照（before her / behind him / to his right），禁 frame/screen/left of frame 表述。
+7. **六段全英文**（仅 `<d>` 内台词保留中文）；长度 ≤7000 字符。
+
 ## Purpose
 Compile one approved OPC shot into one MiniMax H3 per-shot prompt and asset-binding package. This node only compiles approved decisions. It does not write stories, adapt screenplays, design shots, create assets, run models, or judge media. Use the locked project style and the multi-view character/scene subject sheets when supplied.
 
@@ -72,7 +91,7 @@ For full-reference shots (multi-view character/scene references — the local R2
 
 Language rule (official, 2026-09-03 修正): all six sections are written in English — field names, reference labels, shot markers, millisecond timestamps, speaker IDs, `<d>` dialogue tags, retention markers, AND all descriptive content (subject appearance, actions, environment, camera-path prose, soundscape wording). Only dialogue inside `<d>` keeps its original language (Chinese). The earlier "Chinese body" deviation is void — it violated the official guide and was part of the prompt defect chain.
 
-Authoritative unchanged copy: `prompt-master-pipeline/references/minimax-h3-ref2va-official-en.txt`.
+Authoritative unchanged copy: `references/minimax-h3-ref2va-official-en.txt`.
 
 ### Performance Delivery Rules (human liveness)
 

@@ -1,128 +1,144 @@
 ---
 name: novel-to-screenplay
-description: "Use when converting an identified novel chapter into one traceable, performable screenplay package."
-version: 0.2.0-rc
+description: "Use when converting a whole novel volume into a 红果短剧-spec multi-episode screenplay package. 中文触发：小说转剧本、整卷改本、红果集剧本。"
+version: 0.3.0-rc
 author: Xiaonan
 license: MIT
 metadata:
   hermes:
-    tags: [opc, novel-adaptation, screenplay, traceability]
+    tags: [opc, novel-adaptation, screenplay, hongguo-episodes, redline]
     related_skills: [screenplay-asset-extraction]
 ---
-# Novel To Screenplay
+# Novel To Screenplay（红果集规格·整卷改编）
+
 ## Overview
-Convert one identifiable novel or chapter into one complete, performable screenplay
-package for the OPC pipeline. Preserve source facts, agency, causality, information
-timing, dramatic cost, and continuity while making prose observable or audible.
-This node is closed after source submission: no interview, candidate drafts, or
-exposed internal reasoning.
-## When To Use
-Use for novel-to-screenplay, web-fiction-to-screenplay, and chapter dramatization.
-Do not use for original fiction, continuation, shot design, storyboards, asset
-extraction, image/video prompts, model settings, generation, or platform engineering.
+把**一整卷小说**改编为**符合红果短剧规格的多集剧本包**。
+小说的**剧情走向**（事件因果链、人物弧、世界观、悬念装置、情感主题）是**不可动骨架**；
+**节奏结构**（章节气口、铺陈详略、事件组织方式）**必须按红果短剧剧作法打散重组**——
+相当于以小说为故事素材、按短剧节奏重新写作，绝非章节算术切分。
+本节点在源文提交后封闭：无采访、无候选稿、无暴露内部推理。
+
+## 红果节奏铁律（写集时直接满足，凡哥 2026-09-08 定）
+1. **每集 60–180 秒**（主流 90–120 秒）。
+2. **每集独立成情绪单元**：开场 3 秒钩子 → 冲突推进 → 反转/情绪爆发 → 集末卡点（悬念引导下集）。
+3. **集首三要素标注**：`【人物线】`、`【转折】`、`【卡点】`（红果过稿工作室真实格式）。
+4. **每分钟有看点**：情绪爆发 / 反转 / 关键信息推进，至少其一；禁大段抒情、无效对话、拖沓铺垫。
+5. **台词口语化短句**，贴角色身份年龄性格；杜绝水台词；每句台词或推动剧情、或揭示人物、或制造悬念。
+6. **集间勾连**：本集卡点=下集开场钩；每集结束在情绪高点，不急着给答案。
+7. **集数 = 情绪单元自然编排的结果**，禁止按时长算术切分（如"一章÷2"），禁止硬凑集数。
+8. 集数目标：按剧情自然量自然定数（每集的情绪弧完整即成立；参考红果总量 80–100 集，但不为达标而注水/切碎）。
+
+## 对白型铁律（凡哥 2026-09-08 定调：只做对白型，不做旁白型）
+实测依据（拉片 2 部红果爆款漫剧、4 样本 52 分钟成片，ASR 统计）：语音覆盖 **93.2%**（纯画面段仅 6.8%）、**每 3.2 秒一句**台词、单句均 **12.3 字**、台词密度 **177 字/分钟**。信息 100% 走"耳朵"，画面只负责奇观与情绪。
+1. **禁解说旁白（VO）**：禁第三人称叙述、"话说/原来"式解说、小说叙述句进剧本；信息必须由**角色之口**说出。
+2. **信息对白化**：设定/关系/前情/阴谋/任务/规则——每项都要设计成"谁、在什么情境、对谁说出来"；无人说出的关键信息=漏做（例：宗门穷 → "还得天天带队去挖矿补贴家用"；半魔血统 → "别让人看出你是魔族"）。
+3. **OS 严格限量**：仅限情绪峰值（每集 ≤2 处），只表达情绪、不承载新信息；新信息必须转对白。角色传音/"声音"按对白处理，不算旁白。
+4. **交锋密度**：对话一来一回接得住，**每 3 秒一句台词**；单次发言 ≤2 句（禁长段独白）；对话写"斗嘴/对峙/盘问/讨价还价"形态。**关键信息段（传音通告/身世自述/规则发布/死结分析）必须拆成多角色一问一答**，禁一人连说 3 句以上——实测违规（2026-09-18 第一卷）：E15 传音规则 7 连句、E16 巳分析死结 6 连句、E19 龙神自述 5 连句，信息虽在台词里但成了"独白播报"，观众听感是单声道。
+5. **不设硬字数上限（凡哥 2026-09-08 修订：字数管不住节奏）**：句子长短服从**口语听感**——多数台词短句化（一口气念得完），需要交代信息/爆发情绪时可以长；长句必须念着自然、不拗口，可用逗号切出呼吸节奏。**节奏判据用时间不用字数**：每 3 秒一句台词、单次发言 ≤2 句。禁书面腔与文言腔。
+6. **每集有效台词 300–350 字**（实测折算：177 字/分钟）。
+7. **△ 降级为奇观层**：△ 只写动作奇观、走位衔接、情绪外化（可见可演）；△ 不得承载新信息（新信息一律对白化）。
+8. **语音覆盖目标 ≥90%**：不设纯画面叙事段，最长无台词段 ≤10 秒。
+9. 每句台词至少干一件事（交代/关系/冲突/情绪/钩子）；纯风景/纯动作段不得承担剧情推进。
+
+## 开场设计（好莱坞五公式，凡哥 2026-09-21 定；写集时直接满足）
+来源：抖音《AI视频开场这样做，5个黄金开场拯救废片》（7:04；口播 173 段转写 + 要点页，笔记 `opc-sim/research/好莱坞五种黄金开场.md`）。核心：**开场不是铺垫，是第一秒就抓人**。
+
+| # | 类型 | 公式 | 适用 | 对白型落地（配《对白型铁律》） |
+|---|------|------|------|------------------------------|
+| 1 | 冲突驱动型 | 动作进行时 + 危机已爆发 + 结果悬置 | 动作/悬疑/灾难 | 第一句台词就落在冲突中段；不介绍身份、不解释前因 |
+| 2 | 视觉奇观型 | 不可能物理现象 + 日常场景基底 + 平静观察者 = 认知冲击 | 概念/世界规则/奇观 | △ 奇观开场（**观察者越平静，奇观越震撼**）；信息由台词补 |
+| 3 | 人物塑造型 | 极端特写局部 + 标志性动作 + 声音先入（延迟识别） | 情感/成长/传奇 | 先由**他人之口**建标签，本人开口反转；**先不拍脸** |
+| 4 | 世界观震撼型 | 极端大远景 + 渺小参照物 + 一个反常细节 = 未知感 | 科幻/奇幻/史诗 | △ 给"反常细节"当第一个问号；台词随后解释 |
+| 5 | 悬念问题型 | 先给结果 + 露出不合理细节 + 答案放后面 | 悬疑/反转 | 集末卡点的同构结构；开场亦可先抛结果 |
+
+**铁律**：
+1. **第 1 集开场不铺垫、不交代背景**：不需要告诉观众他是谁、为什么在这儿——**第一句台词就落在冲突/悬念中段**（原话："你只需要让观众看到炸弹正在倒计时"）。
+2. **每集前 3 秒必有钩子**：与《红果节奏铁律》第 2 条同一要求，其结构来源即本表五公式。
+3. **公式可组合**（视觉奇观＋悬念、人物特写＋冲突爆发）；"**没有最好的开场，只有最适合你故事的开场**"。
+4. **与《对白型铁律》不冲突**：公式管"开场**做什么**"（叙事结构），铁律管"信息**怎么给**"（走耳朵）——**视觉钩子交给 △ 奇观层，信息照旧全部对白化**。
+5. 人物型开场实例（第一卷 E1）：村民议论"克死爹娘、头顶长角的怪物"（他人之口建标签）→ 牛满开口"你们……把我当成牲口"（本人开口反转）。
+6. 世界观型开场实例：十二座空神位、龙像、时间之外——△ 只给反常细节，解释权留在后面的台词。
+
+## 合规红线（红果官方教程口径，一票否决级；写稿时直接满足，源文踩线→改写/删除并登记，绝不渲染美化）
+- **A 价值观与伦理**：禁宣扬畸形婚恋观（如"强制爱无后果"）、替身文学式合理化；禁主角以违法/私刑手段达成目的且不受惩罚（爽文"打脸"不得写成杀人放火不被追责）；禁戏谑化处理历史人物、民族形象。
+- **B 政策与法律**：禁涉时政、宗教、民族敏感议题；禁刑侦/法律硬伤（私设公堂、无证据定罪当正义）；禁对真实公共事件虚构演绎。
+- **C 表现尺度**：禁过度血腥暴力、性暗示/擦边镜头描写、对未成年人不良引导（美化校园霸凌、虐童细节）。
+- 红线命中即改：改写保持情绪张力与因果（如虐反派可保留羞辱反转，但手段不写成残酷私刑细节）。
+
 ## Contract
-**Unique input:** one identifiable source prose package: novel/chapter text, user-
-locked `style_id` selected by the platform, and available project/source version metadata. A summary alone
-is not source prose. Missing identifiable prose returns `INPUT_ERROR`.
+**唯一输入：** 一整卷小说全文（该卷全部章节文本，作为同一改编素材）、平台锁定的 `style_id`、项目/权属元数据。摘要不算源文；缺失可识别全文返回 `INPUT_ERROR`。
+缺失 `style_id` 返回 `STYLE_REQUIRED`——节点不得擅自替客户选画风；画风由下游资产/故事板节点继承。
+外观缺省遵循 OPC 高颜值基线并译成稳定可观察特征，但绝不为此改变人物性格与剧情功能。
 
-Missing `style_id` returns `STYLE_REQUIRED`; the node must not adapt the novel or
-silently choose a visual style. The selected style is inherited unchanged by downstream
-asset and storyboard nodes.
+**唯一输出：** 恰好一个外部结果：`SUCCESS`（完整 N 集剧本包）、`INPUT_ERROR`（缺输入）、`ADAPTATION_FAIL`（未决冲突/权属不明/规则未过）。禁部分成功。
 
-Unless the source explicitly specifies an appearance exception, preserve the OPC high-
-attractiveness baseline when compiling character feature/state tables. Translate it into
-stable observable facial structure, hair, body proportions, and wardrobe anchors; never
-change the character's personality or story function to achieve it.
+优先级：用户锁定约束 > 源文 > 已验证项目规则 > 保守默认。事实/规则/研究结论/推断/未知必须分离。核心矛盾不许悄悄修补。人物细节缺失=保持未知；歧义取最小改动、保住因果的读法。
 
-**Unique output:** exactly one external result: `SUCCESS` with the complete package,
-`INPUT_ERROR` for missing input, or `ADAPTATION_FAIL` for unresolved conflict,
-rights/provenance uncertainty, or failed gates. Never emit a partial success.
+## 改编工作流（整卷·红果节奏版；取代旧"逐章保真"流程）
+1. **冻结卷源**：整卷各章逐一登记（身份、范围、版本边界、权属/来源状态、未知项）。完成标志：全卷每一段可定位。
+2. **提取剧情走向（不可动骨架）**：全卷事件因果链、人物弧（含觉醒/转变次序）、悬念装置（揭示点/埋点/回收点）、世界规则、情感主题。完成标志：骨架能解释全卷主因果链。
+3. **节拍拆解**：把全卷事件拆成**情绪单元**——每个单元有完整的张力进入→累积→释放（释放=反转/爆发/落点）。源文一个事件可拆多单元，多事件可并为单元，以情绪弧为准。完成标志：每个源文关键事件都在至少一个单元中，无断链。
+4. **集编排（关键步骤，非算术）**：按红果节奏把情绪单元组织成集：
+   - 单元合并/拆分唯一依据=情绪节奏与单集结构（开场钩/冲突/反转/卡点是否成立）；
+   - 逐集写三要素（人物线/转折/卡点）与集间勾连；
+   - 铺陈压缩、看点加密、集末停在情绪高点；
+   - 集数=本步骤的自然结果，登记在案（含每集时长估）。
+   完成标志：每一集都独立成立，集序连读=原剧情走向。
+5. **情绪同源台词重组（对白型）**：先理解源文台词与细节的**情绪**是什么，再以**同等情绪张力**重组为短剧口语——信息点与因果不变、情绪不降格不反向；关键信息点保留原意；名场面情绪的"量"不缩水；禁止把虐戏淡写、把深情写轻、把悬念写平。同时执行对白型铁律：全部信息转对白、口语可念（不设字数硬限）、每 3 秒一句、单次发言 ≤2 句、每集 300–350 字、△ 不承载信息。
+6. **逐集写本（红果格式）**：`第x集` → 三要素 → `场号-序号 日/夜 内/外 地点` → `人物：`行 → `△`动作/画面 → `角色名（神态）：台词` → `OS/VO`内心 → `【闪回】…【闪出】`。每场可表演、可拍（少写心理多写行为，行为可演）。
+7. **锁定状态与登记改动**：身份锚与状态分层（年龄/服装/发型/妆容/伤污/道具/能力/声音）；全卷任何改动登记 retain/compress/merge/reorder/rewrite-rhythm/redline-rewrite，附源文定位与理由；压缩必补补偿。
+8. **交付**：完整 N 集剧本包（集剧本正文+人物/状态表+道具能力流+钩子卡点链+集时长表+改动/补偿登记+红线自证段落：逐条红线声明零命中或已改写登记+44 分自评表）。完成标志：一次交付决定。
 
-Priority is user-locked constraints, source prose, verified project rules, then
-conservative defaults. Separate fact, rule, research conclusion, inference, and
-unknown. Never silently repair a core contradiction. Missing scope becomes one
-complete unit; missing character detail stays unknown; ambiguity takes the smallest-
-change reading preserving causality.
-## Hard Gates (10)
-1. **Source:** prose, scope, version boundary, and provenance are identifiable.
-2. **Facts:** locked identities, relationships, proposition, ethics, results, and
-   ending nature are preserved or explicitly declared changed.
-3. **Phenomena:** figurative/mimetic labels are separated from observable event,
-   supported mechanism, unknowns, and retained dramatic function.
-4. **Agency:** each decisive choice has a character, motive, knowledge, opportunity,
-   action, result, and cost.
-5. **Information:** each reveal has possessor, audience, timing, transfer reason,
-   and consequence; unauthorized knowledge is blocked.
-6. **Scenes:** each scene has entry state, task, conflict/turn, action, result, and
-   exit state; compression cannot erase agency or repayment.
-7. **Performance:** key turns are visible/audible and live; no retrospective
-   replacement of awakening or unplanted coincidence carrying the plot.
-8. **Continuity:** identity anchors and story-state versions are explicit; props,
-   abilities, injuries, and social/temporal changes have ordered causes.
-9. **Trace:** key causality, choices, reveals, and compensation trace both ways to
-   source or explicit addition; at least 90% of scenes are traceable.
-10. **Release:** local 11-item rubric is at least 38/44, every item at least 3,
-    regression passes, and no veto remains.
-A failed gate returns to its earliest responsible step; never invent a missing fact.
-## Short Pipeline
-1. **Freeze source.** Record identity, scope, version boundary, locked constraints,
-   provenance/rights status, and unknowns. Completion: every segment has an ID.
-2. **Set spine.** State proposition, protagonist objective, opposition, irreversible
-   turn, cost, and immediate debt. Completion: it explains the main causal chain.
-3. **Layer information.** Track source, character, audience/opponent knowledge,
-   secrets, misbeliefs, and hooks. Completion: every key reveal has owner and effect.
-4. **Recover phenomena.** Record phrase, observer label, observable event, smallest
-   supported mechanism, function, and risk. Do not turn era labels into science or
-   add supernatural rules. Completion: every high-impact case is decided or unknown.
-5. **Externalize psychology.** Convert trigger to reaction, choice, consequence via
-   action, dialogue, sound, objects, witnesses, or hesitation. Completion: beats
-   change the situation rather than merely narrating it.
-6. **Compile scenes.** Record time/place, participants, entry state, task, pressure,
-   turn, action, dialogue/sound, result, and exit state. Use live reversal: pressure,
-   trigger, manifestation, reaction, cost, new problem. Completion: each scene is
-   irreplaceable and performable.
-7. **Lock states.** Separate invariant identity from age, clothing, hair, makeup,
-   injury/dirt, props, body, ability, voice, and speech state. Each appearance uses
-   supported identity plus state. Completion: changes have range, cause, and source.
-8. **Register changes.** Mark retain, compress, merge, reorder, externalize, add, or
-   delete with source/reason. Record compensation for lost information, evidence,
-   action, or payoff. Completion: no material change is unaccounted for.
-9. **Review package.** Assemble screenplay scenes, character/state table, prop/
-   ability flow, beats/hooks, capacity estimate, trace and compensation registers,
-   and continuity constraints. Run all gates and rubric; up to five hidden repair
-   rounds rerun the complete check. Completion: one release decision exists.
-## Optional Mature Bases
-Dramatron may inform the order constraints -> characters/locations -> scene beats ->
-action/dialogue. Fountain or screenplay-tools may optionally parse/format screenplay
-text. These are optional methods/libraries, not dependencies or platform scope.
-Do not build a runner, database, API controller, checkpoint system, or scoring service.
-## Fixed Regression
-Use `D:\Documents\我的文档\十二时辰_第一卷_01.md`,
-`D:\Hermes\xiaonan-memory\references\十二时辰_第一章_小说改剧本回归验收表.md`, and
-`D:\Hermes\xiaonan-memory\references\小说改剧本_专业能力评分量表_v0.1.md`.
-The verified release line is `38/44`. Preserve: 牛满为女性且是首位觉醒时神；村口老槐树下
-吊缚一天一夜；王二羞辱并欲卖入窑子；牛形木簪折断；赎身钱入泥；时间停止而非变慢；
-挣绳撼树；未来蓝火令王二衰老；牛满支付寿数；十二神位、其他时神和龙神线索只埋下不解释完；
-打火机借入、使用、定时消失归还、现代火柴替代闭环。
+## 保留铁律（重组时的不可动项）
+- 剧情因果链不中断（任何因果事件不许丢）；人物弧不变（觉醒/转变方向一致）；关键信息点与悬念揭示时机可按集节奏重排，但因果顺序不乱；世界规则不新增不改写（源文未知机制保持未知）。
+- 源文已有伏笔/未回收悬念：只埋不解释的仍只埋不解释（集间勾连不等于提前揭秘）。
+- 跨卷连续性与前卷锚点（人物既有状态、已结算道具/能力、称谓）零冲突。
+
+## 写作基线（沿用）
+性能：关键转折必须现场化（可见可听、当场发生）；禁回忆/梦/旁白替代关键转折（作为表演手段可用但不得顶替因果）；禁未铺垫巧合承担剧情。
+能动性：每个决定性选择有 人物—动机—认知—机会—行动—结果—代价；禁旁人或系统代行关键选择。
+信息：每次揭示有 持有人—受众—时机—理由—后果；禁角色越权知情。
+
+## 自评量表（44 分制，交付前自评）
+沿用 11 项量表（小说改剧本_专业能力评分量表_v0.1，见 references）；红线与红果节奏并入评分口径：任一集缺卡点/超 180 秒/集首无三要素 → 该集对应项不得满分；红线命中任一 → 量表外否决，直接 ADAPTATION_FAIL 候选。自评线：≥38/44 且每项 ≥3 且零否决，只暴露 SUCCESS。
+禁止把"自查/修复/重跑"写成节点流程——本节点一次生成、一次交付；检查在节点外（平台/客户）。
+
+## Fixed Regression（红果版基线——第一卷已立标，2026-09-08 凡哥验收通过）
+红果版固定回归对象=《十二时辰》第一卷整卷（9章）→ **20 集**红果剧本包，凡哥验收通过。
+固定断言（重跑不得违反）：
+- 集数=20（情绪单元自然编排结果）；每集集首三要素【人物线】【转折】【卡点】齐全；
+- 分场红果格式（场号-序号 日/内外/地点 + 人物行 + △ + 神态台词）；
+- 剧情走向顺序不变：E1 时停绳断 → E2 蓝火燎脸+十二空神位 → E3 寿数代价+打火机归现代 → E4 刘半仙嗅神格 → E5 法坛黄符朽碎+蛇令 → E6 猫神临死喊出+月儿觉醒 → E7 月儿时倒流 → E8 赵半城缩婴+快逃背影 → E9 牛满离村+街静止 → E10 双纹成古字 → E11 驿道寅 → E12 时破+白虎+巳在等 → E13 巳火刑柱回生 → E14 噬时蛇倒流溃散+天界话断 → E15 八亮三暗一空+黑猫踩龙 → E16 死结+羊预视不说 → E17 围杀三寸 → E18 光柱破阵+羊哭见结局 → E19 古观龙神自述+断答 → E20 把天夺回来+现代人锁链龙梦；
+- 红线：A/B 零命中、C 类改写登记（不渲染）；
+- 台词情绪同源、固定保留断言（猫神三层只埋/龙神时间外/借物到点归还/金纹寿数/辰字座/窃天者不揭底/现代线丢物不自知）。
+旧单章 01 保真基线（38/44）仅作剧情走向保留度对照。
+
 ## Common Pitfalls
-1. Treating a summary as source.
-2. Giving decisive action to a helper, system, or power.
-3. Presenting metaphor as unsupported science.
-4. Replacing a live turn with backstory.
-5. Mixing incompatible character states.
-6. Explaining every buried mystery in the first unit.
-7. Hiding compression without compensation.
-8. Adding camera, prompt, or model decisions.
-9. Passing below 38/44 or any veto.
-10. Returning multiple drafts or unfinished text.
+1. 把"章保真"当目标——红果版目标是**整卷节奏重组**，逐场跟章=失败。
+2. 算术切分集数（一章 2 集/按字数切）——集必须以情绪单元和集结构成立为准。
+3. 重组时丢了因果链或人物弧。
+4. 台词重组时情绪降格（把虐写轻、把深情写淡、把悬念写平）。
+5. 踩红线后悄悄绕过不登记。
+6. 把摘要当源文、把机制当科学、把回忆当现场。
+7. 提前揭秘只埋不解释的悬念。
+8. 加入机位/提示词/模型决策（下游节点的事）。
+9. 交付多稿或未完成文本。
+10. 自评低于 38/44 或任何否决项仍宣称 SUCCESS。
+11. 写成旁白型：用第三人称叙述/解说句讲故事，或信息靠 △ 画面交代（正确做法：全部信息由角色对白说出）。
+12. 台词密度不足：长段独白、书面腔、单次发言超 2 句、一集台词量远低于 300 字（成片会有大段"纯画面"）。
+13. 为凑字数把句子硬切碎，句子念不通、语义断裂（字数不是节奏判据；句子要符合口语呼吸）。
+14. 收束集/过渡集台词缩水——收束集与过渡集同样要 300–350 字有效台词，靠对白收束而非画面展示。实测违规（2026-09-18）：第一卷 E20 仅 141 字（其余 19 集 300–341），末尾成了"△ 风景＋宣言"。
+15. 把"信息量大"当成一人长段独白的理由——信息越多越要拆成多方交锋（问→答→质疑→补刀），独白播报等于把画面时间让给信息朗读。
+
 ## Verification Checklist
-- [ ] One prose input and scope boundary were frozen.
-- [ ] Ten gates passed and no veto remains.
-- [ ] Decisive actions have motive, knowledge, opportunity, result, and cost.
-- [ ] High-impact figurative expressions have decisions or unknowns.
-- [ ] Every scene is state-changing and performance-ready.
-- [ ] Identity and story state are separate and supported.
-- [ ] Trace and compensation registers are bidirectional.
-- [ ] Score is at least 38/44 and every item at least 3.
-- [ ] Fixed regression assertions passed on the complete package.
-- [ ] Only `SUCCESS`, `INPUT_ERROR`, or `ADAPTATION_FAIL` was exposed.
+- [ ] 整卷源文已冻结（各章登记、无遗漏章）。
+- [ ] 剧情走向骨架完整（因果/弧/悬念/规则）且逐集可追溯。
+- [ ] 每集满足红果铁律（时长/三要素/钩-冲突-反转-卡点/有看点）。
+- [ ] 集数=自然编排结果并有编排登记。
+- [ ] 台词情绪同源重组（信息与因果不变、张力不降）。
+- [ ] 红线逐条自证零命中或改写已登记。
+- [ ] 关键转折现场化、能动性完整、信息无越权。
+- [ ] 改动/补偿登记双向可溯。
+- [ ] 对白型检查：零解说旁白（VO=0）；关键信息全部由角色对白说出；OS ≤2 处/集且只表情绪；句子口语可念（不设字数硬限，禁硬切碎）且单次发言 ≤2 句；一集台词 300–350 字；△ 无新信息。
+- [ ] 自评 ≥38/44、每项≥3、零否决。
+- [ ] 只暴露 SUCCESS/INPUT_ERROR/STYLE_REQUIRED/ADAPTATION_FAIL。
