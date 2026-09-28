@@ -429,6 +429,16 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 - **数据源统一**：`D:\Hermes\scripts\project_tree_data.py`（唯一数据源，拓扑图/思维导图共用，改节点只改这一处）
 - 备选（更便宜/免费）：万兴脑图（原亿图脑图）MindMaster（导入导出兼容 XMind 最好）、Freeplane（免费开源但界面笨重）
 
+### 10.37 思维导图已在 XMind 里做出来了（2026-09-28 实测成功）
+- **怎么做的**：把项目树导成 Markdown → **用 `Xmind.exe "文件.md"` 直接启动**（XMind 自动走导入）→ 生成真正的思维导图
+  - ⚠ 背景点击 Electron 无效；按键要 `delivery_mode=foreground`（后台被拒）
+  - 导入后的图：**中心主题＝技术部 · 技术项目主管（凡哥）**，**主题总数 74**（与我们数据完全一致）
+- **成品文件**：`D:\Documents\我的文档\思维导图\技术部项目思维导图.xmind`（286 KB）
+- **导入源**：`D:\Documents\我的文档\思维导图\技术部项目思维导图.md`（`gen_mindmap_md.py` 生成）
+- **关键发现（以后能省事）**：`.xmind` 就是个 zip，内含 **content.json**（结构：rootTopic → children.attached，可直接程序化读写）+ content.xml + metadata.json + Thumbnails/thumbnail.png → **以后我可以直接生成/更新 .xmind，不用再手工导入**
+- **导出**：XMind 客户端「文件 > 导出」支持 PNG/SVG/PDF；⚠ **免费版导出带水印**（"去除水印"是 Pro）→ 要发外部建议 Pro ￥380/年（官网可开票、年付 7 天无理由退款）
+- XMind 版本 26.05.01107；装于 `C:\Users\bobby\AppData\Local\Programs\Xmind\Xmind.exe`（Electron 版，账号已登录）
+
 ## 十、集团架构与项目管理攻略（定位：项目主管 → 目标 CTO）（2026-09-13 建档）
 
 ### 10.31 归属口径修正：以日报署名为准（凡哥 2026-09-24）
