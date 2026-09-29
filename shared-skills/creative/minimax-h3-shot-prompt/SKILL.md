@@ -172,6 +172,16 @@ A new `[Shot N]` = one real cut, requiring a motive: emotional beat (change dist
 
 **Self-check**: before every `the shot cuts to`, ask "what new information or emotion does this cut give the viewer?" If there is no answer, delete the cut and rewrite as continuous action inside the same shot.
 
+### 占框与尺度稳定（2026-09-24 增；治"大小比例忽大忽小"；社区共识 + 模型官方指引）
+
+- **占框写进 prompt**：每个 [Shot] 声明主体占画面高度百分比（`the figure occupies about 30 percent of the frame height`）＋**头顶留白**（`comfortable headroom, eyes on the upper third`）——不写，模型每次自己猜（30% 还是 85% 随机）。
+- **首帧锚定优先**：同一场的各镜尽量从**同一张标准帧（构图锚点）**衍生，跨镜只改表情/手部/微动作，不换占框、不换机位（一个世界，锁首帧，衍生所有镜头）。
+- **镜头顺序先近后远更稳**（Reverse Framing）：特写对位置误差最敏感（5% 偏移在广角看不出、在特写就切额头）——先把最难的近景锁死，再往远景走。
+- **运镜幅度量化为小**：写"推近约 15% 画面宽 / 4 秒"这类可核验小量；大幅运镜人物易崩（本机实测），优先小幅慢速（`small amplitude at slow speed`）。
+- **不写"居中"**：不写 subject centered——会与画面自带空间线索冲突致抖；位置写坐标或相对主体方向。
+- **尺度连续性靠措辞钉住**：同一角色/道具在全片用**逐字相同**的尺寸与位置写法（换词=漂移）。
+- **禁止裁剪放大冒充景别**：不用中景裁剪放大当特写（透视崩）；每个景别独立构图。
+
 ### Storyboard Keyframe Binding (mandatory — official phrasing)
 
 Every shot's approved storyboard keyframe grid is a `<Picture N>` shot-planning anchor and MUST be bound as a reference image (the whole grid, uncropped). Official phrasing (ref-en.txt §2.2):

@@ -91,7 +91,7 @@ For full-reference shots (multi-view character/scene references — the local R2
 
 Language rule (official, 2026-09-03 修正): all six sections are written in English — field names, reference labels, shot markers, millisecond timestamps, speaker IDs, `<d>` dialogue tags, retention markers, AND all descriptive content (subject appearance, actions, environment, camera-path prose, soundscape wording). Only dialogue inside `<d>` keeps its original language (Chinese). The earlier "Chinese body" deviation is void — it violated the official guide and was part of the prompt defect chain.
 
-Authoritative unchanged copy: `references/minimax-h3-ref2va-official-en.txt`.
+Authoritative unchanged copy: `prompt-master-pipeline/references/minimax-h3-ref2va-official-en.txt`.
 
 ### Performance Delivery Rules (human liveness)
 
@@ -171,6 +171,16 @@ State evolution stays **inside one [Shot]** by default: continuous action + emot
 A new `[Shot N]` = one real cut, requiring a motive: emotional beat (change distance), narrative shift, rhythm point (beat-sync cutting allowed), eye-line transfer (shot/reverse-shot), or a large shot-size/angle change. When cutting, the shot-size change must be large (wide↔medium, medium-close↔close-up, reverse angle, side↔front); **never cut to a slightly closer variant of the same angle** (Murch's beehive: the most disorienting cut). No hard cap on cut count — cut whenever there is a motive.
 
 **Self-check**: before every `the shot cuts to`, ask "what new information or emotion does this cut give the viewer?" If there is no answer, delete the cut and rewrite as continuous action inside the same shot.
+
+### 占框与尺度稳定（2026-09-24 增；治"大小比例忽大忽小"；社区共识 + 模型官方指引）
+
+- **占框写进 prompt**：每个 [Shot] 声明主体占画面高度百分比（`the figure occupies about 30 percent of the frame height`）＋**头顶留白**（`comfortable headroom, eyes on the upper third`）——不写，模型每次自己猜（30% 还是 85% 随机）。
+- **首帧锚定优先**：同一场的各镜尽量从**同一张标准帧（构图锚点）**衍生，跨镜只改表情/手部/微动作，不换占框、不换机位（一个世界，锁首帧，衍生所有镜头）。
+- **镜头顺序先近后远更稳**（Reverse Framing）：特写对位置误差最敏感（5% 偏移在广角看不出、在特写就切额头）——先把最难的近景锁死，再往远景走。
+- **运镜幅度量化为小**：写"推近约 15% 画面宽 / 4 秒"这类可核验小量；大幅运镜人物易崩（本机实测），优先小幅慢速（`small amplitude at slow speed`）。
+- **不写"居中"**：不写 subject centered——会与画面自带空间线索冲突致抖；位置写坐标或相对主体方向。
+- **尺度连续性靠措辞钉住**：同一角色/道具在全片用**逐字相同**的尺寸与位置写法（换词=漂移）。
+- **禁止裁剪放大冒充景别**：不用中景裁剪放大当特写（透视崩）；每个景别独立构图。
 
 ### Storyboard Keyframe Binding (mandatory — official phrasing)
 
