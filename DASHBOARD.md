@@ -214,7 +214,7 @@
 - 来源：@野生小四～～《AI场景一转镜头就重装？用拓扑账本锁住》（1:43，含完整提示词全文；笔记 `opc-sim/research/学习笔记_空间拓扑账本_野生小四.md`）。
 
 **⚠️ 出图工具链变更（2026-09-24 凡哥定，重大）**：
-- **Qwen-Image 2.1 工作流 = 唯一出图工具**（"以后所有出图任务都是这个工作流来完成"）。工作流文件：`D:\Hermes\attachments\qwen image2.1图片编辑工作流-2.json`（12 节点：UNET `qwen_image_2.1_int8_convrot` + CLIP `qwen3vl_8b_bf16` + VAE `qwen_image_2.1_vae_bf16`；含 QwenImage21Cache / TextEncodeQwenImage21 专属节点）。
+- **Qwen-Image 2.1 = 唯一出图模型**（"以后所有出图任务都是这个"）。**两个工作流**（切换节点太麻烦所以拆成两条）：① **图生图/编辑流** `D:\Hermes\attachments\qwen image2.1图片编辑工作流-2.json`（有参考图：定妆/换装/改年龄/故事板关键帧；12 节点含 QwenImage21Cache）；② **文生图流** `D:\Hermes\attachments\qwen image2.1文生图工作流.json`（无参考图：首次出图/纯文字；8 节点，EmptyLatentImage 起步，KSampler 25 步/cfg1/euler/simple）。两流同模型三件套：UNET `qwen_image_2.1_int8_convrot` + CLIP `qwen3vl_8b_bf16` + VAE `qwen_image_2.1_vae_bf16`。输出尺寸均按原生最大：横 2752×1536 / 竖 1536×2752。
 - **退役**：GPT Image 2、Nano Banana、z-image、Qwen-2511、Seedream 5.0 Pro——全部不再用于出图。
 - 模型能力：统一生成+编辑 / 原生透明 RGBA / ≤10 参考图 / 局部编辑（圈选/涂画/遮罩）/ 身份保持 / 文字渲染 / 原生 2K（2048，7 比例）/ 40 步 / 前缀 KV 缓存。
 - **提示词规范已换轨**：官方 PE 规范（编辑类"只编辑点名的+其余保持保真"、保持项点到为止、身份用图不用字、引号文字、正向式）。官方提示词全文摘要：`opc-sim/research/学习笔记_Qwen-Image-2.1官方规范.md`。

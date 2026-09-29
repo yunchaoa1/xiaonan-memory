@@ -8,7 +8,7 @@ category: creative
 # AI生图提示词编写
 
 ## ⚠️ 当前出图工具（2026-09-24 凡哥定，唯一）
-**所有出图任务 = Qwen-Image 2.1 工作流**（文件 `D:\Hermes\attachments\qwen image2.1图片编辑工作流-2.json`）。GPT Image 2 / Nano Banana / z-image / Qwen-2511 / Seedream 5.0 Pro **全部退役**。提示词按下节《Qwen-Image 2.1 规范》写；本文件其余旧条目（z-image/Nano Banana 等）降为历史参考。
+**所有出图任务 = Qwen-Image 2.1**，共**两个工作流**（云电脑 ComfyUI）：**① 图生图/编辑流**（有参考图：定妆 / 换装 / 改年龄 / 故事板关键帧）`D:\Hermes\attachments\qwen image2.1图片编辑工作流-2.json`；**② 文生图流**（无参考图 / 纯文字：首次出图、场景、概念图）`D:\Hermes\attachments\qwen image2.1文生图工作流.json`。旧 GPT Image 2 / Nano Banana / z-image / Qwen-2511 / Seedream 5.0 Pro 全部退役。
 
 ## Qwen-Image 2.1 提示词规范（官方；写图必读）
 **核心原则**：只处理你点名的对象，**其余一切保持输入保真**（编辑类）。防两错：① 动了没让动的 ② 改太弱看不出。

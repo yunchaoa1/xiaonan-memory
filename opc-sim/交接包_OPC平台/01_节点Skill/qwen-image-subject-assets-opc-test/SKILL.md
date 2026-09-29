@@ -12,7 +12,7 @@ metadata:
 ---
 # Qwen-Image 2.1 Subject Assets (Direct Generation)
 
-**出图工具（2026-09-24 换轨）**：出图走**云电脑上的 Qwen-Image 2.1 工作流**（ComfyUI：UNET `qwen_image_2.1_int8_convrot` + CLIP `qwen3vl_8b_bf16` + VAE `qwen_image_2.1_vae_bf16`）。旧 GPT Image 2 / Nano Banana 通道已退役。
+**出图工具（2026-09-24 换轨）**：出图走**云电脑上的 Qwen-Image 2.1**（ComfyUI，三件套 UNET `qwen_image_2.1_int8_convrot` + CLIP `qwen3vl_8b_bf16` + VAE `qwen_image_2.1_vae_bf16`），**两个工作流**：**有参考图 → 图生图/编辑流**（人物定妆、换装、改年龄、状态版本）；**无参考图（首次出图）→ 文生图流**。旧 GPT Image 2 / Nano Banana 通道已退役。
 
 ## Prompt-Writing Rules (Qwen-Image 2.1 official, 2026-09-24)
 
