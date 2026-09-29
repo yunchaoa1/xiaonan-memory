@@ -181,6 +181,7 @@ A new `[Shot N]` = one real cut, requiring a motive: emotional beat (change dist
 - **不写"居中"**：不写 subject centered——会与画面自带空间线索冲突致抖；位置写坐标或相对主体方向。
 - **尺度连续性靠措辞钉住**：同一角色/道具在全片用**逐字相同**的尺寸与位置写法（换词=漂移）。
 - **禁止裁剪放大冒充景别**：不用中景裁剪放大当特写（透视崩）；每个景别独立构图。
+- **尺度对比镜（变小/巨物题材）**：每镜带**尺度锚**（巨手/巨物/家具腿/地毯纹理）与主体同框，巨物虚焦、主体清晰；机位贴地或贴物、不做大幅运镜；不用"小人与正常人并排"构图——用"人 vs 物"的尺度差表达；锚物措辞全片逐字一致。
 
 ### Storyboard Keyframe Binding (mandatory — official phrasing)
 
