@@ -8,7 +8,7 @@ metadata:
   hermes:
     category: creative
     tags: [opc, ai-manga, workflow, reuse, one-click, validation]
-    related_skills: [opc-creative-skill-authoring, novel-to-screenplay-opc-test, screenplay-asset-extraction-opc-test, screenplay-to-15s-storyboard-opc-test, gpt-image-subject-assets-opc-test]
+    related_skills: [opc-creative-skill-authoring, novel-to-screenplay-opc-test, screenplay-asset-extraction-opc-test, screenplay-to-15s-storyboard-opc-test, qwen-image-subject-assets-opc-test]
 ---
 
 # OPC Workflow Reuse

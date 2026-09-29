@@ -1,4 +1,4 @@
-# OPC GPT Image 主体资产提示词编译模板 v0.3
+# OPC Qwen-Image 2.1 主体资产提示词编译模板 v0.4
 
 ## 1. 通用编译原则
 
@@ -43,7 +43,7 @@ TASK
 Create one production character subject-asset sheet for [CHARACTER_ID] in [STYLE].
 
 OUTPUT
-One 16:9 native 4K image, 3840x2160. Exactly four vertical panels with equal visual rhythm and clean separators. Panel 1: front full-body standing. Panel 2: one side full-body standing. Panel 3: back full-body standing. Panel 4: enlarged straight-on facial detail. No fifth panel.
+One Qwen-Image 2.1 native-maximum image (landscape 2752x1536 or portrait 1536x2752). Exactly four vertical panels with equal visual rhythm and clean separators. Panel 1: front full-body standing. Panel 2: one side full-body standing. Panel 3: back full-body standing. Panel 4: enlarged straight-on facial detail. No fifth panel.
 
 CAMERA_OR_PROJECTION
 Neutral orthographic-like inspection views, consistent subject scale in the three full-body panels, eye-level, feet on one shared ground line, head tops on one shared guide line. Arms relaxed with body silhouette readable. Full body including feet visible.
@@ -61,7 +61,7 @@ EXCLUSIONS
 No external props, bags, handheld objects, scenery, text, labels, logos, extra people, repeated side view, three-quarter view replacing a required panel, cropped feet, different outfits, different faces, different ages, panel count changes, or decorative layout.
 ```
 
-### 验收
+### 交付形态
 
 严格四格；三张全身加一张五官特写；同一头高线/地面线；全身不裁脚；侧面只有一张；五官、发型、衣服、配饰跨格一致。
 
@@ -78,7 +78,7 @@ TASK
 Create one unlabeled four-panel empty-location reference sheet for [LOCATION_ID] in [STYLE].
 
 OUTPUT
-One single 16:9 native 4K image, 3840x2160, with exactly four equal image panels and clean white gutters. All four panels show the same unoccupied approved location and share one spatial identity. The sheet has no header, title, footer, legend, caption area, metadata block, or written annotation.
+One single Qwen-Image 2.1 native-maximum image (landscape 2752x1536 or portrait 1536x2752), with exactly four equal image panels and clean white gutters. All four panels show the same unoccupied approved location and share one spatial identity. The sheet has no header, title, footer, legend, caption area, metadata block, or written annotation.
 
 SCENEPLAY_TO_SPACE_RULE
 The screenplay may choose only empty areas and fixed landmarks already represented by the approved scene facts. A missing region or object is omitted from this asset version, not invented. Translate actions only into required free space, circulation, fixed furniture, and architectural visibility. Do not render the characters, actions, handled objects, plot props, emotions, or story event that motivated the view.
@@ -135,7 +135,7 @@ TASK
 Create one production prop subject-asset sheet for [PROP_ID] in [STYLE].
 
 OUTPUT
-One 16:9 native 4K image, 3840x2160. Exactly four panels with clean separators. Panel 1: straight-on front view. Panel 2: one side view. Panel 3: back view. Panel 4: functional view showing the prop performing its core physical function. No fifth panel.
+One Qwen-Image 2.1 native-maximum image (landscape 2752x1536 or portrait 1536x2752). Exactly four panels with clean separators. Panel 1: straight-on front view. Panel 2: one side view. Panel 3: back view. Panel 4: functional view showing the prop performing its core physical function. No fifth panel.
 
 CAMERA_OR_PROJECTION
 Neutral orthographic-like inspection views, consistent object scale across panels, object centered in each panel. Front plane parallel to image plane for the front view. One side view only, never split into left-side and right-side. Back view directly opposite the front. Functional view keeps the same object axis while showing the active function state.
@@ -156,7 +156,7 @@ EXCLUSIONS
 No person, hand, body part, clothing, scenery, pedestal unless structurally required, accessory not included in the asset, second product, three-quarter view replacing a required panel, collage, text, logo, watermark, invented control, invented port, clipped edge, or a functional panel showing a different prop.
 ```
 
-### 验收
+### 交付形态
 
 严格四视图：正面/侧面/背面/功能图；单一物件跨格一致；正面严格正面、侧面只有一张、背面正对正面；功能图展示核心物理功能且身份不变；完整不裁切；部件数可核对；材质清楚。模糊"普通包"不足以锁定主体资产时，应先补结构事实或降级为B级镜头道具。
 
@@ -199,4 +199,4 @@ No redesign, extra part, missing part, changed material, changed color, changed 
 
 ### 正式扩展
 
-每个状态都需身份一致性检查，不能只检查“动作对了”。所有最终扩展统一16:9原生4K。
+每个状态都需身份一致性检查，不能只检查“动作对了”。所有最终扩展统一 Qwen-Image 2.1 原生最大尺寸（横屏 2752×1536 / 竖屏 1536×2752）。

@@ -7,7 +7,7 @@ metadata:
   hermes:
     category: creative
     tags: [image-generation, asset-design, consistency, prompting]
-    related_skills: [gpt-image-template-assets-opc-test, gpt-image-subject-assets-opc-test, scene-image-generation]
+    related_skills: [gpt-image-template-assets-opc-test, qwen-image-subject-assets-opc-test, scene-image-generation]
 ---
 # Image Asset Prompting
 

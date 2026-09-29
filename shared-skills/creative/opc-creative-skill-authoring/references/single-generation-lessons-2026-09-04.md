@@ -25,7 +25,7 @@
 4. **Location Merging Rule（场景合并）**：连通性+叙事同一性判定——同一住宅连通空间（玄关/客厅/厨房/餐厅）=一个 location_master（一张图）；独立隔离空间（楼道）=单独。目的：少一个参考对象、少一道工序。
 5. **Source-Clue Alignment（门禁 11）**：客户补充设定 vs 源文可见线索逐项对齐，每条线索必须有保留或显式裁定删除+理由；手工起草母版文件替代节点产物=明令禁止（帽就是这样悄悄丢的）。
 
-## 四、画风锁定迭代链（写进 gpt-image-subject-assets + storyboard 节点 Skill）
+## 四、画风锁定迭代链（写进 qwen-image-subject-assets + storyboard 节点 Skill）
 
 凡哥四次指认画风漂移，每次根因不同：
 

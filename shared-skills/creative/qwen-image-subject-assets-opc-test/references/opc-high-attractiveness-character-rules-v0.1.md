@@ -72,12 +72,12 @@ H3参考图不是越多越好。按当前镜头需要选择最小集合，并为
 
 ## 证据边界
 
-OpenAI官方GPT Image提示指南支持具体描述脸部、人物比例、姿态、构图和“保持/改变”清单，并强调人物外观与身份在编辑流程中要重复锁定；官方没有发布“高颜值词表”或颜值保证。[1]
+Qwen-Image 2.1 官方资料支持具体描述脸部、人物比例、姿态、构图和“保持/改变”清单，并强调人物外观与身份在编辑流程中要重复锁定；官方没有发布“高颜值词表”或颜值保证。[1]
 
 专业角色参考资料普遍把正面/侧面/背面转面、全身比例和面部特写作为一致性参考的核心组成；这属于制作方法参考，不是模型输出保证。[2][3]
 
 ## Sources
 
-[1] OpenAI GPT Image Generation Models Prompting Guide: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
+[1] Qwen-Image 2.1 官方仓库（含官方 PE 提示词规范）: https://github.com/QwenLM/Qwen-Image-2.1
 [2] Kapwing, How to Create a Character Reference Sheet With AI: https://www.kapwing.com/resources/how-to-create-a-character-reference-sheet-with-ai/
 [3] Luma AI, How to Keep the Same Character Across Every Shot: https://lumalabs.ai/news/ai-character-prompts

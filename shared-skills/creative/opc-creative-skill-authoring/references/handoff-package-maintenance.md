@@ -3,7 +3,7 @@
 **包位置**：`D:\Hermes\xiaonan-memory\opc-sim\交接包_OPC平台\`
 **结构（2026-09-24 起）**：`00_先读这个_使用说明.md` + `01_节点Skill/`（**只含 7 个节点 skill**）。凡哥 2026-09-24 明确："我们的 skill 只需要 7 个节点的 skill 其他的都不要，能保证这 7 个 skill 可以跑通就好。"——02_方法论Skill / 03_产品设计参考已按此移除（留本地自用，不进交接包）。
 
-**7 个节点**：writing-opc-entry-test ／ novel-to-screenplay-opc-test ／ screenplay-asset-extraction-opc-test ／ gpt-image-subject-assets-opc-test ／ screenplay-to-15s-storyboard-opc-test ／ gpt-image-storyboard-keyframe-opc-test ／ minimax-h3-shot-prompt
+**7 个节点**：writing-opc-entry-test ／ novel-to-screenplay-opc-test ／ screenplay-asset-extraction-opc-test ／ qwen-image-subject-assets-opc-test ／ screenplay-to-15s-storyboard-opc-test ／ qwen-image-storyboard-keyframe-opc-test ／ minimax-h3-shot-prompt
 
 ## 更新流程（2026-09-24 实测跑通）
 

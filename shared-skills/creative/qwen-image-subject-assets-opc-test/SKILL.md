@@ -1,20 +1,32 @@
 ---
-name: gpt-image-subject-assets
-description: Use when compiling approved OPC asset manifests into one direct GPT Image subject-asset sheet (character 4-view, scene 4-panel, or prop).
-version: 0.3.0-rc
+name: qwen-image-subject-assets
+description: Use when compiling approved OPC asset manifests into one direct Qwen-Image 2.1 subject-asset sheet (character 4-view, scene 4-panel, or prop).
+version: 0.4.0-rc
 author: Hermes Agent
 license: MIT
 metadata:
   hermes:
     category: creative
-    tags: [opc, gpt-image, subject-assets, direct-generation]
+    tags: [opc, qwen-image, subject-assets, direct-generation]
     related_skills: []
 ---
-# GPT Image Subject Assets (Direct Generation)
+# Qwen-Image 2.1 Subject Assets (Direct Generation)
+
+**出图工具（2026-09-24 换轨）**：出图走**云电脑上的 Qwen-Image 2.1 工作流**（ComfyUI：UNET `qwen_image_2.1_int8_convrot` + CLIP `qwen3vl_8b_bf16` + VAE `qwen_image_2.1_vae_bf16`）。旧 GPT Image 2 / Nano Banana 通道已退役。
+
+## Prompt-Writing Rules (Qwen-Image 2.1 official, 2026-09-24)
+
+1. **写详细描述**——Qwen-Image 2.1 吃自然语言长描述（官方 PE 标准约 400-500 词），不要极简关键词堆。
+2. **肯定式为主**（官方倾向 positive phrasing）；排除项少而准，不能用来替代正向描述。
+3. **身份靠参考图指认**，不用文字描述五官（文字描述会损害相似度）；多参考图按顺序绑定，并写明各图角色。
+4. **保持项点到为止**——写"保持服装与发型不变"即可，不要展开描述要保留的内容。
+5. **要渲染的文字引号逐字**；不确定的文字不加。
+6. **画幅/分辨率只走参数**，不写进 prompt 正文。
+7. 锁风措辞以正向为主，"东方五官 + 修长比例 + 国漫渲染"三锚点缺一不可（凡哥实测）。
 
 ## Style Selection
 
-Use `references/opc-style-and-asset-tiering-v0.1.md`. GPT Image has no fixed official
+Use `references/opc-style-and-asset-tiering-v0.1.md`. Qwen-Image 2.1 has no fixed official
 style menu; OPC presents five customer-friendly directions: 3D animated film, Japanese
 anime, Korean full-color webtoon, Chinese ink/gongbi, and realistic cinematic concept
 design. Lock one project style before generating characters or scenes and carry the same
@@ -25,7 +37,7 @@ customer-facing dropdown (`style_id`), inherited and never chosen or changed by 
 It is adjustable across the project lifetime without rewriting subject facts. Character,
 scene, and prop visible facts are decoupled from style: switching style changes only the
 rendering language, not facial geometry, hairstyle, wardrobe structure, spatial topology,
-materials, or palette logic. When compiling prompts, fill the `[STYLE]` placeholder with the structured style declaration for the locked `style_id` from `opc-style-prompt-vocabulary-v0.1.md` (style name + 2-3 key traits + one explicit exclusion, placed near the front of the prompt) — never a bare label such as "3D animated film style" (drifts toward realistic CGI), and never an over-stuffed keyword stack (GPT Image 2 uses a reasoning layer and wants minimal prompting).
+materials, or palette logic. When compiling prompts, fill the `[STYLE]` placeholder with the structured style declaration for the locked `style_id` from `opc-style-prompt-vocabulary-v0.1.md` (style name + 2-3 key traits + one explicit exclusion, placed near the front of the prompt) — never a bare label such as "3D animated film style" (drifts toward realistic CGI), and never an over-stuffed keyword stack: Qwen-Image 2.1 reads natural-language description, so write the style as a sentence-level declaration rather than a keyword dump.
 
 ## High-Attractiveness Character Baseline
 
@@ -39,7 +51,7 @@ character into the same face.
 
 ## Purpose
 
-Compile one approved upstream asset specification into one direct GPT Image subject-asset
+Compile one approved upstream asset specification into one direct Qwen-Image 2.1 subject-asset
 sheet for one character, scene, or prop. The node generates the final asset in one pass; it
 does not first produce a separate template and then expand it. It owns only fixed-rule prompt
 compilation and image generation.
@@ -108,8 +120,9 @@ of the generated asset specification.
 
 ## Asset Sheet Contract
 
-All deliverables use **16:9 native 4K, 3840x2160** and a pure-white (`#FFFFFF`) canvas, panel
-backing, gutters, and separators. Do not upscale and call it native 4K.
+All deliverables use **Qwen-Image 2.1 native maximum size** and a pure-white (`#FFFFFF`) canvas,
+panel backing, gutters, and separators. Two supported frames: **横屏 landscape 16:9 = 2752x1536**,
+**竖屏 portrait 9:16 = 1536x2752**. Do not upscale and call it native maximum.
 
 **Grid Format Rule (凡哥 2026-09-04 定稿 v2，边框稳定约束)**：任何多面板宫格图（四视图人物/四格场景/四视图道具）：
 - **子图间分割线**（prompt 必写）：`uniform ultra-thin hairline dividers between panels, every divider exactly the same 1mm thickness, thin light-gray hairline lines`——每根线同粗细，禁粗细不一。
@@ -207,8 +220,9 @@ text, zero labels, zero numbers, zero arrows, and zero loose plot props.
 ## Prop Sheet
 
 A prop asset is a four-panel multi-view set, not a single front view: exactly four panels in one
-16:9 native 4K sheet — straight-on front, one side, back, and one functional view. The functional
-view shows the prop performing its core physical function (for example, a bag with its main
+Qwen-Image 2.1 native-maximum sheet (landscape 2752x1536 or portrait 1536x2752) — straight-on
+front, one side, back, and one functional view.
+The functional view shows the prop performing its core physical function (for example, a bag with its main
 compartment opened, a lighter with the flame lit), derived from the prop's sourced physical
 function rather than its story meaning. Establish silhouette, proportions, material, color, part
 count, fasteners, controls, and current state. If the screenplay requires visible functional
@@ -244,8 +258,8 @@ Keep external props, abilities, and scene bindings outside the identity master p
 
 ## Runtime Resolution
 
-Use the controlled runtime provider, model ID, endpoint, output size, quality, background, and
-format supplied by the platform. The node generates at the requested output size. Runtime
+**出图走云电脑上的 Qwen-Image 2.1 工作流**（ComfyUI 本地工作流，非 API 调用）。画幅按 Asset Sheet
+Contract 的横屏/竖屏原生最大尺寸走工作流参数，不写进 prompt 正文。Runtime
 telemetry, file validation, acceptance, and asset lifecycle management belong outside the Skill.
 
 ## Output
