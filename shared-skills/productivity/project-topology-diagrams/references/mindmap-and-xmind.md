@@ -130,8 +130,8 @@ with zipfile.ZipFile(xmind_path) as z:
 ## 10. ⚠ 强杀 XMind 后它会「恢复旧工作副本」（2026-09-29 踩到）
 
 - **现象**：`taskkill /F /IM Xmind.exe` 之后再用文件参数启动，界面里显示的是**上一版内容**（旧文字 / 旧布局），而磁盘上的 `.xmind` 其实已经是新版。
-- **根因**：XMind 把正在打开的文件缓存成工作副本 `%APPDATA%\Xmind\Electron v3\vana\workbooks\<hash>\content.json`（配套 `vana\file-cache\<hash>`）；非正常退出后按这些副本恢复。
-- **处理**：删掉过期的 `workbooks\<hash>`（连带 `file-cache\<hash>`）再启动；或把交付文件**改名**后重开（旧会话按路径关联）。**`vana\state\account.json` 是登录态，不要删**。
+- **根因（两个缓存位置，缺一不可清）**：`%APPDATA%\Xmind\Electron v3\vana\` 下 ① `workbooks\<路径hash>\content.json`（工作副本）② **`file-cache\<路径hash>\*.xmind`（打开文件时的缓存副本）**；非正常退出后 XMind 按这两处恢复。**只清 workbooks 不够** —— 2026-09-29 实测：清了 workbooks 仍显示旧版、右下角主题数还是旧的，**连 `file-cache` 一起清掉再启动**才读到磁盘最新版（清完首次启动稍慢，可能 30s+ 才出窗口，别急着判失败）。
+- **处理**：删掉 `workbooks\<hash>` + `file-cache\<hash>` 再启动（清前可整目录备份到 `%LOCALAPPDATA%\Temp`）；或把交付文件**改名**后重开（旧会话按路径关联）。**`vana\state\account.json` 是登录态，不要删**。
 - **教训**：改完 `.xmind` 别用 taskkill 收尾 —— 要么让凡哥正常关闭，要么「先杀 → 再生成 → 再启动」；启动后一律用 `capture(mode='ax')` 核对文字是不是最新版（否则凡哥按 Ctrl+S 会把旧内容写回磁盘）。
 
 ## 9. 驱动 XMind（Electron）的 computer_use 硬规则
