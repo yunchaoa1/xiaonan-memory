@@ -63,7 +63,22 @@ curator:
 - 先对比两个 SKILL.md：互补则合并成完整版（如 world-building 英文工作流并入 worldbuilding 中文设计原则，保留业务核心方），被吸收方移出目录。
 - 同名冲突技能（world-building vs worldbuilding）优先保留中文、业务核心的一方。
 
+### 4.5 重命名技能（2026-09-24 实战：gpt-image-* → qwen-image-*）
+
+工具换代（出图模型从 GPT Image 换到 Qwen-Image）时节点 skill 要跟着改名。改名是「文件系统 + 全库引用 + 交付包」三处同步的原子动作，漏一处就留悬空引用。
+
+1. **别直接 `mv`**：Hermes 常驻监控 skills 目录，`mv`/`rm` 可能报 `Device or resource busy`。用 **`cp -r 旧名 新名` → `sleep 3` → `rm -rf 旧名`**（重试一次基本能删掉）。⚠️ 两个目录同时存在时必须立刻处理——两份 SKILL.md 声明同一个 `name:`，加载会重复。
+2. **frontmatter 的 `name:` 同步改**（目录名带 `-opc-test` 后缀、`name:` 是短名，属历史惯例，保持一致）。
+3. **全库找引用**：`grep -rln "旧名" /d/Hermes/skills /d/Hermes/xiaonan-memory | grep -v "\.git/"`，分两类——**活文档必改**（其他 skill 的 SKILL.md/references、DASHBOARD、交付包说明书）；**历史快照不改**（`opc-lean-plan/`、`opc-sim/v2/` 运行数据、`.curator_ledger.jsonl`、`.usage.json`、旧交付 zip）。
+4. **批量替换走 execute_code 精确 `str.replace`**（替换串按「先长后短」排序，逐文件打印命中数）；不要用正则改结构化文本。
+5. **改完三查**：`health_check.py` + frontmatter（每个 skill 的 `name:`/`description:` 各 1 条）+ 引用完整性两层检查（见 §4）。
+6. **交付包同步**：包内目录名、说明书节点表、依赖表、打包（zip 名带日期+版本）、旧 zip 清理，一步不落。
+
 ### 4. 修复悬空引用
+- ⚠️ **两层都要查（2026-09-24 补）**：① SKILL.md → `references/xxx.md`；② **references 文件之间的相互引用**。第二层最易漏——实战：`opc-style-and-asset-tiering-v0.1.md` 正文引用 `references/opc-style-prompt-vocabulary-v0.1.md`，而该文件只在仓库共享 `references/` 下、没进 skill 目录 → 交付包里就是悬空。查法：
+  ```bash
+  grep -rh -o "references/[A-Za-z0-9_.\-]*\.md" <skill>/references/*.md | sort -u   # 再逐个 find 校验
+  ```
 - 官方包扁平化安装的常见问题：SKILL.md 在但 references/ 缺失（seedance 系列是 Emily2040/seedance-2.0 官方包，只拷了 SKILL.md）。
 - **正文自足原则**：正文有完整表格/规则时，把 `[ref:xxx]` 替换为"以正文为准"提示，不补不存在的文件。
 - 批量替换脚本：解析 frontmatter 拿技能名 → 排除 disabled 列表 → 正则替换缺失 `[ref:xxx]` → 只保留指向真实存在文件的引用。

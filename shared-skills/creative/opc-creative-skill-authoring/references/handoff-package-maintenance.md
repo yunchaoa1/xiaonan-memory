@@ -34,8 +34,28 @@
    输出到 `D:\数字资产\`，zip 路径**交凡哥本人转发**给小何（我们不直接发）。
 8. **收尾**：git 提交 xiaonan-memory ＋ `sync_skills.py push`（本地 skill 侧的改动）。
 
+## 工具换代换轨（2026-09-24b：GPT Image → Qwen-Image 2.1）
+
+出图工具换代时交接包要整体换轨——**目录改名 + 内容换轨 + 全库引用同步 + 重打包**，四件一起做完才叫"能跑通"。
+
+1. **skill 改名**：`gpt-image-subject-assets-opc-test` → `qwen-image-subject-assets-opc-test`、`gpt-image-storyboard-keyframe-opc-test` → `qwen-image-storyboard-keyframe-opc-test`（目录名 + frontmatter `name:` + `tags` 一起改）。改名技术细节见 `skill-library-maintenance` §4.5（目录 busy 用 `cp -r` + `sleep` + `rm -rf`）。
+2. **内容换轨四个必改点**：
+   - **工具口径**：所有 "GPT Image 2 / Nano Banana" → "Qwen-Image 2.1 工作流（云电脑 ComfyUI）"。**工作流文件不随包**（凡哥定："他可以看到云电脑"）。
+   - **提示词策略反转**：旧的"少写提示词（模型有推理层）" → **Qwen 详细自然语言描述（官方 PE 标准约 400-500 词）+ 肯定式为主**。这条最容易漏——旧 skill 里 "minimal prompting" 的说法与新规范直接冲突。
+   - **分辨率**：旧的"16:9 原生 4K（3840×2160）" → **Qwen 原生最大：横屏 2752×1536 / 竖屏 1536×2752**（凡哥："按照原生最大的来，横屏竖屏两个版本"）。**不虚标 4K**。
+   - **去门禁形态**：扫掉 skill 里残留的"自检/核对/重写/不生成"段落，改成**生成规则形态**。本次实例：故事板 skill《剧情核对铁律》第 2 条"prompt 写完，调生图**之前**，对照卡**自检**一遍…缺一个=违规，**重写** prompt，**不生成**" → 改为《剧情动作抄写规则》"写 prompt **时**把剧情动作逐字写进去"。依据：凡哥 2026-09-24 重申"**我们的 skill 没有自检的作用，不要给它增加检查错误的任务**"。
+3. **references 全量重拷**：改名后共享参考文件要重新拷进新目录——本次补了 4 个（tiering／attractiveness／templates／**vocabulary**，其中 vocabulary 此前一直悬空）。
+4. **两层引用检查（本次新增）**：除 SKILL.md → references 外，还要查 **references 之间相互引用**：
+   ```bash
+   grep -rh -o "references/[A-Za-z0-9_.\-]*\.md" <skill>/references/*.md | sort -u
+   ```
+   逐个 `find` 校验——本次正是这层查出 `opc-style-prompt-vocabulary-v0.1.md` 悬空（它只在仓库共享 `references/` 下、没进 skill 目录）。
+5. **全库引用同步**：在 `/d/Hermes/skills` + `/d/Hermes/xiaonan-memory` 全库 grep 旧名，**活文档批量精确替换**（本次 14 处：4 个 skill 的 SKILL.md/references、DASHBOARD 6 处、说明书 2 处）；**历史快照不动**（`opc-lean-plan/`、`opc-sim/v2/` 运行数据、旧 zip）。
+6. **重打包**：`OPC节点Skill交接包-YYYY-MM-DD<b>.zip`（同日出多版加 b），旧 zip 删除。
+
 ## 纪律
 
+- **交付路径（2026-09-24 凡哥明确要求）**：zip 交凡哥时回话里**必须写完整绝对路径**（`D:\数字资产\...zip`）——原话"要直接给我文件路径，不要只给我文件名称"；用 `MEDIA:` 时路径文本再写一遍。
 - **交付物不加料**：凡哥"不用添加其他的东西"——只封装规定内容，不塞额外文件/说明/版本注记。
 - **触发时机**：① 凡哥明确说"给小何/交接包"；② 节点 skill 更新后（主动提醒凡哥"交接包落后了"，由他决定何时出包）。
 - **2026-09-24 版更新记录**（对照旧版）：分镜节点（+开场镜/对话戏焦点策略/生活化动作/空间拓扑账本/主体占框）、写作节点（+开场设计五公式）、H3 提示词（六段规则最新＋官方原文参考随包）；references 补齐 4 处（此前 3 文件缺失+1 处路径悬空）。
