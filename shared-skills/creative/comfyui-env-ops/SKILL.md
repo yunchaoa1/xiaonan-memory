@@ -62,6 +62,69 @@ Lightricks/ComfyUI-LTXVideo 首次安装后 IMPORT FAILED（其余插件正常�
 
 ComfyUI 任务中断/失败后模型不卸载（`0 models unloaded`）→ 下任务 OOM。批量/平台接法：每任务前 `POST /free`（`{"unload_models":true,"free_memory":true}`），封装在 worker 层一次，客户无感。
 
+## 云端操作协作模式（2026-09-20 凡哥两次纠正 — 别再把轮次浪费在"想办法自己连"上）
+
+**云电脑 = 智算云扉平台，控制台入口 `https://waas.aigate.cc/dashboard/instance`；凡哥在控制台的网页终端里执行 root 命令。** 小南（本机）对云端**没有直连通道**——别自己去试 SSH / preview 面板 / 独立浏览器连控制台（本次绕了整整一轮，凡哥原话：『**你没办法连接云电脑的，你忘记了，我们是用root命令控制云电脑的**』『我给你云电脑的官网地址，你去回忆一下怎么操控云电脑』）。固定三步，别再想别的：
+
+1. 小南写好命令 → 2. 凡哥贴进网页终端 → 3. 他拷打印结果回来，小南判断/给下一步
+
+**命令格式纪律（凡哥原话：『你给我的是一条命令吗？』）**：给**单行、能整段一次粘贴**的命令（多步用 `&&` / `;` 串起来），**不要多行脚本**——多行他虽能整段贴，但会先反问"这是一条吗"。输出用 `echo "=== ① xxx ==="` 分段标注，他整段拷回后逐块对读。备选方案写在文字里、别塞进命令块（他会把备选一起跑）。
+
+**云端两个模型库（一条命令同时查，2026-09-20 实测）**：
+
+```bash
+find /home/waas /datasets -iname "*<关键词>*" -name "*.safetensors" 2>/dev/null | sort
+```
+
+- `/home/waas/ComfyUI/models/` = **共享盘**（自建件 / H3 在用件，可写，ComfyUI 插件只扫这里）
+- `/datasets/ComfyUI/models/` = **平台公模库**（**只读**，海量现成模型；`ln -sf` 软链进共享盘即零下载白嫖，软链后**必须重启 ComfyUI** 才扫到）
+
+**Qwen Image 2.1（图片模型，UP 工作流常用）三件套 —— 公模库三件全有，软链即用**：
+
+| 文件 | 公模库分类 | 大小 |
+|---|---|---|
+| `qwen_image_2.1_int8_convrot.safetensors` | `diffusion_models/` | ~7 GB |
+| `qwen3vl_8b_bf16.safetensors` | `text_encoders/` | 17.5 GB（另有 `_int8_convrot` / `_w4a8` 小版可换）|
+| `qwen_image_2.1_vae_bf16.safetensors` | `vae/` | 676 MB |
+
+官方重打包仓库 `Comfy-Org/Qwen-Image-2.1`（HF，ModelScope 有同镜像）。软链模板：`ln -sf /datasets/ComfyUI/models/<分类>/<文件> /home/waas/ComfyUI/models/<分类>/`。⚠️ Qwen-Image 2.1 支持 **2026-09 中旬才合进 ComfyUI 主干** → 老版本加载报 `UNSUPPORTED DIFFUSION MODEL` / 节点缺失 = 版本不够新，不是装错了（升到哪个版本见本文「为某工作流升级 ComfyUI」节）。
+
+**「测试」与「交接」是两件事，别搅在一起（2026-09-29 凡哥纠正：『测试是测试，和交接有什么关系？』）**：凡哥在云上做的测试 = 验证「这套东西到底能不能跑」（技术验证，他自己做）；交接 = 把「怎么调这套东西」交给下游（接口交付）。**测试通过只说明「可以交」**——不代表要把测试数据/结论写进交接包，更**不要反过来问凡哥要测试数字**（他会直接反问「有什么关系」）。交接物只含：接口规格 / 素材与提示词格式 / 随附样例输入 / 待下游自证的开放项。同理：**凡哥自己的测试结论由他自己说，别替他写「已实测 XX」**。
+
+## 为某工作流升级 ComfyUI：切「最小含所需节点」的版本（2026-09-29 云端实测）
+
+症状：工作流报缺几个节点，右侧同时提示 **"Some nodes require a newer version of ComfyUI. (Your version: X) … 核心节点来源于 Y 版本"** —— 这**不是缺插件**，是版本落后。官方文档（docs.comfy.org 对应模型教程）同款诊断原文：
+
+> "If nodes are missing when loading a workflow, possible reasons: ① You are not using the latest ComfyUI version ② Some nodes failed to import at startup" / "If you find any core node missing in this document, it might be because the new core nodes have not yet been released in the latest stable version."
+
+**别直接跳到最新 tag —— 先算出「最小含该节点的版本」**（改动最小、风险最低）：
+
+```bash
+# ① 找引入提交（在 ComfyUI 仓库根跑）
+git log -S "<节点类名>" --oneline --all | head -5
+# ② 找最小含该提交的 tag，并一步切过去
+cd <ComfyUI> && TARGET=$(git tag --contains <commit> | sort -V | head -1) && echo "→ 最小版本: $TARGET" && git fetch --tags && git checkout $TARGET && <venv>/bin/pip install -r requirements.txt -i https://pypi.org/simple
+```
+
+**实例（Qwen-Image 2.1，2026-09-29 云上）**：缺 `TextEncodeQwenImage21` / `QwenImage21Cache`（在 `comfy_extras/nodes_qwen.py`，引入提交 `6bfaacc6 "Qwen-image 2.1 support (CORE-423)"`）。**v0.36.0 里还没有**（那次白升一级、节点仍红）——`git tag --contains` 算出最小版本 = **v0.37.0**（当时最新已 v0.37.4）。升级后 H3 链路未受影响（插件全加载，comfy_kitchen CUDA 后端认到 sol_attn）。
+**顺手的自检**：`grep -rl "<节点类名>" --include="*.py" .`（全仓库搜实现文件）——搜到路径 = 代码里有了，搜不到 = 这个 tag 确实还没进；**只搜 `comfy_extras/` 会漏**（节点也可能在 `comfy/` 下）。
+
+⚠️ **两个必踩的坑**：
+
+1. **pip 必须走官方源** `-i https://pypi.org/simple`。用国内镜像时 `comfyui-workflow-templates-media-assets-02==0.1.3` 等新包尚未同步 → **整个 `pip install` 中断**（`ERROR: No matching distribution found`），连带目标版本需要的 `comfy-aimdo` 也没升级 → 启动直接 `ModuleNotFoundError: No module named 'comfy_aimdo.storage'`（顶在 `comfy/utils.py → comfy/storage.py` 的 import 链上，**不起服务，报错形态跟"缺节点"毫无相似度，极易误判成"升级失败"**）。
+   **教训**：**别把"某个看起来不重要的包（模板预览资源之类）安装失败"当无害** —— pip 是一批事务，一个 `No matching distribution` 就让整批依赖停在半路。**只要输出里出现任何 `ERROR:`，就换源重跑整条**，不要只补那一个包（本次因误判"不影响节点"多绕一轮）。
+
+2. **0.36 起 asset catalog 数据库迁移重建**（`0006_add_loader_path → 0007_record_content_split`）：官方警告**手动标签 / 用户元数据 / 预览缩略图 / 重命名 / API 记录会丢**，旧库自动备份在 `user/comfyui.db.bkp`，**图片文件本身不丢**。在意就先 `cp user/comfyui.db user/comfyui.db.manual-bak` 再升。
+
+**升级纪律（这是动 H3 的窝，直接改代码，比"装插件"重）**：
+- 升级前记录当前版本：`git log -1 --format="%H %s" | tee <备份文件>`
+- checkout 时输出里的一串 `D models/xxx/put_xxx_here` 是 **git 删自己仓库里的占位文件**（真实模型在共享盘/软链，git 不碰）——别慌，但顺手 `ls -l` 验一下软链模型还在
+- 升完**先跑一次 H3 基线**（如 15s）确认没坏，**再上新工作流** —— 别一次动两件事
+- **回滚**：`git checkout <旧tag> && venv/bin/pip install -r requirements.txt -i https://pypi.org/simple` + 重启；数据盘不动，模型/工作流都在
+- 备选自检（不用命令行）：ComfyUI 界面 → **模板库搜目标模型名**（如 "Qwen-Image-2.1"）—— 官方口径「模板库里搜不到 = 你的 ComfyUI 过期了」
+
+⚠️ **节点版本信息的权威源是「报错的那个实例自己」**：截图上那句"核心节点来源于 0.36.0"就是云端 ComfyUI 前端按自己的节点定义库算出来的，比任何外部搜索都准。**凡哥说"我们版本已经很新了"时不要跟他争** —— 让实例自己报（`git describe --tags` + `grep -rl` 两条命令），用输出说话。
+
 ## 云端装件与运行可见性（2026-09-10 实测）
 
 ### 先查公模库，再下载
@@ -401,6 +464,7 @@ curl -s "http://127.0.0.1:18188/api/userdata?dir=workflows"
 | **子图实例**：`<uuid>` 形态的 type | 该 uuid = `definitions.subgraphs[].id`（本例 `d581531a-…` = 子图「模型加载」）。**子图内节点要单独收集**，别当缺件 |
 | **加载器第 1 个 widget 不是文件名** | `CLIPLoader` = `[name, type]`、`UNETLoader` = `[name, weight_dtype]` → `minimax` / `default` 这类值会被当成模型名 |
 | **模型匹配未归一化** | 工作流写 `MiniMax-H3\xxx.safetensors`，本机文件在 `diffusion_models/minimax_h3/xxx` → **按 basename 小写比对、忽略目录前缀**。不归一会把本机已有的模型误报成缺（本次第一版误报 4 个） |
+| **插件来源标记 ≠ 要装插件** | UI 格式节点上的 `properties.cnr_id`（部分导出写 `aux_id`）：**值为 `comfy-core` = ComfyUI 官方内置节点**，看着像第三方其实一个插件都不用装——实例（2026-09-20 Qwen Image 2.1 编辑工作流 12 节点全 `comfy-core`：`ResolutionSelector` / `SaveImageAdvanced` / `ComfySwitchNode` / `QwenImage21Cache` / `TextEncodeQwenImage21` 都是核心）；值是别的字符串才是插件仓库 id。**判"要不要装插件"先读这个字段，比逐个 web 搜快且准** |
 
 ### 装完新插件怎么验：不打扰在跑实例（`--quick-test-for-ci`，2026-09-14 实测）
 
