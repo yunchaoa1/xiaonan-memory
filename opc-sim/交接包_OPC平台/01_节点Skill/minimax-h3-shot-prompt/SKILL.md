@@ -23,14 +23,14 @@ Use when an approved OPC shot needs a MiniMax H3 prompt and asset-binding packag
 
 另：动作要写**因果链**（准备→触发→加速→主动作→接触→反应→恢复→终态），运镜要写**五要素**（机位+运动+方向+速度/幅度+跟随对象），情绪要落到**可观察微动作**（眼/脸/呼吸/姿态/手/注意力）；禁 `cinematic`／`dynamic camera`／`cool VFX` 这类空词。
 
-## Pre-Output Hard Checklist（每次输出前逐条核对 — 2026-09-09 云电脑首测教训，漏过一条就返工）
+## 六段编译规则（写 prompt 时直接满足 — 2026-09-09 云电脑首测教训；以下每条都是 prompt 的写法，违反即该 prompt 不成立）
 
-1. **每个 `<Subject N>` 定义必须点名来源参考图槽位**：写 `defined by <Picture N>` / `supplies her appearance from <Picture N>`。漏点名 = 参考图不绑定（实测事故：Director 公共参考图已上传，prompt 未点名槽位，模型不跟参考图）。
-2. **六段字段名裸写开头**：`subject_definitions:` 直接起行；**禁止**用 `<subject_definitions>`…`</subject_definitions>` XML 包裹整段。尖括号只用于 `<Subject N>` / `<Picture N>` / `<d>` 三种标签。
-3. **六段顺序与字段名固定**：subject_definitions → summary → retention_analysis → detailed_description → overall_soundscape → non_diegetic_music（summary 必须带 `[reference generation]` 前缀；retention 用 `fully_preserved - ` 官方标记）。
-4. **`<d>` 格式**：`<d>[Chinese] 台词</d>`——`[Chinese]` 后必须带一个空格；台词句末有 `。？！`；禁装饰标点/emoji/重复符号。
-5. **单镜声明**：全镜只有一个 `[Shot N]` 时必须写 `The camera stays locked in this single continuous shot throughout, no cuts.`
-6. **方位锚点**：画面方向以主体自身方向为参照（before her / behind him / to his right），禁 frame/screen/left of frame 表述。
+1. **每个 `<Subject N>` 定义点名来源参考图槽位**：写 `defined by <Picture N>` / `supplies her appearance from <Picture N>`（实测事故：Director 公共参考图已上传、prompt 未点名槽位，模型不跟参考图）。
+2. **六段字段名裸写开头**：`subject_definitions:` 直接起行；**不用** `<subject_definitions>`…`</subject_definitions>` XML 包裹整段。尖括号只用于 `<Subject N>` / `<Picture N>` / `<d>` 三种标签。
+3. **六段顺序与字段名固定**：subject_definitions → summary → retention_analysis → detailed_description → overall_soundscape → non_diegetic_music（summary 带 `[reference generation]` 前缀；retention 用 `fully_preserved - ` 官方标记）。
+4. **`<d>` 格式**：`<d>[Chinese] 台词</d>`——`[Chinese]` 后带一个空格；台词句末有 `。？！`；无装饰标点/emoji/重复符号。
+5. **单镜声明**：全镜只有一个 `[Shot N]` 时写 `The camera stays locked in this single continuous shot throughout, no cuts.`
+6. **方位锚点**：画面方向以主体自身方向为参照（before her / behind him / to his right），不用 frame/screen/left of frame 表述。
 7. **六段全英文**（仅 `<d>` 内台词保留中文）；长度 ≤7000 字符。
 
 ## Purpose
@@ -47,7 +47,7 @@ Required input:
 - ordered asset references with ID, version/state, role, URI/path, hash and approval/lock status;
 - exactly one dialect and adapter version.
 
-Missing, stale, duplicate or ambiguous inputs return a block. Do not repair neighboring shots or invent facts.
+输入以这一份闭合包为唯一来源；不修补相邻镜头、不发明事实。
 
 ## Responsibility Boundary
 Upstream owns story facts, screenplay, asset extraction, shot duration, camera plan, sound intent and state transitions. This node preserves and compiles them.
@@ -142,7 +142,7 @@ The executor may run the shot through the AIMixer Director plugin's r2v (referen
     - **标点净化（官方原文 line 274）**：完整句必须句末标点（`。？！`）后再 `</d>`——"妈"→"妈。"合规；`……`→`，`合规；删除重复标点/表情/装饰符号。
     - **长台词拆段**：按时间戳/节奏可拆多段 `<d>`，每段仍完整包裹；拆段后拼接必须与卡台词逐字一致（检查脚本按拼接对比）。
 11. **Prompt ≤7000 字符**；六段顺序固定不可乱。
-12. **preflight 自检**（官方 checklist 汉化）：①每个资产图只有一个明确角色？②模式/时长/画幅/时间线兼容？③身份/服装/道具/地点跨切镜一致？④每句台词长度适配该镜时长？⑤音轨分类正确且无多余 BGM？⑥帧锚点落在声明的 shot/时间上？
+12. **六个落项（写 prompt 时直接对齐；源自官方 checklist）**：①每个资产图只承担一个明确角色；②模式/时长/画幅/时间线彼此兼容；③身份/服装/道具/地点跨切镜一致；④每句台词长度适配该镜时长；⑤音轨分类正确且无多余 BGM；⑥帧锚点落在声明的 shot/时间上。
 13. **方位锚点（凡哥铁律，2026-09-03）**：画面内方向一律以**主体自身方向**为锚点——`the closed door directly before him`、`half a step behind him to his right`、`in front of her`。禁止以画面/镜头为参照系：`left of the frame`、`on the right side of the screen`、`at the left edge of the picture` 一律改写为主体参照。
 
 ## Reference Image Usage Rule (参考图使用规则 — 2026-09-03 修正版)
@@ -170,7 +170,7 @@ State evolution stays **inside one [Shot]** by default: continuous action + emot
 
 A new `[Shot N]` = one real cut, requiring a motive: emotional beat (change distance), narrative shift, rhythm point (beat-sync cutting allowed), eye-line transfer (shot/reverse-shot), or a large shot-size/angle change. When cutting, the shot-size change must be large (wide↔medium, medium-close↔close-up, reverse angle, side↔front); **never cut to a slightly closer variant of the same angle** (Murch's beehive: the most disorienting cut). No hard cap on cut count — cut whenever there is a motive.
 
-**Self-check**: before every `the shot cuts to`, ask "what new information or emotion does this cut give the viewer?" If there is no answer, delete the cut and rewrite as continuous action inside the same shot.
+**切镜必须携带新信息或情绪**：每次写 `the shot cuts to` 时，该切镜必须带来新的信息或情绪变化；无新信息就不切，改写为同一镜头内的连续动作。
 
 ### 占框与尺度稳定（2026-09-24 增；治"大小比例忽大忽小"；社区共识 + 模型官方指引）
 
@@ -210,7 +210,7 @@ upstream marks them continuity-critical.
 
 ## Output Contract
 
-Return exactly one complete package or one explicit block.
+输出一份完整编译包（本节点只产出编译结果）。
 
 A successful compile contains:
 - status `SUCCESS`;
@@ -224,36 +224,25 @@ A successful compile contains:
 - executor handoff;
 - `execution_status: NOT_RUN`.
 
-A block uses one code: `SHOT_BLOCKED`, `ASSET_BINDING_BLOCKED`, `PROVENANCE_BLOCKED` or `DIALECT_BLOCKED`. It must list affected fields. No output may claim rendered video, runtime QC or human acceptance.
+输出不声称已渲染视频、已做运行时 QC 或已获人工验收——执行与验收属节点外环节。
 
-## Hard Gates
+## 编译前提（输入事实，由上游闭合包提供；本节点只读、只编译，不判定不阻断）
 
-1. Shot and source versions, approvals, hashes and closed boundary are present.
-2. Duration, mode, action, camera intent, state timeline, dialogue, audio and continuity are present.
-3. Every visible subject, scene, prop, group and ability has an approved locked binding.
-4. Asset ID, version/state, hash, role, order and lineage are valid.
-5. The prompt adds no unapproved fact and omits no required fact.
-6. Exactly one supported dialect and adapter version is selected.
-7. URI/slot mappings preserve OPC identity and do not rely on slot order.
-8. Output is complete, has `execution_status: NOT_RUN`, and makes no media acceptance claim.
+1. Shot 与来源的版本、批准、哈希与闭合边界；
+2. 时长、模式、动作、运镜意图、状态时间线、台词、音频与连续性；
+3. 每个可见主体/场景/道具/群组/能力的已批准锁定绑定；
+4. 资产 ID、版本/状态、哈希、角色、顺序与血缘；
+5. prompt 不新增未批准事实、不遗漏必需事实；
+6. 恰有一个受支持的方言与适配器版本；
+7. URI/槽位映射保留 OPC 身份、不依赖槽位次序；
+8. 输出完整、`execution_status: NOT_RUN`、不声称媒体验收。
 
-Any failed gate blocks compilation and leaves execution untouched.
+## 参考样例（历史三镜包，供写法对照；非门禁）
 
-## Fixed Regression
-
-Use the existing three-shot package:
+样例包路径：
 - `D:\Hermes\xiaonan-memory\opc-mvp\05_h3_prompt_package\h3_prompt_package.json`
 - `D:\Hermes\xiaonan-memory\opc-mvp\03_storyboard_timeline\opc_shots.json`
 - `D:\Hermes\xiaonan-memory\references\reuse-scout\video-pipeline-reuse-scout-v0.1.md`
 
-The static package has three shots, four dialect declarations and `selected_dialect: aimixer_director`. Its execution, runtime model, locked asset binding, video generation and media QC remain `NOT_RUN` until independently verified.
+该样例含三镜、四个方言声明与 `selected_dialect: aimixer_director`（仅作写法对照）。
 
-## Verification Checklist
-
-- [ ] Closed shot and source references were checked.
-- [ ] Every visible dependency has one approved locked binding.
-- [ ] Prompt and state timeline preserve upstream meaning.
-- [ ] One dialect and adapter version were used.
-- [ ] OPC IDs remain beside URI/slot mappings.
-- [ ] Output is one package with `execution_status: NOT_RUN`.
-- [ ] No video, runtime QC or human acceptance was claimed.
