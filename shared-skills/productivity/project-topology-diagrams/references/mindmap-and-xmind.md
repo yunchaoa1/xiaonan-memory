@@ -120,7 +120,19 @@ with zipfile.ZipFile(xmind_path) as z:
 | `metadata.json` / `manifest.json` | 元数据、文件清单 |
 | `Thumbnails/thumbnail.png` | 预览缩略图 |
 
-→ **父子层级结构与我们数据一一对应**，因此下一步可以直接由脚本**写出/更新 `.xmind`**（改数据 → 出文件 → 凡哥双击打开即最新），省掉"重跑 md + 再导入"。做之前用 §7③ 的 zipfile 校验法验证生成物可读，并让 XMind 打开目视一次。
+→ **父子层级结构与我们数据一一对应**，因此**可直接由脚本写出 `.xmind`**（2026-09-29 实测跑通，见 §10 末尾示例）：以某个现有 `.xmind` 当模板，读进 `content.json` / `metadata.json` / `manifest.json` / `Thumbnails/thumbnail.png`，**只替换 `content.json` 里 sheet 的 `rootTopic`**（`title` + `children.attached`），再原样写回 zip —— XMind 双击正常打开、可编辑，右下角「主题: N」与数据一致。
+
+- 可直接抄的示例脚本：`D:\Hermes\scripts\gen_mindmap_guozhiqin.py`（数据放在文件顶部 `TREE`，形态 `("父", ["子", ...])`；跑一次同时产出 `.md` + `.xmind`）
+- topic 最小结构：`{"id": uuid4, "class": "topic", "title": ..., "titleUnedited": false, "children": {"attached": [...]}}`
+- 布局：`rootTopic.structureClass` 用 `org.xmind.ui.map.balance`（左右平衡，适合"左一类/右一类"的双向结构）或 `org.xmind.ui.map.clockwise`
+- 校验：重开 zip 读 `content.json`，比对中心主题 + 递归主题数（同 §7③）。**同时用 `capture(app='Xmind', mode='ax')` 读节点文字核对**——比截图 OCR 可靠，Electron 的 a11y 树能给每个主题的原文。
+
+## 10. ⚠ 强杀 XMind 后它会「恢复旧工作副本」（2026-09-29 踩到）
+
+- **现象**：`taskkill /F /IM Xmind.exe` 之后再用文件参数启动，界面里显示的是**上一版内容**（旧文字 / 旧布局），而磁盘上的 `.xmind` 其实已经是新版。
+- **根因**：XMind 把正在打开的文件缓存成工作副本 `%APPDATA%\Xmind\Electron v3\vana\workbooks\<hash>\content.json`（配套 `vana\file-cache\<hash>`）；非正常退出后按这些副本恢复。
+- **处理**：删掉过期的 `workbooks\<hash>`（连带 `file-cache\<hash>`）再启动；或把交付文件**改名**后重开（旧会话按路径关联）。**`vana\state\account.json` 是登录态，不要删**。
+- **教训**：改完 `.xmind` 别用 taskkill 收尾 —— 要么让凡哥正常关闭，要么「先杀 → 再生成 → 再启动」；启动后一律用 `capture(mode='ax')` 核对文字是不是最新版（否则凡哥按 Ctrl+S 会把旧内容写回磁盘）。
 
 ## 9. 驱动 XMind（Electron）的 computer_use 硬规则
 
