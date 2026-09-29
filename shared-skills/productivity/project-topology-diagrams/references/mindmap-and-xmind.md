@@ -127,13 +127,35 @@ with zipfile.ZipFile(xmind_path) as z:
 - 布局：`rootTopic.structureClass` 用 `org.xmind.ui.map.balance`（左右平衡，适合"左一类/右一类"的双向结构）或 `org.xmind.ui.map.clockwise`
 - 校验：重开 zip 读 `content.json`，比对中心主题 + 递归主题数（同 §7③）。**同时用 `capture(app='Xmind', mode='ax')` 读节点文字核对**——比截图 OCR 可靠，Electron 的 a11y 树能给每个主题的原文。
 
-## 10. ⚠ 强杀 XMind 后它会「恢复旧工作副本」（2026-09-29 踩到）
+## 10. ⚠ 改完 .xmind 后让 XMind 显示最新版（2026-09-29 连踩三坑）
 
-- **现象**：`taskkill /F /IM Xmind.exe` 之后再用文件参数启动，界面里显示的是**上一版内容**（旧文字 / 旧布局），而磁盘上的 `.xmind` 其实已经是新版。
-- **根因（两个缓存位置，缺一不可清）**：`%APPDATA%\Xmind\Electron v3\vana\` 下 ① `workbooks\<路径hash>\content.json`（工作副本）② **`file-cache\<路径hash>\*.xmind`（打开文件时的缓存副本）**；非正常退出后 XMind 按这两处恢复。**只清 workbooks 不够** —— 2026-09-29 实测：清了 workbooks 仍显示旧版、右下角主题数还是旧的，**连 `file-cache` 一起清掉再启动**才读到磁盘最新版（清完首次启动稍慢，可能 30s+ 才出窗口，别急着判失败）。
-- **处理**：删掉 `workbooks\<hash>` + `file-cache\<hash>` 再启动（清前可整目录备份到 `%LOCALAPPDATA%\Temp`）；或把交付文件**改名**后重开（旧会话按路径关联）。**`vana\state\account.json` 是登录态，不要删**。
-- **教训**：改完 `.xmind` 别用 taskkill 收尾 —— 要么让凡哥正常关闭，要么「先杀 → 再生成 → 再启动」；启动后一律用 `capture(mode='ax')` 核对文字是不是最新版（否则凡哥按 Ctrl+S 会把旧内容写回磁盘）。
+**坑 ①：MSYS(git-bash) 下 `taskkill //F /IM Xmind.exe` 根本没生效**
+- 本机禁用了 MSYS 路径转换 → `//F` 原样传给 taskkill → `ERROR: Invalid argument/option - '//F'`；命令若带 `>/dev/null 2>&1`，**报错你看不见**，会以为杀成功了。
+- 后果很隐蔽：XMind 旧实例一直活着，新启动的实例只把路径转发给旧实例（日志 `Application receives arguments from another instance`），**旧实例不会重载磁盘上改过的文件** → 界面一直显示内存里的旧版，容易误判成「缓存没清干净」。
+- 正确关法：
+```bash
+powershell -NoProfile -Command "Stop-Process -Name Xmind -Force"
+tasklist | grep -ci xmind    # 确认必须是 0
+```
 
+**坑 ②：XMind 会从缓存恢复旧内容（两个位置，缺一不可清）**
+- `%APPDATA%\Xmind\Electron v3\vana\` 下：① `workbooks\<路径hash>\content.json`（工作副本）② `file-cache\<路径hash>\*.xmind`（打开文件时的缓存副本）。
+- 发新版 `.xmind` 前把两处删掉（先整目录备份到 `%LOCALAPPDATA%\Temp` 更稳）；**登录态在 `vana\state\account.json`，别动**。
+- 校验判据：读 `vana\workbooks\*\content.json` 看中心主题与主题数是否＝磁盘新版（比看界面快且可靠）。
+
+**坑 ③：XMind 窗口在第二块显示器时，cua-driver 枚举不到**
+- 症状：`capture(app='Xmind')` 报 `no on-screen window matched`、`list_windows` 里没有 Xmind 条目，但 `tasklist /V` 能看到窗口标题。
+- 解法：截指定 HWND 的窗口（`Get-Process Xmind` 的 `MainWindowHandle` + `PrintWindow` PW_RENDERFULLCONTENT），再用 vision 核对。现成脚本：`D:\Hermes\cache\capture_win.ps1 -hwnd <HWND> -out <png>`。
+
+**✅ 最终流程（改完 .xmind 照抄）**
+```bash
+powershell -NoProfile -Command "Stop-Process -Name Xmind -Force; Start-Sleep 6"          # 1 真关
+rm -rf "$APPDATA/Xmind/Electron v3/vana/workbooks"/* "$APPDATA/Xmind/Electron v3/vana/file-cache"/*   # 2 清缓存
+python D:/Hermes/scripts/gen_mindmap_guozhiqin.py                                       # 3 生成新版
+# 4 启动：Start-Process '<Xmind.exe 路径>' -ArgumentList '"<完整路径>.xmind"'
+# 5 校验：读 vana/workbooks/*/content.json 的主题数，或截窗口图核对
+```
+- 别在「内存里是旧版」的状态下按 Ctrl+S —— 会把旧内容写回磁盘。
 ## 9. 驱动 XMind（Electron）的 computer_use 硬规则
 
 - **后台投递会被丢**：`click`/`key` 报 `Background delivery is not available for target window class 'Chrome_WidgetWin_1' ...` → 必须 `delivery_mode='foreground'`（实测 `keys='ctrl+s'` 前台 SendInput 成功）。前台会**短暂切走凡哥的窗口**，动手前在回复里说明。
