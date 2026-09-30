@@ -20,7 +20,7 @@ OPC下游Skill=单一生成黑匣子:只读正式上游+固定规则出唯一产
 §
 。
 §
-模型:默认deepseek-flash(provider deepseek);凡哥可手动切;仅flash/v4-pro+子代理flash
+模型:deepseek-flash默认;可手动切;仅flash/v4-pro+子代理flash
 §
 清理铁律:生图/生视频前①核台账②删作废旧图(换版即清)③POST/free;整剧跑完打包。
 §
@@ -55,3 +55,5 @@ sageattention Linux解法见comfyui-env-ops skill
 学习线(凡哥定):只学投喂的不主动收;对比skill→报批落地,一点一点防冲突;理念:镜头叙事驱动/表情贴情绪/对焦听者看叙事需要;笔记opc-sim/research/
 §
 交付:给凡哥东西一律完整绝对路径(勿只文件名/相对路径)。
+§
+会议转写:本地large-v3已下,复用。
