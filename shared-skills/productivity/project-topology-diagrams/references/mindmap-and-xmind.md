@@ -162,3 +162,33 @@ python D:/Hermes/scripts/gen_mindmap_guozhiqin.py                               
 - **`coordinate` 按"截图空间"传**：工具会按窗口偏移+缩放换算到 native。我第一次按 native 数学推算坐标 → 点空（落到了别处）。正确做法：从 `capture(mode='som')` 的元素 native bounds 反算截图坐标，或先点一次再看 `capture_after` 复核。
 - **裸 `element_index` 会被拒**（要求 `element_token` 或 `snapshot_id`+`element_index`，而这两个字段不在工具入参里）→ 退回 `coordinate` 方案。
 - 起手式：`Start-Process` 启动 → `sleep 20` → `capture(app='Xmind', mode='som')` 读 element 标签（Electron 的 a11y 树能给出**每个节点文字**，比截图 OCR 可靠）。
+
+## 11. 专题脑图：手写聚焦 .md ＋ 与凡哥同时编辑（2026-09-30 实测）
+
+**两条 .md 来源，共用同一条导入链**：
+
+| 用途 | 数据从哪来 | 例 |
+|---|---|---|
+| **全项目树**（技术部全景） | 脚本从 `project_tree_data.py` 生成：`python D:\Hermes\scripts\gen_mindmap_md.py` | `技术部项目思维导图.md` → 74 主题 |
+| **专题框架图**（单主题，别硬塞进主树） | **手写** `D:\Documents\我的文档\思维导图\<专题>.md`：首行＝中心主题，其后 `- ` 两级缩进 | `影剧工坊_六节点.md` → `影剧工坊_六节点思维导图.xmind`（45 主题） |
+
+**专题图的内容配方**（影剧工坊六节点实例，凡哥要"每节点带上输入/产出/约束/负责人"）：中心＝`<项目> · 六节点框架（<版本> · <日期> 会议定）`；六个主分支＝六个节点，每节点下挂 `输入 / 产出 / 会议约束（如"1 分钟一集分章""逐章串行"）/ 工具 / 负责人 / 状态图标`；再补 5–6 条**贯穿枝**（资产库、双形态分用户、引擎与管线、AI Agent 环节、前端、目标）。归属只写会上认领或已核准数据，其余标「待确认」。
+
+**存档位置（再次确认）**：XMind 存到**上次用过的目录**，两次实测都落在 `D:\Documents\我的文档\拓扑图\`，而 .md 在「思维导图」→ 每次都要找回来改名归位：
+```bash
+find /c/Users/bobby/AppData/Roaming/Xmind /d/Documents -iname "*.xmind" -newermt "-10 minutes"
+# → 移到 D:\Documents\我的文档\思维导图\<专题>思维导图.xmind
+```
+
+**⚠ 凡哥可能正在同一份图里编辑 —— Ctrl+S 会把他的改动一起存盘**：
+- 发现方式：`capture` 的元素文字里出现**自己没写过的句子**（实例：`方向：影剧工坊围绕6个节点实现傻瓜制剧的能力，增加以小说为资产单元…`——我只写了后半句）。
+- **保存后必须核对**（也用来确认他的编辑没丢）：
+```python
+import zipfile
+cj = zipfile.ZipFile(dst).read("content.json").decode("utf-8")
+for kw in ["傻瓜制剧", "围绕6个节点"]:
+    print(f"含『{kw}』:", kw in cj)      # → True ＝ 他的编辑已进文件
+```
+- 处理原则：**保留他的编辑**（Ctrl+S 即已存），**不要拿旧 .md 重新导入覆盖**；回复里明确说明「你补的那句一起存进去了」。若他的改动与 `project_tree_data.py` 冲突，**先问**再同步主树。
+
+**交付**：`.xmind`（可编辑源）＋ 一张**窗口截图**（`capture(pid=…, window_id=…)` 后把 `screenshot_path` 用 MEDIA 发出去，比让他自己找文件快）；免费版限制只影响**导出带水印**，不影响 `.xmind` 本身。

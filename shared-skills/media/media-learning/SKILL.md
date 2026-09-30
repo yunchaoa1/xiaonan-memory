@@ -54,6 +54,8 @@ segs, info = m.transcribe('audio.wav', language='zh', vad_filter=True)
 for s in segs: print(f'[{s.start:.1f}-{s.end:.1f}] {s.text}')
 ```
 
+> ⏱ **长音频另走一路**：会议/讲座这类 **>10 分钟**的素材别用上面 CPU medium 的写法（几十分钟会磨很久）→ 用 `meeting-recording-to-minutes` 的**本地 large-v3 GPU 管线**（RTX 5080 上 73 分钟 ≈ 18 分钟出稿，含 hf-mirror 取模型与 `initial_prompt` 术语表，外加"边跑边读"手法）。
+
 **做法**：转写在后台跑的同时，用 `vision_analyze` 分批读关键帧（一次 6 张左右，`image_url` 用 Windows 绝对路径），
 然后把**口播说的规则**和**画面展示的步骤**对齐 —— 两边对上的那条才是可执行的方法。
 

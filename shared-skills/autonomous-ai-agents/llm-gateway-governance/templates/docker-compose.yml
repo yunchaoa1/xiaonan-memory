@@ -1,0 +1,67 @@
+# New API · 多人 LLM 网关（模板）
+# 底稿：官方 docker-compose.yml（github.com/QuantumNous/new-api）—— 不要自己手搓
+# 相对官方的改动：
+#   ① 默认弱密码 → 占位符 __PG_PASS__ / __REDIS_PASS__ / __SESSION_SECRET__（由 bootstrap.sh 用随机串替换）
+#   ② 补 SESSION_SECRET（官方 README 要求设置为持久随机串）
+#   ③ 不对外暴露 postgres / redis 端口（官方默认也是注释掉的，别手贱打开）
+#
+# 用法：把本文件与 bootstrap.sh 放在同一目录，执行 bash bootstrap.sh
+
+services:
+  new-api:
+    image: calciumion/new-api:latest
+    container_name: new-api
+    restart: always
+    command: --log-dir /app/logs
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+      - ./logs:/app/logs
+    environment:
+      - SQL_DSN=postgresql://newapi:__PG_PASS__@postgres:5432/new-api
+      - REDIS_CONN_STRING=redis://:__REDIS_PASS__@redis:6379
+      - TZ=Asia/Shanghai
+      - ERROR_LOG_ENABLED=true
+      - BATCH_UPDATE_ENABLED=true
+      - NODE_NAME=company-gw-1
+      - SESSION_SECRET=__SESSION_SECRET__
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - new-api-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:3000/api/status | grep -o '\"success\":\\s*true' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    command: ["redis-server", "--requirepass", "__REDIS_PASS__"]
+    networks:
+      - new-api-network
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: newapi
+      POSTGRES_PASSWORD: __PG_PASS__
+      POSTGRES_DB: new-api
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - new-api-network
+    # ports:            # ⚠️ 不要打开：数据库只允许容器内网访问
+    #   - "5432:5432"
+
+networks:
+  new-api-network:
+
+volumes:
+  pg_data:
