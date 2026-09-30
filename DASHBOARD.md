@@ -754,3 +754,31 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 **2026-09-14 虚拟偶像四视图（真人照片→3D国漫）**：凡哥4张照片（正面胸像/全身正面/侧面/背面）要求转 3D 国漫数字虚拟偶像，16:9 横版，左三视图+右五官特写。落地：分维度单项参考（每维度单独裁一张参考图+提示词逐条声明只取该维度）；产出2稿 3840×2160（版式/本人相似度/眼镜/发髻/白底全对，**画风偏半写实3D，国漫感不足**）。查证：GPT-Image-2.5 已于 2026-09-08 发布（Flare 快/Sunburst 精），核心增益=跨画风保真人特征；本机走中转站(api-yue88.xyz)仍挂 gpt-image-2-medium，模型列表只返回 gpt-image-2，**2.5 未验证成功**。踩坑：image_gen.model 改配置**需重启 Hermes 才生效**（已回滚）。资产：D:\数字资产\图片资产\虚拟偶像资产\（refs/ 4张维度参考、产出/ 2稿、提示词-四视图.txt）。规则已回流 gpt-image-style-prompting skill。
 **2026-09-14 真人照片→3D国漫虚拟偶像四视图**：凡哥批评第一轮"看不出是3D国漫，就是原照片的感觉"。**根因=只压了表面（无毛孔）没改形体**。行业实证 "photos pull toward realism"；关键招式=`bold intentional deformation`+`cartoon-shaped geometry`+`clean controlled surface finish`+删除锁风句里的`highly detailed/detailed skin`（内在矛盾）。另：不加负向会漂向皮克斯欧美风（凡哥否过）→须显式`oriental facial structure/not cute/not Western cartoon`；体型须单列条款防瘦化。二段式（先风格锚定图再出四视图）实测有效。7稿定稿候选=国漫骨相+真实体型版。资产 `D:\数字资产\图片资产\虚拟偶像资产\`（refs 分维度参考4张 + 产出7张 4K）。规则已回流 gpt-image-style-prompting skill。
 **2026-09-14 虚拟偶像·偶像练习生妆造**：凡哥认可 06-国漫骨相版，要求在此基础上改"练习生偶像派妆造"。产出两版 4K 四视图（08 舞台打歌服 / 09 练习室潮流），位于 `D:\数字资产\图片资产\虚拟偶像资产\产出\`。**实测固化：① idol 妆造硬指标 = `completely clean-shaven — no stubble, no beard shadow`（不写就留胡茬）② 玻璃肌/细直眉/卧蚕眼线/水光唇 四件套 ③ 发型保结构提质感（sleek glossy product shine），眼镜作本人锚点必留 ④ 改妆造用「上一稿当唯一参考图」而非喂真人照片（防写实回拉），且本版**不写**体型防瘦化条款（偶像派要精瘦）。同步 `提示词-偶像妆造.txt` + gpt-image-style-prompting skill。2.5 接口仍未验证通过（返回值 model 仍是 gpt-image-2-medium）。
+
+---
+
+## 十一、公司 AI 网关（DeepSeek 统一接入）· 2026-09-30 建档
+
+**问题**：公司 4 人各注册 DeepSeek 账号、各充各的钱、用 Agent 写代码跑项目 → ①统计不了 ②管不了 ③个人发票报销走不通 ④峰谷价差一倍没人调度。
+
+**方案（凡哥定）**：**B 方案 · 云服务器自建 New API 网关**
+
+```
+4 人 ──► 公司企业实名账号 ──► 云服务器 New API 网关 ──► 每人一把虚拟 key ──► api.deepseek.com
+                              （用量看板 / 额度上限 / 审计日志 / 一键吊销）
+```
+
+**关键事实（已核官方文档）**：
+- 并发限制**按账号计，与 API Key 无关**（flash 2500 / v4-pro 500）
+- Agent 工具不会上报身份 → 官方 `user_id` 在 Agent 场景用不上，**按人统计必须靠网关这层**
+- 官方**没有**团队/子账号/按 key 看用量功能（已核 api-docs 全站 sitemap 44 页）
+- 企业实名**不可逆**（不能改回个人）；对公汇款**汇款方开户名必须与实名一致**
+
+**进度**：
+- [x] 方案选型 B（云服务器自建 New API）
+- [x] 交付物已备齐 → `D:\Hermes\xiaonan-memory\tech\company-ai-gateway\`
+- [ ] **凡哥线**：① DeepSeek 企业实名认证 ② 对公汇款 ③ 买云服务器（2核4G / Ubuntu 22.04）
+- [ ] **小南线**：④ 部署网关 ⑤ 发 4 把虚拟 key ⑥ 4 人改 Agent 配置 ⑦ 端到端验收
+- [ ] 待确认：4 人用的具体 Agent 工具是哪几个（决定 `03-成员接入配置.md` 怎么写）；公司是否已有云账号
+
+**入口**：`D:\Hermes\xiaonan-memory\tech\company-ai-gateway\README.md`
