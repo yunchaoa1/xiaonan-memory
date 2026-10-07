@@ -87,6 +87,24 @@ metadata:
 - ⚠ **凡哥会与你同时在 XMind 里改图**：Ctrl+S 存盘会把**他正在编辑的内容**一起写进去（实例 2026-09-30：他在「2.0 目标」分支补了「围绕 6 个节点实现傻瓜制剧的能力」）→ **报告前先读 `content.json` 核对是否被他改过**（见 `references/mindmap-and-xmind.md` §11），**绝不用旧 .md 覆盖他的编辑**；回复里主动说明「你补的那句一起存进去了」
 - **会议 → 当天出脑图**是常见节奏（会上定的框架，下午给团队对齐用）；节点归属只写**会上认领 / 已核准数据**，没人认领的标「待确认」，**不按岗位推定**
 
+### .xmind 直出（2026-10-07 打通 · 不依赖界面，优先用这条）
+
+- 脚本 `D:\Hermes\scripts\gen_xmind.py`：读 `project_tree_data.py` → 直接写 `思维导图\技术部项目思维导图.xmind`（**一条命令，不用开 XMind**）
+- 格式（照 XMind 26.x 实测样例）：zip{ content.json, metadata.json, manifest.json }
+  - `content.json` = `[{id, revisionId, class:"sheet", rootTopic:{id, class:"topic", title, titleUnedited:false, structureClass:"org.xmind.ui.map.clockwise", children:{attached:[{id, title, titleUnedited:false, children:{attached:[...]}}]}}}]`
+  - 节点只需 `id`(uuid4) + `title`；**不用写样式**，XMind 打开自动布局配色（7KB 也能正常渲染）
+  - `manifest.json` = `{"file-entries":{"content.json":{},"metadata.json":{}}}`；`metadata.json` 的 `activeSheetId` 必须＝sheet 的 id
+- 界面导入（.md → `Start-Process Xmind.exe -ArgumentList "<md路径>"` → Ctrl+S）**只在需要 XMind 自己的模板配色时**才用
+- ⚠ **免费版陷阱**：保存/操作时会弹「升级 ¥420/年」内嵌面板，**会挡掉 Ctrl+S**（实测按了没反应、磁盘无新文件）→ 遇到就转直出，**绝不点付费按钮**
+- ⚠ Ctrl+S 只对**前台窗口**生效（`delivery_mode='foreground'`），且必须先 `capture()` 定位窗口，否则报 "No active window"
+
+### ⚠️ 改 project_tree_data.py 的两个坑（都踩过）
+
+1. 节点格式＝ **(标签, 类型, 子节点列表)**；类型只有 `root / title / done / prog / none / block` 六种
+2. **别把顺序写反**（写成 `(类型, 标签, ...)`）→ 生成的 .md/.xmind 里标签会变成 "done"/"prog" 字样。
+   **校验方法**：生成后 grep `.md` 是否出现整行 `- done` / `- prog` / `- none` / `- block`，有＝写反了
+3. 改完必须回读验证：跑 `gen_mindmap_md.py` 看前 20 行标签正常 + `gen_xmind.py` 报的主题数＝预期节点数
+
 ### 交付给团队的「节点框架」怎么写（凡哥 2026-09-30 定稿版 · 照这个格式抄）
 
 实例：**影剧工坊 · 六节点框架**（凡哥定稿后导出 PDF 发群；源 `D:\Documents\我的文档\思维导图\影剧工坊_六节点思维导图.xmind`，镜像 md 同目录 `影剧工坊_六节点.md`）
