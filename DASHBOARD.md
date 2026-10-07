@@ -64,9 +64,13 @@
 | 世界 | worldbuilding | 南溟岛/世界观/反派设计 |
 | 🎨 设计 | logo-generator | 说"设计logo/品牌标志/App图标" |
 | 🧠 **管理·人际** | **carnegie-human-relations** | **凡哥令（2026-09-15）：凡涉及管理 / 带人 / 说服 / 反馈 / 冲突 / 家庭关系，必先加载本技能按六步走，不凭小南自己思路答** |
+| 🔍 **搜索·抓取** | **local-web-capabilities** | **搜索/抓取被拒（403 / 反爬 / SPA 空白 / `web_search` 报 Keyless Exa 失败）时加载：本机 wigolo + Scrapling MCP 零key搜索与反爬抓取栈** |
 
 > 🧠 2026-09-15 新增 `carnegie-human-relations`（management 类）：**《人性的弱点》蒸馏成果**。来源：凡哥从博主处学来的四步蒸馏法（类型判定→方法论提取→skill化→适用边界），小南执行蒸馏并核实原书结构（四部分 30 条 = 3+6+12+9，另中文版第六篇家庭七法）。内容：两条底层前提（人最强烈的渴望是"觉得自己重要"／没人会为你的理由行动）＋六步流程（P0分诊→P1刹车→P2换位→P3找共同点→P4说话结构→P5落到行动）＋输出四件套（开场句/三步话术/让他说出承诺/禁忌三句）＋七种翻车场景＋中式职场适配＋三句自检。references 内含 30 条「原则→动作→禁忌」全表。成品：`D:\Documents\我的文档\蒸馏\人性的弱点_蒸馏skill_v1.0.docx`。
 > ⚠️ **铁律**：管理/人际类问题**先走该技能六步**再答；凡哥纠正过的做法要**回流 patch 到技能**，不能只在对话里说。
+
+> 🔍 **2026-10-07 新增 `local-web-capabilities`（research 类）：搜索/抓取卡点一次到位方案。** 已装好并实测：**wigolo MCP**（本地 18 引擎、**零 API key** 搜索 + 浏览器渲染抓取 + 缓存 + research，10 工具）+ **Scrapling MCP**（自适应解析 + 隐身抓取绕 Cloudflare，13 工具），两者均已写入 `D:\Hermes\config.yaml` 的 `mcp_servers` 且 **enabled**（**需新会话才加载工具**）。
+> 关键教训：一切"下载超时"根因 = **国外 CDN / HuggingFace 受限**，解法 = `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright` + `HF_ENDPOINT=https://hf-mirror.com`；npm 装包须加 `--allow-scripts`；Hermes 内置 `browser_exec`（DevToolsActivePort 报错）**不必修**，走这两条即可。抓抖音单条视频仍可用旧法 `media/video-analysis/scripts/douyin_video_fetch.py`（Playwright 直连）。
 
 > 💕 2026-09-17 新增 `mishangwo-attraction-system`（relationships 类）+ `book-distillation`（knowledge-management 类）：**成真《迷上我》全28章蒸馏成果**。
 > **第一步判定：工具书**（混合型——主干是方法，第1-5章与25-28章是心法层）。结构：4条底层机制（安全感=吸引内核／潜沟通＞内容／后情感合理化／吸引是流动）＋**分诊表**（症状→走哪条流程）＋四条主流程（激起兴趣／建立吸引／巩固吸引／确立关系）＋表白失败挽回＋内功（本我vs小我·身份认同·内化五步）＋18技巧工具箱＋**写厚的适用边界**（8条翻车场景＋前提条件＋作者自承局限＋时代差异）＋红线（第1章道德框架：拒绝就是拒绝）。
