@@ -71,6 +71,7 @@
 
 > 🔍 **2026-10-07 新增 `local-web-capabilities`（research 类）：搜索/抓取卡点一次到位方案。** 已装好并实测：**wigolo MCP**（本地 18 引擎、**零 API key** 搜索 + 浏览器渲染抓取 + 缓存 + research，10 工具）+ **Scrapling MCP**（自适应解析 + 隐身抓取绕 Cloudflare，13 工具），两者均已写入 `D:\Hermes\config.yaml` 的 `mcp_servers` 且 **enabled**（**需新会话才加载工具**）。
 > 关键教训：一切"下载超时"根因 = **国外 CDN / HuggingFace 受限**，解法 = `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright` + `HF_ENDPOINT=https://hf-mirror.com`；npm 装包须加 `--allow-scripts`；Hermes 内置 `browser_exec`（DevToolsActivePort 报错）**不必修**，走这两条即可。抓抖音单条视频仍可用旧法 `media/video-analysis/scripts/douyin_video_fetch.py`（Playwright 直连）。
+> 🌐 **2026-10-07 晚 wigolo 深度验收（新会话实测·副业搜索任务）**：`search` 引擎池降级——DDG/Wikipedia 直连被墙（curl 000）、mojeek/marginalia 对程序请求 403/429 限流，仅 bing 独苗且对机器人返回降级结果 → **中文搜索暂以 Hermes 内置 `web_search`（Exa）为主力**；wigolo **`fetch` ✅（博客园全文实测）/ `research` ✅（standard 深度可用）**；修复方向 = 给 wigolo 挂代理（待凡哥定）。详细结论已回流 `local-web-capabilities` 技能。
 
 > 💕 2026-09-17 新增 `mishangwo-attraction-system`（relationships 类）+ `book-distillation`（knowledge-management 类）：**成真《迷上我》全28章蒸馏成果**。
 > **第一步判定：工具书**（混合型——主干是方法，第1-5章与25-28章是心法层）。结构：4条底层机制（安全感=吸引内核／潜沟通＞内容／后情感合理化／吸引是流动）＋**分诊表**（症状→走哪条流程）＋四条主流程（激起兴趣／建立吸引／巩固吸引／确立关系）＋表白失败挽回＋内功（本我vs小我·身份认同·内化五步）＋18技巧工具箱＋**写厚的适用边界**（8条翻车场景＋前提条件＋作者自承局限＋时代差异）＋红线（第1章道德框架：拒绝就是拒绝）。

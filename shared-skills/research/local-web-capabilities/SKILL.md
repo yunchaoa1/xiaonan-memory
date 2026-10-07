@@ -57,6 +57,23 @@ python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --progress-bar
 - `hermes mcp add` 是**交互式**:用 `printf 'y\ny\n' |` 喂确认(重新添加时前面会多一个 `Overwrite? [y/N]`)
 - **加/改 MCP 后需新会话才加载工具**
 
+## ⚠️ 实测限制:wigolo search 引擎池(2026-10-07 深度验收)
+
+**现象**:本机直连网络下 `search` 常处 degraded(`engine_pool.degraded=true`,`pool_collapsed`),标称 18 引擎实际只有 bing 响应;中文查询质量差——曾被 `no_lexical_match` 过滤为空,或返回词典/百科等无关结果。
+
+**根因(本机 curl 逐引擎实测)**:
+- duckduckgo.com / wikipedia.org:**直连超时(被墙)** → wigolo 里 soft-deadline timeout
+- mojeek.com / marginalia:网络可达,但对程序请求返回 **403 / 429**(反爬/限流)
+- 仅 cn.bing.com 稳定可达——但对**无 cookie 机器人请求返回降级结果**(整句查询被拆成单词级匹配,结果是词典站),即质量不可用
+
+**当前推荐用法(降级方案)**:
+- 中文搜索主力 → Hermes 内置 `web_search`(Exa 后端;偶发 "Keyless Exa search failed" 稍后重试即可)
+- wigolo `fetch` ✅ 好用(实测博客园文章全文干净抓取;知乎 403 属目标站反爬,会诚实上报 http_status)
+- wigolo `research` ✅ standard 深度可用(~90s 出结构化报告,会诚实标注数据缺口);comprehensive 深度会超 300s 超时
+- ❌ 别用 `fetch` 抓 cn.bing.com/search 结果页当搜索——返回的是降级结果,不可用(已实测)
+
+**修复方向(待凡哥拍板)**:给 wigolo 挂代理(如 `HTTPS_PROXY=http://127.0.0.1:<port>` 走本机 v2rayN/Clash)→ DDG/Wikipedia 可达 → 引擎池恢复。
+
 ## 边界(法律红线,务必守)
 
 - **只抓公开数据**:不碰个人信息、不绕过登录墙抓私密内容、不抢被爬方自身服务
