@@ -54,6 +54,9 @@ Lightricks/ComfyUI-LTXVideo 首次安装后 IMPORT FAILED（其余插件正常�
    - **故障根因三源对齐**才给方案：① UP 视频教程 ② json Note / 作者主页 / 网盘说明 ③ 插件源码（参数定义与 tooltip）。自创结论只能标「待验证」。
    - 反面教材：二采暴显存崩，曾自创「cudaMallocAsync 高压崩 → 加 `--disable-cuda-malloc`」，被凡哥打回；真根因是 UP 早讲过的 **`short_edge_max = 0`（参考图不缩放）**，见 `av-generation-troubleshooting/references/h3-refimage-scaling-vram-crash-2026-09.md`。
 
+8. **★ 第三方库 / 扩展报错：先在宿主系统之外做「最小隔离复现」，再在系统内逐层猜**（2026-10-08 血泪教训：本次在 ComfyUI 里连猜三轮 —— 改插件设备检查、加启动开关、翻插件版本 —— 全落空；最后**一条 10 秒的隔离测试**直接锤死真因）。做法：把报错那一步单独拎出来，用 `<venv>/bin/python - <<'PY'` 在纯进程里重跑（纯 cuda 张量、零 ComfyUI 参与）。**炸 ⇒ 是这个包/组件本身坏了，宿主里怎么调都没用**；不炸 ⇒ 才轮到宿主系统（显存机制 / 插件交互）当嫌疑。凡哥容忍「一次只变一个变量」，但**不容忍在错误的那一层反复换变量**（原话：『**你是不是找不到原因在瞎试？去找靠谱的方案来啊**』）。越「寄生」的组件越要先隔离——**pip 装的 C++/CUDA 加速扩展**、monkey-patch 型插件、共享库依赖，它们在宿主里的报错位置与真因往往隔着好几层。
+   配套两个通用判据：① **`print` 放进条件里** —— 一个字都不打印 = 你的假设是错的；② **报错栈行号位移** = 补丁确实落地了（据此区分「改了没生效」与「生效了但没用」）。
+
 ## LTX IC-guide 多参考图（官方源码核实）
 
 `LTXAddVideoICLoRAGuide.image` = 参考帧序列（支持多帧）。多参考图标准接法：多个 `LoadImage` → `ImageBatch`（Join Images）串联合并成 N 帧 batch → 直连 guide（frame_idx=0）。要求各参考图同尺寸。放大倍数由 upscaler 模型定死（官方仅 x2 模型，工作流无倍数旋钮）。
@@ -69,6 +72,10 @@ ComfyUI 任务中断/失败后模型不卸载（`0 models unloaded`）→ 下任
 1. 小南写好命令 → 2. 凡哥贴进网页终端 → 3. 他拷打印结果回来，小南判断/给下一步
 
 **命令格式纪律（凡哥原话：『你给我的是一条命令吗？』）**：给**单行、能整段一次粘贴**的命令（多步用 `&&` / `;` 串起来），**不要多行脚本**——多行他虽能整段贴，但会先反问"这是一条吗"。输出用 `echo "=== ① xxx ==="` 分段标注，他整段拷回后逐块对读。备选方案写在文字里、别塞进命令块（他会把备选一起跑）。
+
+**命令块里只能有命令（2026-10-08 云端再犯一次，白跑一整轮）**：把 `--help` 输出的参数说明行紧挨着命令块放 → 凡哥当场问『**这个是给我去云电脑上跑的命令吗？**』，然后跑了**上一条**命令。规矩：① 一个代码块 = **一条**完整命令；② 解释 / 参数含义一律放块外；③ **新增了参数时明确写「和上一条的区别就是多了 `XXX` 这个词」**，并告诉他「命令末尾会打印 XXX，看见它才说明带上了」——否则他会以为你只是又解释了一遍。
+
+**重启服务带新参数后，先自证生效，再让他跑（2026-10-08 实测教训）**：本次没验证就让他重跑，报错报告里 `** Arguments:** ... --disable-cuda-malloc`（**没有新参数**）= 跑的还是旧进程，整轮作废。自证两条任选：`ps -ef | grep -v grep | grep "[m]ain.py"` 要看见该 flag；或直接读 **ComfyUI Error Report 的 `** Arguments:` 行** —— 那是最省事的「参数到底带上没有」判据。同一行还会暴露哪些 flag 是凡哥长期带着的（云端 H3 的 `--disable-cuda-malloc` 就是），那些别当可疑变量去动。
 - **凡哥说「只做 X」时给最小纯净命令**：如「只启动 comfyui，不要别的」= 只给启动那一条（不带 `pkill` / 检查 / 前置清理）；附属动作（杀旧进程、验服务）另作**单列**命令并注明"什么时候才需要跑它"——他要"只"的时候，混进去的步骤会被当场反问。
 
 **云端两个模型库（一条命令同时查，2026-09-20 实测）**：
@@ -120,6 +127,16 @@ df -h; echo ---; ls -la /home/waas/ /home/personal_share/ /home/teams/ 2>/dev/nu
 
 **⚠️ 2026-10-08 后续（最新状态）：老实例已被全部释放、镜像也被误删，本轮起按「系统盘」重建** —— 新实例选型：框架行 **pytorch 2.12.1 / CUDA 13.0 / ubuntu2404**（列表里唯一 CUDA 13；0.35+ 的 H3 硬性要求 cu130+，cu12x 系采样会 kernel 层崩）、端口**手动加 HTTP 8188**、保留 `WAAS_IMAGE_VERSION=V2` 环境变量；环境装 **`/root/h3-0300`**（系统盘，镜像带得走）。**旧 `/home/waas/h3-0300` 路径与 v0.30.0/cu128 老配方一律作废** —— 给凡哥的命令统一用 `/root` 前缀。
 **环境全灭 ≠ 素材全灭**：工作流 JSON / 交接包 / 样例包本机全量备份（`D:\数字资产\云电脑工作流\` + `D:\Hermes\attachments\`）→ 丢环境时先清点本机资产再谈重建。
+**★ 分享镜像前的自检（2026-10-08，凡哥问「这次的镜像可以完完整整分享给别人用吗？」）** —— 「环境装进 `/root` 了」**不等于**镜像可用，逐项核：
+
+1. **环境**在 `/root/...` ✅（`ls -ld /root/h3-0300/ComfyUI`）
+2. **模型**：⚠️ **重建时 `models` 是软链到数据盘 `/home/waas/ComfyUI/models` 的 → 镜像带不走**（`ls -l <ComfyUI>/ | grep -E "models|output"` 只要看到箭头就中招）→ 必须走**共享盘**、且分享时勾选挂载，否则对方打开工作流一片红
+3. **`output` / `input`** 同理（也是数据盘软链）
+4. **工作流 JSON 与参考素材**：镜像**永远带不走**，单独发给对方（本机备份在 `D:\数字资产\云电脑工作流\`）
+5. **本次手改过的文件**（KJNodes 源码补丁 / 软链 / 自建插件）都在 `/root` → 带得走，但要**列清单给他**；顺带清掉调试残留（`*.bak`、`sage.tar.gz`、`sage_build.log`、编译源码目录）
+
+对外口径：**先给「带得走 / 带不走」两栏表，再给补法** —— 别只回一句「可以分享」。
+
 完整重建配方（控制台选型表 / 安装命令序列 / 锁版插件批 / 20 插件对照清单 / 收尾步骤）：`references/cloud-instance-rebuild.md`。
 
 完整官方摘录（存储矩阵 / 镜像vs实例 / 共享空间细节 / 端口表 / 官方URL清单）：`references/waas-cloud-storage-and-mirroring.md`。
@@ -347,6 +364,31 @@ for r in "<owner>/<repo>"; do n=$(echo $r | cut -d/ -f2); git clone "https://git
 4. **交付前生成 HTML 预览**（把组框+节点按同比例画成 div）在聊天里 `::preview` 给凡哥看——他确认后才导入；比让他先导入再改省一轮
 5. 布局只改 `pos`，**不要动 links/widgets_values**
 
+#### 凡哥说「调哪个参数？我找不到」→ 先读他给的那份工作流，再开口（2026-10-08 教训）
+
+**不要拿技能里旧场景的操作描述去指导他当前的工作流。** 本次照 8 月本机的记录让他「把 sage 节点模式改成 `disabled`/`auto`」，可他这次的工作流里**根本没有那个带参数的节点** —— 是**同系但无参数的另一个节点**，他因此白找一轮（原话：『**调哪个参数？我找不到**』）。节点名相近 ≠ 同一个节点；**跨机器 / 跨工作流的旧操作记忆不能直接复用**。
+
+正确顺序：**他问某节点/参数在哪 → 先程序化读他给的工作流 JSON，报出「节点 id / 类型 / 在不在子图 / 连接关系」，再给操作**：
+
+```python
+import json
+d = json.load(open(WORKFLOW, encoding="utf-8"))
+def dump(nodes, where):
+    for n in nodes:
+        if "<关键词>" in str(n.get("type", "")):
+            print(where, n.get("id"), n.get("type"), "mode=", n.get("mode"),
+                  "widgets=", n.get("widgets_values"),
+                  "in=", [i.get("name") for i in (n.get("inputs") or [])],
+                  "out=", [o.get("name") for o in (n.get("outputs") or [])])
+dump(d.get("nodes", []), "顶层")
+for s in (d.get("definitions") or {}).get("subgraphs", []) or []:
+    dump(s.get("nodes", []), f"子图[{s.get('name')}]")
+```
+
+**★ 节点常常藏在子图里，顶层画布上看不见**（本次两个 sage 补丁节点都在子图「模型加载」内）→ 凡哥说「找不到」时**先怀疑在子图**，别让他继续翻画布；告诉他「双击那个大框进去」，或者干脆**把改好的 JSON 给他**（比在界面里点更省事、更不容易点错）。
+
+**`mode` 语义（可直接改 JSON 做旁路，不必手动点）**：`0` = 正常 · `2` = mute 静音 · `4` = bypass 旁路（bypass 自动直通输入→输出，**无需改线**）。给他改过的 JSON 时，**改完复读校验**（重新 load 打印一遍 `mode`）并把「改了哪几个 id、其余一个没动」列出来 —— 他要有依据的改动，不接受「应该没问题」。
+
 一致性自检（改完必跑）：`scripts/audit_workflow_ui_json.py <文件>.json` —— 校验格式、坏链接、inputs↔links 双向一致性、节点是否漏入组。
 
 ## 0.35 官方核心节点 vs 社区节点：参数表迁移（2026-09-10 实测）
@@ -364,7 +406,7 @@ for r in "<owner>/<repo>"; do n=$(echo $r | cut -d/ -f2); git clone "https://git
 
 **修法**：① 读**云端**节点源码拿合法取值（`sed -n '/class <节点名>/,/^class /p' <文件> | head -95`，官方核心节点在 `comfy_extras/`）；② 按官方 input 顺序重写 `widgets_values`，判断不了语义就**全落官方默认值**；③ 节点在子图里时改 `definitions.subgraphs[*].nodes`；④ 改完逐项校验区间/枚举+重跑一致性自检。参数表、完整报错、通用信号见 `references/035-node-migration.md`。
 
-**依赖同类坑一**：`llama_cpp` 报 `GLIBCXX_3.4.30 not found` **≠ 没装**，是 conda base 的 libstdc++ 太旧（GCC 11 → 只到 3.4.29）。**GLIBCXX↔GCC 对照**：3.4.29≈GCC11 / 3.4.30≈GCC12 / **3.4.32≈GCC13** / 3.4.35~36≈GCC15~16——报错要几号 = 对方是哪个 GCC 编的，据此选库。两条路：① 只要 ≤3.4.30：`ln -sf /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /root/miniconda3/lib/libstdc++.so.6`（Ubuntu 22.04 系统库到 3.4.30）；② 要求 **≥3.4.32**（系统库不够）→ 换 conda-forge 新版，**改完必须重启 ComfyUI**。
+**依赖同类坑一**：`llama_cpp` 报 `GLIBCXX_3.4.30 not found` **≠ 没装**，是 conda base 的 libstdc++ 太旧（GCC 11 → 只到 3.4.29）。**同族还有 `CXXABI_*`，别只盯 GLIBCXX**——2026-10-08 云上实测：sageattention 2.2.0+cu13 的 `_fused.so` 要 **`CXXABI_1.3.15`**（GCC 13 起），conda 的 6.0.29 只到 1.3.13，日志表现为 `sageattention failed to import: .../libstdc++.so.6: version 'CXXABI_1.3.15' not found ... Falling back to native attention.`（节点不报错、只静默降级，跑图才炸）；**修法同一条软链**（该机系统库 6.0.33=GCC13 有 1.3.15）→ `ln -sf /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /root/miniconda3/lib/libstdc++.so.6`，改完探针立刻 `archs: ['sm120']` 6符号全绿。查 CXXABI 用 `strings <lib> | grep -o 'CXXABI_[0-9.]*' | sort -Vu | tail -3`。**GLIBCXX↔GCC 对照**：3.4.29≈GCC11 / 3.4.30≈GCC12 / **3.4.32≈GCC13** / 3.4.35~36≈GCC15~16——报错要几号 = 对方是哪个 GCC 编的，据此选库。两条路：① 只要 ≤3.4.30：`ln -sf /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /root/miniconda3/lib/libstdc++.so.6`（Ubuntu 22.04 系统库到 3.4.30）；② 要求 **≥3.4.32**（系统库不够）→ 换 conda-forge 新版，**改完必须重启 ComfyUI**。
 
 ⚠️ **`libstdcxx-ng` 是空壳包 —— 装它等于没装（2026-09-10 实测更正，本条曾建议装它，是错的）**：
 - 实证：下载 conda-forge 的 `libstdcxx-ng-16.2.0-*.tar.bz2` → **1545 字节、零文件**；`conda search --info` 显示它 `dependencies: libstdcxx 16.2.0`——它是只声明依赖的 meta 包，**真文件在 `libstdcxx`（不带 `-ng`）里**。
@@ -642,6 +684,7 @@ H3 生态模型来源/大小/公模库路径/放置目录总表（配 UP 工作�
 UP 小黄瓜 H3 全能生视频工作流（V3/V4）结构解剖——槽位索引、一采/二采双链、提示词组、开关语义：`references/up-h3-workflow-structure.md`
 UI 格式工作流编辑实录（改连线/加节点/分组布局的完整配方与踩坑）：`references/comfyui-ui-format-editing.md`
 0.35 官方核心节点参数迁移（`BlockSparseAttention` widget 整体错位）＋ `llama_cpp` 的 GLIBCXX 依赖修法：`references/035-node-migration.md`
+**H3 × ComfyUI 0.37 报 `Tensor input must be on CUDA` —— 根因已定位（sageattention 预编译轮子与 torch 2.12 的 ABI 不匹配，与 ComfyUI / 工作流全无关系）**：判定靠「在 ComfyUI 之外最小隔离复现」一条命令；含已证伪假设清单（设备搬移补丁、`--disable-comfy-compiler`、KJNodes 版本、降 0.30 全部排除）、预编译轮子的 ABI 标签选型表（无 torch 标签 = 红旗）、修法候选（**`Ctrl+B` 旁路 = 已验证可用**，2026-10-08 工作流跑通；换轮子 / 就地编译**实测均失败**，见 035-node-migration 第四节）、0.37 启动开关清单、命令交付纪律：`references/h3-sage-cuda-abi-mismatch.md`
 torch/CUDA/libstdc++/wheel 的 ABI 依赖矩阵（GLIBCXX↔GCC 对照、`libstdcxx-ng` 空壳包、nvcc 必须同 major、sageattention × torch2.13 COW 符号移除）：`references/torch-cuda-dependency-matrix.md`
 H3 / AI 音乐视频（MV）工作流版图——三条路线对比、**按 `pushed_at` 时间排序**的 9 个现成方案（含 2026-09-14 修正：MultiRef 并非最新且是唯一有撞车的，零撞名首选改为 `H3-Continuum 3.8` / `liaodaobin 数字人MV`）、`NEW - Music Video.json` 节点解剖、5 帧 preroll 与接缝 1s 重叠等对口型坑、教程链接核验手法、本机落地清单：`references/h3-mv-workflow-landscape.md`
 **MV 制作「方法论」**（不是工作流版图，是"怎么做一个 MV"）——业界 5 步前置流程（**Treatment 先于 Storyboard**）、段落→视觉职能→镜头类型表、**镜数量级：传统 80-150 镜 vs H3 10-30 镜（一镜扛一个段落职能，"逐句配图"是错的）**、切镜铁律、参考图各司其职、AV 双栏分镜表 + Sync Points 产出物、齐白兰《爱的记忆》素材位置：`references/h3-mv-production-methodology.md`　（⛔ 凡哥 2026-09-15 定：**弃用自摸的 LTX 版 21 镜分镜**，改学现成方法论）
