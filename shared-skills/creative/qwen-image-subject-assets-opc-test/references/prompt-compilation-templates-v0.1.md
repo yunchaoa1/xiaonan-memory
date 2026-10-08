@@ -65,52 +65,75 @@ No external props, bags, handheld objects, scenery, text, labels, logos, extra p
 
 严格四格；三张全身加一张五官特写；同一头高线/地面线；全身不裁脚；侧面只有一张；五官、发型、衣服、配饰跨格一致。
 
-## 3. 场景四宫格
+## 3. 场景（主图先行 + 逐机位派生，2026-10-08 凡哥定改版）
 
 ### 前置条件
 
-从资产提取节点的场景主体信息直接生成，不再先出场景模板。左上格固定为场景内部真实俯视图；其余三格固定为该场景内、服务于剧本动作的细节视角。
+场景资产**不再一次生成四宫格**（实测四格会看着像四个不同场景：材质/光线/尺度对不上）。流程改为三步：**先出单张场景主图（身份锚）→ 以主图为参考图逐机位图生图派生 → 需要多格交付时机械拼合**。
 
-### 编译模板
+### 3.1 场景主图编译模板（单张 · 正俯视，一次生成）
 
 ```text
 TASK
-Create one unlabeled four-panel empty-location reference sheet for [LOCATION_ID] in [STYLE].
+Create one production scene master view for [LOCATION_ID] in [STYLE].
 
 OUTPUT
-One single Qwen-Image 2.1 native-maximum image (landscape 2752x1536 or portrait 1536x2752), with exactly four equal image panels and clean white gutters. All four panels show the same unoccupied approved location and share one spatial identity. The sheet has no header, title, footer, legend, caption area, metadata block, or written annotation.
+One single Qwen-Image 2.1 native-maximum image (landscape 2752x1536 or portrait 1536x2752) showing one **true top-down orthographic view** of the unoccupied approved location — camera directly overhead, looking straight down at the floor, showing the complete plan layout with all surrounding walls. No header, title, footer, legend, caption, metadata block, or written annotation.
+
+CAMERA_OR_PROJECTION
+True top-down orthographic view from directly above, no perspective tilt: the complete footprint is visible, including every boundary wall and its orientation, door/opening positions, fixed furniture seen from above, permanent landmarks, and circulation paths. The view must show the fixed landmarks needed for later angle derivation: [LANDMARK_LIST].
 
 SCENEPLAY_TO_SPACE_RULE
-The screenplay may choose only empty areas and fixed landmarks already represented by the approved scene facts. A missing region or object is omitted from this asset version, not invented. Translate actions only into required free space, circulation, fixed furniture, and architectural visibility. Do not render the characters, actions, handled objects, plot props, emotions, or story event that motivated the view.
+The screenplay may choose only empty areas and fixed landmarks already represented by the approved scene facts. A missing region or object is omitted from this asset version, not invented. Do not render characters, actions, handled objects, plot props, emotions, or story events.
 
 COMMON_SENSE_BASE
-Establish the believable common-sense base first: a modern living room normally has a sofa seating area, a low coffee table, a television on a low console, and a usable open activity area; a kitchen reads as a usable kitchen with worktop/chopping-board area, hob, sink and normal counter line; a dining area reads as a usable dining area with a table and ordinary chairs. Incidental plants, ordinary furniture and small appliances may appear when consistent with the dwelling and not contradicting the screenplay.
+[SCENE_COMMON_SENSE_BASE].
 
-SCREENPLAY_ADDITIONS
-Add only the screenplay's extracted fixed structures on top of that base, such as an entrance door with a clear wall-side area for a bag, a window sill with a green pothos, a washed-blue dining cloth, a hob, or a chopping-board worktop. Do not render the extracted list as an empty room.
+SCENE_FACTS
+[ARCHITECTURE]. [FIXED_FURNITURE]. [PERMANENT_LANDMARKS]. [MATERIALS]. [PALETTE]. [TOPOGRAPHY_AND_LAYOUT]. Light: [TIME_OF_DAY_LIGHT_DIRECTION_QUALITY].
 
-PANEL_LAYOUT
-Top-left: the actual interior top-down view of the approved scene, showing its complete footprint, fixed boundaries, doors/openings, permanent landmarks, activity area, circulation paths, and the spatial relationship needed to understand the other three panels. This panel is the shared spatial truth. EMPTY_PANEL_CONTRACT: architecture and fixed furnishings only; zero people, zero body parts, zero loose props, zero text or symbols.
-Top-right: [SCREENPLAY_REQUIRED_EMPTY_AREA_VIEW_1]. ANCHOR: [FIXED_SUBJECT_1]. ANCHOR_RELATIONS: [OTHER_VISIBLE_OBJECTS_DESCRIBED_FROM_ANCHOR_1_OWN_FRONT_BACK_LEFT_RIGHT]. EMPTY_PANEL_CONTRACT: architecture and fixed furnishings only; zero people, zero body parts, zero loose props, zero text or symbols.
-Bottom-left: [SCREENPLAY_REQUIRED_EMPTY_AREA_VIEW_2]. ANCHOR: [FIXED_SUBJECT_2]. ANCHOR_RELATIONS: [OTHER_VISIBLE_OBJECTS_DESCRIBED_FROM_ANCHOR_2_OWN_FRONT_BACK_LEFT_RIGHT]. EMPTY_PANEL_CONTRACT: architecture and fixed furnishings only; zero people, zero body parts, zero loose props, zero text or symbols.
-Bottom-right: [SCREENPLAY_REQUIRED_EMPTY_AREA_VIEW_3]. ANCHOR: [FIXED_SUBJECT_3]. ANCHOR_RELATIONS: [OTHER_VISIBLE_OBJECTS_DESCRIBED_FROM_ANCHOR_3_OWN_FRONT_BACK_LEFT_RIGHT]. EMPTY_PANEL_CONTRACT: architecture and fixed furnishings only; zero people, zero body parts, zero loose props, zero text or symbols.
-
-ANCHOR_DIRECTION_RULE
-Every directional statement uses the fixed subject's own front, back, left, and right. Never replace object-relative direction with screen-left or screen-right. When the camera moves, screen position and occlusion may change, but real coordinates, adjacency, orientation, quantity, material, and nearest-neighbor relations stay unchanged.
-
-PRESERVE_EXACTLY
-Preserve one scene identity across all panels: approved topology, boundary walls, door/opening positions, fixed furniture and landmarks, materials, palette, scale relationships, and circulation logic. The three detail views are different camera framings of this same scene, not three new rooms.
+EMPTY_SCENE_CONTRACT
+Architecture and fixed furnishings only; zero people, zero body parts, zero loose props, zero text or symbols.
 
 BACKGROUND_AND_LIGHT
-Pure-white #FFFFFF outside the scene image areas, in gutters, and in unused margins. Use coherent neutral inspection lighting across the three detail views.
+[IN_SCENE_LIGHTING_DESCRIPTION]. One coherent single-time-of-day lighting across the whole image.
 
 EXCLUSIONS
-No fifth panel, no extra room, no expanded bedroom/bathroom/laundry/storage interior, no duplicate kitchen or dining area, no loose plot prop, no person, no human silhouette, no hand, no shoulder, no reflection of a person, no portrait/photo/TV image containing a person, no perspective plan replacing the top-left overhead view, no title, header, footer, caption, scene description, camera term, panel label, number, letter, word, pseudo-text, arrow, grid, logo, watermark, or collage of different scenes.
+No person, human silhouette, hand, shoulder, reflection of a person, or portrait/photo/TV image containing a person; no loose plot prop; no title, caption, camera term, label, number, letter, pseudo-text, arrow, logo, watermark, or frame.
 ```
 
-### 四格选择原则
+### 3.2 逐机位派生编译模板（图生图，每次一个机位）
 
-左上俯视图负责空间总览；三个细节格必须分别对应剧本中真正需要拍摄的区域、动作或接触关系，不按“客厅/厨房/餐区”机械凑格。某细节没有剧本依据时，不得加入该格。
+```text
+TASK
+Derive one additional camera-angle view of the SAME approved location, using <image1> (the approved scene master) as the identity source.
+
+OUTPUT
+One single Qwen-Image 2.1 native-maximum image showing one different camera framing of the same unoccupied location.
+
+CAMERA_OR_PROJECTION
+Change only the camera: [NEW_ANGLE_DESCRIPTION]. Everything else stays as in <image1>.
+
+PRESERVE_EXACTLY
+Keep the architecture, boundary walls, door/opening positions, fixed furniture and landmarks, materials, palette, scale relationships, circulation logic, and lighting identical to <image1>. The same objects keep their unique identity, count, material, orientation, and nearest-neighbor relationships.
+
+ANCHOR_DIRECTION_RULE
+Every directional statement uses the fixed subject's own front, back, left, and right, not screen-left or screen-right.
+
+EMPTY_SCENE_CONTRACT
+Architecture and fixed furnishings only; zero people, zero body parts, zero loose props, zero text or symbols.
+
+EXCLUSIONS
+No new room, no redesigned architecture, no changed material, palette, or lighting, no person, no hand, no loose plot prop, no text or labels or watermark, no frame.
+```
+
+### 3.3 交付形态
+
+主图 + 派生图（按剧本需要的机位数）；需要多格时**机械拼合**为宫格（俯视/平面图可另出为独立辅助素材）。所有视图共享主图身份。
+
+### 机位选择原则
+
+主图负责空间总览并为后续派生留对照物；派生机位必须分别对应剧本中真正需要拍摄的区域、动作或接触关系，不按“客厅/厨房/餐区”机械凑格。某机位没有剧本依据时，不得加入。派生时每张只允许改变“机位”一个变量（其余写“与参考图完全一致”），保持项点到为止。
 
 ## 4. 道具四视图
 

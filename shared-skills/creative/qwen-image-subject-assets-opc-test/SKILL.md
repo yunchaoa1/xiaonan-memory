@@ -1,6 +1,6 @@
 ---
 name: qwen-image-subject-assets
-description: Use when compiling approved OPC asset manifests into one direct Qwen-Image 2.1 subject-asset sheet (character 4-view, scene 4-panel, or prop).
+description: Use when compiling approved OPC asset manifests into one direct Qwen-Image 2.1 subject-asset sheet (character 4-view, scene master + derived camera angles, or prop).
 version: 0.4.0-rc
 author: Hermes Agent
 license: MIT
@@ -124,7 +124,7 @@ All deliverables use **Qwen-Image 2.1 native maximum size** and a pure-white (`#
 panel backing, gutters, and separators. Two supported frames: **横屏 landscape 16:9 = 2752x1536**,
 **竖屏 portrait 9:16 = 1536x2752**. Do not upscale and call it native maximum.
 
-**Grid Format Rule (凡哥 2026-09-04 定稿 v2，边框稳定约束)**：任何多面板宫格图（四视图人物/四格场景/四视图道具）：
+**Grid Format Rule (凡哥 2026-09-04 定稿 v2，边框稳定约束)**：任何多面板宫格图（四视图人物/四视图道具/机械拼合的场景图）：
 - **子图间分割线**（prompt 必写）：`uniform ultra-thin hairline dividers between panels, every divider exactly the same 1mm thickness, thin light-gray hairline lines`——每根线同粗细，禁粗细不一。
 - **宫格外无边框**（prompt 必写）：`no outer frame, no outer border around the whole sheet`。
 - **禁止项**（凡哥实测边框粗细不稳定，prompt 必写）：`no thick borders, no black frames, no comic panel outlines, no double lines, no colored dividers, no decorative edges`。
@@ -163,13 +163,17 @@ External props are a separate responsibility and are absent. Do not infer bags, 
 biography from occupation or relationship. Keep age, clothing, hair, body proportions, palette,
 style, and stable identity anchors consistent across the set.
 
-## Scene Sheet
+## Scene Sheet（2026-10-08 凡哥定改版：主图先行 + 逐机位派生）
 
-A scene asset is one unlabeled four-panel empty-location sheet. Top-left is the actual interior
-top-down view of the approved scene (the shared spatial truth). The other three panels are
-selected in-scene detail views derived from screenplay actions, fixed landmarks, character
-staging, and required prop contact. All four panels belong to the same scene and preserve its
-spatial identity.
+**背景**：一次生成"场景四宫格"会让四格**看着像四个不同场景**（材质/光线/尺度对不上——凡哥实测 ✗）。社区/行业共识（Nano Banana Pro"一图派生多机位"教程、Reddit r/aifilmmaking 场景一致性专帖、国内 AI 长片导演陈小雨"让 AI 每次只专注于一件事"）与项目角色四视图经验一致：**场景多格一次生成不稳定，必须分步**。角色四视图与道具四视图保持"一次多格"不变（已成熟），本条只改场景。
+
+**三步流程（身份一致优先）**：
+1. **主图（Scene Master）= 俯视图**：先单张生成场景**正俯视主图**（从正上方垂直向下看），作为场景身份锚——锁定**完整平面布局、四面墙及门窗位置、固定地标、走道关系**，同时锁定材质、配色与光线氛围。社区共识（B站场景一致性工作流："俯视图+九宫格是室内空间逻辑的定海神针"）与 Reddit r/aifilmmaking"master image 建立空间视觉事实"一致。此图为该场景资产的**唯一身份源**。
+2. **逐机位派生**：以俯视主图为参考图（`<image1>`）做**图生图**，逐个生成平视机位（按剧本需要的区域，如灯室/木梯/门口），**每张只允许改变"机位"这一个变量**，其余全部写"与参考图完全一致"（空间布局/材质/配色/光线/地标）。墙面材质与细节由派生平视机位呈现。保持项点到为止。
+3. **机械拼合**：需要多格交付形态时，把主图与派生图**机械拼合**为宫格（俯视在固定位置，作为空间总览格）。
+
+底层契约不变：面板是同一场景的机位视图（主图 + 细节派生），全部属于同一场景并保持空间身份。
+Scene Master fact: initial scene master view becomes the identity source of the scene asset.
 
 The screenplay selects which empty spatial regions and fixed landmarks must be visible. It does
 not authorize rendering characters, body parts, actions, plot props, shot labels, captions, or
@@ -212,8 +216,32 @@ camera-relative words alone. For each panel:
 6. Relationships unsupported by the approved scene facts remain unknown and are not invented.
    Plot props are not promoted into fixed landmarks.
 
-The top-left overview is the shared spatial truth. Each detail panel must be reversible: its
-anchor and visible neighbor relationships must map to one unambiguous position in that overview.
+The scene master view is the shared spatial truth. Each derived panel must be reversible: its
+anchor and visible neighbor relationships must map to one unambiguous position in the master view.
+
+## Scene Prompt Writing（2026-10-08 实测调通 · 凡哥验收"比较稳定"）
+
+### 写法五条（社区实证 + 本地实测）
+
+1. **开场句 = 画面是什么**：直接以画面内容开句（如"一间宽敞的石砌灯塔塔楼的一层室内，午后时分"），不用"为XX生成…"的任务式开头。
+2. **物体流**：每个物体一个独立句子——"什么物体 + 在哪 + 什么材质状态"（如"一扇厚重的木门，高约两米，闭合在墙上，门板由竖向木板拼成"）。
+3. **尺度自然句**：把"宽敞 / 直径足有五米 / 塔壁高约四米"写进散文句，防止空间被画成井；楼梯必须写"贴壁、无中柱、踏面保持水平、均匀平顺升高、绕行近一整圈"防折叠。
+4. **排除段 = 名词列表 + "均排除"**：如"墙面上的第二道门、额外的拱形开口、散置的道具、人物、玩偶、文字，均排除"。**不写"不要…"否定句**（官方指南：否定句会催生对应概念；Qwen 默认 cfg=1 无 negative 通道，排除只能靠名词列表式正向写法）。
+5. **风格句收尾**：视角 + 渲染 + 光 + 色调 + 氛围一句收（如"从塔顶斜上方约四十五度向下俯视，像从塔顶边缘探头往下看……电影级CG渲染，柔和暖光……"）。
+
+### 避雷清单（本地实测踩坑）
+
+| 坑 | 现象 | 正确做法 |
+|---|---|---|
+| 否定句"不要第二个门" | 每轮催生新门 | 名词列表式排除 |
+| "门"字高频（>3次） | 墙上到处长门 | "门"只在自有句子里出现一次；其余用"出入口"或省略 |
+| "通向 / 接入 / 内侧 / 通道" | 催生开口、门洞 | 删掉这些词；改"搭接 / 连到 / 靠墙" |
+| "平台上方的开阔空间" | 催生"上层门" | 改"一整片连续的石砌墙面，向上延伸到画面之外" |
+| "等轴测"术语 | 模型不认，出平视 | 改身体语言："从塔顶斜上方45度俯视、像探身往下看" |
+| 不写尺寸 | 空间画成井 | 开场句写"宽敞"+ 散文句给直径/高度 |
+| 楼梯只写"螺旋" | 踏板纸片感/折叠 | 写厚度三指 + 踏面/立板/踏沿可见 + 连续扶手 + 栏柱 + 无中柱贴壁 |
+
+**验证版完整示例**：`references/scene-prompt-validated-2026-10-08.md`（潮汐塔塔底主图，凡哥验收通过）
 Each panel repeats the empty-location contract independently: zero people, zero body parts, zero
 text, zero labels, zero numbers, zero arrows, and zero loose plot props.
 
@@ -238,6 +266,10 @@ carrying need, and use history; do not equate occupation with military design or
 
 每个 asset_id 只调**一次**生成，结果生成后**立即交付并登记**。禁止重新生成、筛选、
 择优、修图、或任何形式的"不满意再来一张"——节点没有第二次机会。生成一张 = 交付一张。
+
+**场景例外（2026-10-08 凡哥定）**：场景资产采用"主图 + 逐机位派生 + 机械拼合"流程（见 Scene Sheet 节），
+该流程整体视为**一次生成交付**（最终交付物为拼合后的场景资产图或主图+派生图集），
+不属于"重新生成"，不受本条禁止约束。
 
 1. Read the selected asset's approved visible facts and explicit unknowns.
 2. Select the matching sheet job (character / scene / prop).
