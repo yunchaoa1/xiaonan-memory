@@ -634,7 +634,7 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 ### 10.53 OPC 影视工坊整套平台 · 云部署启动（2026-10-10 · 小南）
 
 - **任务**：把 10-09 从云扉实例备份的「OPC 影视工坊」整套平台（Java21 后端 8090 · pi-runtime 8093〔含整套 OPC 节点技能〕· 网页端/nginx 8094 · PostgreSQL16/Redis · ComfyUI v0.37 环境 · 开机自启钩子）部署到 waas 云电脑，让"一键做剧"在云上真跑；收尾尽量**保存镜像**固化（不再有这次的丢失隐患）
-- **备份**：`D:\下载\opc-gpu-backup\`（README + core/extra/assets/inventory 四包）+ 凡哥已压 `opc-gpu-backup.7z`（解压 1.21GB · 已核 6 条）= 传输件；分析件在 `D:\Hermes\cache\opc-deployecon\`
+- **备份**：`D:\下载\opc-gpu-backup\`（README + core/extra/assets/inventory 四包）+ 凡哥已压 `opc-gpu-backup.7z`（解压 1.21GB · 已核 6 条）= 传输件；分析件在 `D:\Hermes\cache\opc-deploy\recon\`
 - **缺口**：① llama_cpp cu130 wheel 未在包内（需重编或从源实例取）② 21.7GB 本地改写模型要重下（或先关改写开关）③ platform.env 绑定旧实例 ID/地址，部署时更新
 - **官方通道已核（docs.aigate.cc）**：传输＝云扉OS 拖拽 / SCP / SFTP；SSH＝`ssh -p 端口 root@主机`（实例信息里复制密码）；保存镜像＝运行中实例 · 系统盘快照 · 建议<100GB
 - **✅ 通道已开**：目标实例=5e4be19a（凡哥给出 SSH：`ssh -p 44463 root@5e4be19a….region1.waas.aigate.cc`）；小南已密码接入并挂好本机公钥（免密直连），无需传包（东西全在实例上）
