@@ -87,9 +87,12 @@ metadata:
 - ⚠ **凡哥会与你同时在 XMind 里改图**：Ctrl+S 存盘会把**他正在编辑的内容**一起写进去（实例 2026-09-30：他在「2.0 目标」分支补了「围绕 6 个节点实现傻瓜制剧的能力」）→ **报告前先读 `content.json` 核对是否被他改过**（见 `references/mindmap-and-xmind.md` §11），**绝不用旧 .md 覆盖他的编辑**；回复里主动说明「你补的那句一起存进去了」
 - **会议 → 当天出脑图**是常见节奏（会上定的框架，下午给团队对齐用）；节点归属只写**会上认领 / 已核准数据**，没人认领的标「待确认」，**不按岗位推定**
 
-### .xmind 直出（2026-10-07 打通 · 不依赖界面，优先用这条）
+### .xmind 直出（2026-10-07 打通 · 10-10 抽成公共模块 · 优先用这条）
 
-- 脚本 `D:\Hermes\scripts\gen_xmind.py`：读 `project_tree_data.py` → 直接写 `思维导图\技术部项目思维导图.xmind`（**一条命令，不用开 XMind**）
+- **公共模块 `D:\Hermes\scripts\xmind_writer.py`**：`write_xmind(tree, out_path)` 直出 `.xmind`、`read_xmind_titles(path)` 回读校验、`tree_to_md(tree)` 出人可读 md。**任何新脑图＝新建 `gen_mindmap_<主题>.py`（自带 `TREE`）并 import 它**（实例：`gen_mindmap_yuanqi.py` → 元气森林平台脑图 60 主题）。节点格式＝**`(标题, [子节点…])` 二元组**；⚠ 与 `project_tree_data.py` 的 `(标签, 类型, 子节点)` 三元组**不是一个格式，别混用**
+- 主树专用 `gen_xmind.py`：读 `project_tree_data.py` → 直接写 `思维导图\技术部项目思维导图.xmind`（**一条命令，不用开 XMind**）
+- **生成后必做回读校验（3 条）**：① 主题数＝预期节点数 ② **所有 title 都是字符串**（踩过：`_topic` 签名不匹配＋推导式写错 → 52/60 个标题变成 JSON 数组的废图）③ `.md` 里无整行 `- done` / `- prog` / `- none` / `- block`
+- 格式全文、校验配方、实测记录：`references/xmind-direct-generation.md`
 - 格式（照 XMind 26.x 实测样例）：zip{ content.json, metadata.json, manifest.json }
   - `content.json` = `[{id, revisionId, class:"sheet", rootTopic:{id, class:"topic", title, titleUnedited:false, structureClass:"org.xmind.ui.map.clockwise", children:{attached:[{id, title, titleUnedited:false, children:{attached:[...]}}]}}}]`
   - 节点只需 `id`(uuid4) + `title`；**不用写样式**，XMind 打开自动布局配色（7KB 也能正常渲染）
@@ -105,6 +108,28 @@ metadata:
    **校验方法**：生成后 grep `.md` 是否出现整行 `- done` / `- prog` / `- none` / `- block`，有＝写反了
 3. 改完必须回读验证：跑 `gen_mindmap_md.py` 看前 20 行标签正常 + `gen_xmind.py` 报的主题数＝预期节点数
 
+### ⭐ 凡哥要的"方案脑图"标准（2026-10-10 元气森林案 · 被纠正两次后定稿）
+
+**📌 标准样板（凡哥逐字：`这个是最终版不要变了，以后的思维导图就这么做`）**
+- 样板文件：`D:\Documents\我的文档\思维导图\元气森林平台_落地方案.xmind`（40 主题 · 已设**只读**锁死，别再改）
+- **展开方向＝从左到右**（凡哥 2026-10-10 定）：生成器默认 `STRUCTURE = "org.xmind.ui.logic.right"`（逻辑图·向右）
+  - ✗ 不要再用 `org.xmind.ui.map.clockwise`（那是左右两边都长枝的脑图）
+  - 结构标识别猜——从本机 XMind 程序里核：`grep -rao "org\.xmind\.ui\.[a-zA-Z.]*" "C:\Users\bobby\AppData\Local\Programs\Xmind" | sort -u`
+  - 其他可选：`logic.left`(向左) · `map.clockwise/anticlockwise/unbalanced`(脑图) · `tree.*` · `timeline.horizontal` · `spreadsheet` · `fishbone.*`
+- 样板结构：一级 4 条 → 二级**按角色/层级分级** → 三级**人话"怎么做"**；全文**零专业术语**（BAN 自检必须 0 命中）
+- **新图做法**：复制 `D:\Hermes\scripts\gen_mindmap_yuanqi.py` → 改里面的 `TREE` → `python 新文件名.py`（依赖公共模块 `xmind_writer.py`，一条命令直出 .xmind + .md，不用开 XMind）
+- 定稿的图**不要再跑生成器**（只读会 PermissionError，是故意设的保护）；要给新版就另存新文件名
+**原则：先分级别 → 再落地。不要复杂，核心思维出来就行。**
+1. **一级只放 3–4 条**：核心思路 / 业务闭环 / **模块（按角色或层级分级）** / 内容支线。别放"项目定位""待确认""落地节奏"这类管理性分支（他会删 ✗）
+2. **分级**＝把功能模块挂到**角色/层级**下（B端 / 服务商门店 / 自媒体 / C端 / 管理后台），每个角色下只列"它能看到/能用的模块"
+3. **落地**＝每个模块下写清 **"怎么做"**，但**一律用人话**——凡哥 2026-10-10 明确：**"不要出现任何专业性的东西，我需要的是人人都能看懂的思维导图"**
+   - ✗ 禁：RBAC / 状态机 / SKU / 接口 / 数据库 / 算法 / 加权 / 快照 / 字段 / token / 模型名（Happyhorse、Novin、LangGraph…）
+   - ✓ 换成行为描述：「谁能看什么」「出货多、发货准、售后少的排前面」「打款后上传付款截图，平台确认到账再发货」「照上个月出货量定级别，够量升级、掉量降级」
+   - **自检**：生成后跑专业词黑名单，命中必须为 0（`D:\Hermes\scripts\gen_mindmap_yuanqi.py` 里的 BAN 列表可直接复用）
+4. 文字要短：一句话一节点，像跟不懂技术的人解释
+5. 他加了参考（如"参考星火智画『电商』板块"）→ **先去技能库找依据再写**（sparkart-clone 技能里：电商场景＝应用中心/商品修图/带货短片/资产，视频模型 Happyhorse 1.1）
+6. 他改过的版本先**归档**（`xxx_凡哥改版.xmind`）再出新版；旧版删掉（换版即清）
+
 ### 交付给团队的「节点框架」怎么写（凡哥 2026-09-30 定稿版 · 照这个格式抄）
 
 实例：**影剧工坊 · 六节点框架**（凡哥定稿后导出 PDF 发群；源 `D:\Documents\我的文档\思维导图\影剧工坊_六节点思维导图.xmind`，镜像 md 同目录 `影剧工坊_六节点.md`）
@@ -119,6 +144,17 @@ metadata:
 5. 泛化口径：**对外/给团队的框架 ＝ 定义与要求；对内管理视图 ＝ 进度与归属**。同一份内容分两版，别混着交。
 6. ⚠ **他可能与你同时在 XMind 里改**（实测 16:02 我存的草稿 vs 16:52 他定稿的 531KB 版）：归档前**必须**读最新 `.xmind` 的 `content.json` 比对，**绝不用旧 .md 覆盖他的编辑**；他会继续在**他打开的那个路径**上 Ctrl+S（可能在别的目录）。
 7. ⚠ 待确认口径：框架里 **⑥ 出视频 工具写 MiniMax H3**；同期生产记录里视频主线是 **Seedance 2.0**（H3/LTX 为测试线）→ 适用范围需凡哥明确，**别自己合并口径**。
+
+### 客户/大单「落地方案」脑图怎么做（2026-10-10 元气森林单实测）
+
+凡哥说"接了个大单，开会商讨怎么落地，最后用思维导图给出清晰思路"时，**别急着画图**，按这四步：
+
+1. **先对齐口径再画**：主动问他四组问题，每组都附上**我的默认答案**让他回"对/改"（他喜欢一次答完，不喜欢挤牙膏）：
+   A 边界与钱（只做应用开发还是含运营？资金链路走不走平台？一次性收入＋持续收入的结构？）· B 角色与闭环（每类角色的定位、货怎么流、钱怎么流）· C 内容/工具支线（形态、素材来源、合规谁审）· D 时间与人力（里程碑、要不要我出排期）
+2. **先翻公司已有架构**：这类平台单（B端/C端/门店/达人）多半已有前身脑图（例：果知沁平台 2026-09-29 图）→ **先把旧图读出来做映射**，回复里点明"已有 X%" —— 省一半设计工作量，也让凡哥确认口径差异（本次实测：果知沁已含 B端订单闭环/排行返点/自媒体+Novin AI，且已预留"商品广告视频工作流"）。
+3. **未定口径一律进图里单独的「⑦ 待确认（请凡哥拍）」分支**；正文严格按他口头口径写，**一条业务规则都不自行增补**。
+4. **产物两件＋两处同步**：`.xmind`（用 `xmind_writer` 直出）＋ `.md`（人可读）；顺手把新项目加进主树（`project_tree_data.py` 追加分支 → 重跑 `gen_xmind.py`）＋ DASHBOARD 记口径。⚠ 图里要写日期时**先跑 `date` 核实**（踩过：写 10-08，实际 10-10，只能重生成）。
+5. ⚠ **人力与分工不用小南出**：凡哥 2026-10-10 明确「不需要你来定人力」「不需要制定 5 个人怎么分」→ 方案里到"时间要求"为止，**别主动附排期和人力分配**。
 
 ## 拓扑图到底是什么（凡哥 2026-09-23 纠正 · 最高优先）
 
@@ -248,6 +284,7 @@ python D:\Hermes\scripts\gen_topology_tree.py --layout
 ## 支撑文件
 - `references/drawio-cli-and-format.md` — **现役路线必读**：CLI 命令（PowerShell 调商店版）、离线布局预设（ELK 会卡死）、布局后画布重设、格式要点与三层验证配方
 - `references/mindmap-and-xmind.md` — **思维导图路线**：拓扑图/思维导图区别、博赞规范 8 条、XMind 官方事实（版本/价格/水印/开票/退款）、Markdown 导入映射表（第一行＝中心主题）、`gen_mindmap_md.py` 用法与备选工具对比、**实测全链（文件参数自动导入／Ctrl+S 存档位置坑／zipfile 校验／`.xmind`＝zip 可程序化生成）＋ Electron 驱动硬规则（§7–9）**
+- `references/xmind-direct-generation.md` — **.xmind 直出必读**：公共模块 `xmind_writer.py` 用法、content.json/metadata/manifest 全文格式、生成后 3 条回读校验配方、踩坑（标题变数组 / 日期写错重生成）
 - `scripts/drawio_verify.py` — 一条命令校验：节点/连边计数 + 零重叠断言 + 画布包含 + SVG 关键词核对
 - `templates/topology_slide_skeleton.py` — 最小可跑骨架（换机器/新环境起手用：四色图例 + 模块卡 + 卡点三件套 + 待办区）
 - `references/wps-feishu-facts.md` — 现场实测事实：WPS 组件清单（为什么没有本地流程图）、pptx 打开命令、生成/验收固定套路、飞书读取与点击现状、卡点排查四步

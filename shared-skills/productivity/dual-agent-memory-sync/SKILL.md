@@ -147,7 +147,13 @@ git add -A && git commit -m "manual: 手动同步" && git push
 
 **最快体检**：`hermes cron list` —— 只看 `Last run` 行；出现 `error: … (N failures in a row)` 就是坏任务（2026-09-15 实测：两个任务被钉在已回滚的 `gpt-5.5/openai-codex` 上，连续失败 17 次，用 `RuntimeError: Request timed out.` 表现）。
 
-**任务根本不触发 → 先查网关**：`hermes gateway status`。网关没进程时，所有 cron **静默不执行**（Windows 的登录项只保证"下次登录后"自动起，本次实测启动前新建的任务一直停在等待首次运行）→ `hermes gateway start`，再 `sleep 4 && hermes gateway status` 确认 PID 起来了。
+**任务不触发 → 先看调度器现状，别急着起 gateway（2026-10-10 修正）**：
+
+- **桌面版 App 自带 in-process 调度器**（日志出现 `hermes_cli.web_server: Desktop cron scheduler started (provider=builtin, interval=60s)`），**App 启动时会补跑错过的任务**（实测 10-07 20:48 补跑了当天 17:50 的提交任务）→ 平时**开着 App 就够，不要再多起一个**。
+- ⚠ **两个调度器并存会抢任务**：`hermes gateway start` 会**再起一个** in-process 调度器 → 一次性任务可能被"领走但不执行"、**静默消失**（本次实测：12:33 的测试任务无记录消失；与历史 incidents 里 `Fire claim ownership lost; stale result was discarded` 同一病症）。要起 gateway 就**先停掉另一个**（`hermes gateway stop`）。
+- 查询统一用 **`hermes cron status`**（显示调度器进程 / `Ticker heartbeat` / active job 数）——`hermes gateway status` 只反映网关，**不代表调度器**。
+- **deliver 必须显式写 `bot-chat`**：用 cronjob 工具不写 deliver 时默认落 `local` ＝ **只存不推送**（桌面版唯一可推送的通道就是 Bot Chat）；纯提醒一律用 **`no_agent` 脚本版**（不走大模型，不怕余额/限流）。
+- **通道必须实测**：建一个 2 分钟后的一次性测试任务 → `hermes cron run <id>` 立即触发 → `hermes cron runs <id>` 看 `completed` + `grep "delivered to Bot Chat" logs/agent.log` → 验证完删掉测试任务。提醒类需求另见 `fange-reminders`（含 Windows 任务计划兜底）。
 
 **改模型只能走 CLI**（`cronjob` 工具的 API 不暴露 model/provider）：
 `hermes cron edit <job_id> --model <model> --provider <provider>`
@@ -176,5 +182,8 @@ cd /d/Hermes/xiaonan-memory && git status && git log --oneline -3
 ## 注意事项
 
 - 两个实例不同时编辑同一文件，避免合并冲突
+- **同一个工作树可能被并发提交**（另一端 / 另一会话也在跑 17:50 那类自动提交，2026-10-10 实测）：`git pull` 报 `cannot pull with rebase: You have unstaged changes` → 那是**别人的未提交改动**，不是你的 → 此时**只 `git add <你改的具体路径>`**，**别用 `git add -A`**（会把对方半成品裹进你的提交）
+- **提交显示 `nothing to commit` 但你确定刚改过文件** → 大概率是对端已把你的改动一起提交了：先 `git log --oneline -3` + `git status` 核实，**别急着重写文件**
+- 每次动手前先 `git pull origin main`（能拉就拉）；拉不动时按上面两条处理，改动就绪后再 push
 - 每天 17:50 自动提交，确保下班前记忆已落地
 - 如果冲突发生，优先保留内容更完整的版本
