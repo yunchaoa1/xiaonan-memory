@@ -104,14 +104,22 @@ python "$RPC" pause <gid> | unpause <gid> | remove <gid>
 
 ## ⚠️ 输出规范（凡哥环境专属，2026-10-11 定，必须遵守）
 
-**跑下载类命令时，终端输出里不要出现完整可点的 URL。**
+**两条红线：终端输出、聊天消息里都不要出现"可被加载的链接"。**
 
-**取证经过**：2026-10-11 在 Hermes 桌面版里跑 aria2/curl 下载后，凡哥屏幕上出现一个**以 URL 为标题的"另存为"对话框**（Chromium 内核特征），默认位置 `D:\下载`，文件名正是终端里出现过的 `aria2-1.37.0.tar.bz2`；随后**用同款命令受控复现 → 零弹窗**。结论：**不是命令本身弹的，而是终端输出里的那个 URL 被"打开"触发的**。
+### 为什么（2026-10-11 实测定位，源码为证）
+Hermes 桌面版内置**「链接标题抓取」**：**聊天消息里一出现链接，它就会自动去加载** ——
+源码 `D:\Hermes\hermes-agent\apps\desktop\dist\electron-main.mjs` 第 24544–24710 行：
+`fetchHtmlTitleWithCurl()` 跑 curl 抓 `<title>`（伪装 Mac 版 Chrome、5 秒超时、最多跳 3 次）；
+`runRenderTitleJob()` → `createLinkTitleWindow()` 更狠 —— **开一个真浏览器窗口去加载该地址**（8 秒超时）。
+实测后果（两次都撞上）：
+- 加载**下载型链接** → Electron 触发下载 → 弹「另存为」框
+- 加载**自定义协议**（协议名 + 双斜杠形式）→ Windows 找不到处理程序 → 弹「获取打开此链接的应用」
+**对照实验**：终端里 echo 一个 URL → **不会被抓**。**只有聊天消息的内容会触发。**
 
-**做法（四条）**：
-1. URL 走变量或文件：`curl ... "$U"` / `aria2c -i urls.txt`，**别把完整 URL 打在命令行/回显里**
-2. 必须展示来源时做「反链接化」：写成 `ghproxy[.]net/...` 或协议后加空格 `https:// ghproxy.net/...`
-3. 全程静默：`curl -sS` / `aria2c --console-log-level=error --summary-interval=0`
+### 做法（四条）
+1. URL 走变量或文件；聊天里必须提到时做「反链接化」：写成 `ghproxy[.]net`、`github[.]com/xxx`
+2. **自定义协议名也别写完整形式**（别写"某名字 + 双斜杠"）—— 说「某浏览器协议」「某 app 的 scheme」即可
+3. 命令全程静默：`curl -sS` / `aria2c --console-log-level=error --summary-interval=0`
 4. 结果只报三样：**路径 + 字节数 + 成功/失败**
 
 ## 验证方式（必须做）
