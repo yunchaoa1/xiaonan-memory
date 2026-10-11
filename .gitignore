@@ -57,3 +57,6 @@ node_modules/
 # Hermes Desktop 临时附件/文档缓存
 .hermes/
 *.docx
+
+# ★ 集团主数据：必须跨机同步（2026-10-11 修 —— 原 *.json 规则把台账/例行清单误伤了）
+!集团/*.json
