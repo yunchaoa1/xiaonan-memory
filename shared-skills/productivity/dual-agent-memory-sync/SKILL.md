@@ -71,13 +71,16 @@ metadata:
 - `heart-demons/` — 心魔谱系（57条）
 - `director-kb/` — 导演思维知识库
 - `characters/` — 角色设定
+- `集团/` — **业务主数据**：`台账数据.json`（考核原料）· `凡哥例行与待办.json`（日/周/月例行+待办）· `项目拓扑与模块清单.md` · `豆包工作记忆.md`
 - 其他知识库目录
 
-不同步的（.gitignore 排除）：
+**不同步的（.gitignore 排除）：**
 - 媒体文件（*.mp3, *.png, *.jpg 等）
 - Python 缓存（__pycache__/）
 - node_modules/
 - 临时/脚本文件
+
+> ⚠️ **通配规则会误伤主数据（2026-10-11 实测）**：`.gitignore` 里的 `*.json` 曾把 `集团/` 下两份主数据**整个挡在仓库外**，另一端因此没有考核原料。**凡是要跨机同步的业务数据，必须显式加 `!` 例外**（放在 `.gitignore` 末尾）并用 `git add -f` 首次入库 —— 完整分析见下方**坑 6**。
 
 ## 技能同步不能靠目录存在性推断
 
@@ -115,7 +118,7 @@ xiaonan-memory\shared-skills\      唯一编辑源（Git 同步，含 INDEX.md �
 **自动兜底**：cron `40df234f060d` 每天 17:50 跑两条 push + git 提交 + 推送（**需 Gateway 在运行**，`hermes gateway status` 查）。
 **开工安装**：SOUL.md 启动规则已写死 —— git pull 后跑两条 pull（profile 的 pull 会先备份到 `memories\.sync-backup\`）。
 
-**踩过的 5 个坑（都能复现，别再踩）**：
+**踩过的 6 个坑（都能复现，别再踩）**：
 
 1. **`.gitignore` 里的 `skills/`** —— 标着"OpenClaw 系统文件"，按名字匹配**任意层级**的 skills 目录，导致整个技能目录从未进过仓库。`shared-skills` 名字不同所以不受影响。
 2. **技能名 ≠ 目录名** —— `creative/writing-opc-entry-test/` 里的技能名是 `writing-opc-entry`（Hermes 以 frontmatter 的 `name` 为准，不是目录名）。**用目录名扫描会漏 5 个技能**（91 变成 85）。扫描器必须读 frontmatter。
@@ -124,6 +127,26 @@ xiaonan-memory\shared-skills\      唯一编辑源（Git 同步，含 INDEX.md �
 5. **技能同步"静默空跑"（2026-10-11 实测，最阴）** —— 脚本原用 `HERMES_HOME = Path(__file__).resolve().parent.parent`；从仓库副本 `xiaonan-memory\scripts\` 跑时算出来的是**仓库自己**（少一层）→ `SKILLS`/`SHARED` 指向不存在的目录 → 打印 `push: 新增 0 个 []` / `更新 0 个 []`，**看着像成功，实际什么都没同步，也不报错**。我改完技能跑它，直到 `git show --stat HEAD` 只看见 DASHBOARD/SOUL、**没有技能文件**才露馅。
    **三条防身规则**：① 认 `status` 输出——`运行目录 D:\Hermes\skills 里的自建技能: 0` 就是路径算错了；② **刚改完技能，push 报"更新 0 个"是红旗，不是好消息**；③ 用 `git show --stat HEAD` 确认提交里**真有技能文件**，别只看 `git push` 成功。
    **已修**：改为向上找第一个含 `skills/` 的目录当 HERMES_HOME（两份副本都改了），且 scan 结果为 0 时**明确报错退出**（`**什么也没改。**`）。
+
+6. **`.gitignore` 的通配规则静默吞掉主数据 → "假提交"（2026-10-11 实测，凡哥一句"日志这步你没提醒"顺藤摸出来的，最隐蔽）** —— `.gitignore` 里有一条防中间产物的 `*.json`，把 `集团/台账数据.json`（**考核原料**）和 `集团/凡哥例行与待办.json`（**例行清单**）一起误伤。后果：这两个文件**从未进过 git** → **另一台电脑上压根没有这两份主数据**（考核数据两头各一套）；而**提交历史里明明写着"新建 xx.json"** —— commit 成功、push 成功，**文件却不在仓库里**。
+   **症状**：`git status --short` 干净（`nothing to commit`）**但你确定刚改过那个文件**；或 `git check-ignore -v <路径>` 有命中。
+   **修法**：① `.gitignore` **末尾**加精确例外（`!` 规则**必须排在排除规则之后**才生效）：`!集团/*.json`；② **首次入库必须 `git add -f <路径>`** —— 新例外对**已被忽略的文件不会自动生效**，光 `git add -A` 带不上；③ 提交后用 `git ls-files -- <路径>` 复核。
+   **三条防身规则**：① 写完**要跨机同步的业务数据**，先 `git check-ignore -v <路径>` 确认没被挡；② **提交后要 `git ls-files` 复核文件真在库里**，别只看 commit 输出/push 成功（与坑 5 同源：**"脚本说成功" ≠ "事情做成了"**）；③ 主数据宁可显式加例外，**不靠"通用排除规则碰巧放行"**。
+   **通用教训**：`.gitignore` 是**按名字匹配、不分层级、静默生效**的 —— 一条防"中间产物"的规则，会连**主数据**一起吃掉，且**不报错**。
+
+7. **改 SOUL / MEMORY / USER 改错了一份 = 白改，且 push 照旧成功（2026-10-11 实测，以为生效其实被覆盖）** —— `sync_profile.py` 的三对文件里，**真相源是"运行时"那一侧**：
+
+   ```text
+   D:\Hermes\SOUL.md               <->  xiaonan-memory\SOUL.md
+   D:\Hermes\memories\MEMORY.md    <->  xiaonan-memory\MEMORY.md
+   D:\Hermes\memories\USER.md      <->  xiaonan-memory\USER.md
+    ↑ 真相源（改这份才生效）              ↑ 仓库副本（push 时会被运行时覆盖）
+   ```
+
+   **后果**：改**仓库副本** → 随后一次 `sync_profile.py push`（**运行时 → 仓库**）用旧版把你的改动**原样覆盖**，而 **commit / push 照旧报成功**。本次症状：SOUL 的改动在提交 `8043735` 里**压根没出现**（那次 `--stat` 只有 MEMORY.md 和技能文件），文件 mtime 还停在几周前。
+   **症状辨识**：`git log --oneline -1 -- SOUL.md` 显示的最后提交**不是你刚做的那次**；或 `grep <你新加的句子> SOUL.md` 没命中；或 `sync_profile.py status` 报 `SOUL.md: 不同 ⚠️ 运行时 N 字 / 仓库 M 字`。
+   **正确工序**：① **改运行时那份**（`D:\Hermes\SOUL.md`、`D:\Hermes\memories\MEMORY.md`、`D:\Hermes\memories\USER.md`）；② `sync_profile.py status` 看差异是否符合预期；③ `sync_profile.py push` 导出到仓库；④ **再 `status` 一次，必须三对全"一致 OK"**；⑤ 随记忆一起 commit + push。
+   **与坑 6 同源**：**"命令没报错" ≠ "改动生效了"** —— 涉及两份副本的文件，改完必须**回源头确认**（`status` / `git ls-files` / `git show --stat`），别只看命令成功。
 
 完整审计清单见`references/shared-skill-sync-audit.md`。
 
@@ -192,3 +215,25 @@ cd /d/Hermes/xiaonan-memory && git status && git log --oneline -3
 - 每次动手前先 `git pull origin main`（能拉就拉）；拉不动时按上面两条处理，改动就绪后再 push
 - 每天 17:50 自动提交，确保下班前记忆已落地
 - 如果冲突发生，优先保留内容更完整的版本
+
+## ⚠️ 改 SOUL / MEMORY / USER 必须改"运行时真身"（2026-10-11 实测踩坑）
+
+**配对关系（`sync_profile.py` 的 `PAIRS`，第 25-27 行）**：
+
+| 运行时真身 ← **改这个** | 仓库副本 ← 别直接改 |
+|---|---|
+| `D:\Hermes\SOUL.md` | `xiaonan-memory\SOUL.md` |
+| `D:\Hermes\memories\MEMORY.md` | `xiaonan-memory\MEMORY.md` |
+| `D:\Hermes\memories\USER.md` | `xiaonan-memory\USER.md` |
+
+**坑的本质**：`sync_profile.py push` 是**运行时 → 仓库**的**单向覆盖**。**改仓库副本 = 白改** —— 下次 push 会用运行时旧版把它盖掉。
+
+**本次事故**：我改的是仓库副本 `xiaonan-memory\SOUL.md`，随后跑 push，**改动被 9-17 的旧版覆盖** → 查 `git show <commit> -- SOUL.md` 时**压根没有 SOUL.md**（只有 MEMORY 和技能），排查很久才发现是"改错文件"。**症状隐蔽**：patch 工具报"成功"，文件却还是旧时间戳。
+
+**正确流程**：
+1. 改**运行时真身**（上表左列）
+2. `python D:\Hermes\scripts\sync_profile.py push`
+3. `python D:\Hermes\scripts\sync_profile.py status` → 必须显示 **`合计: 一致 3 / 不同 0`**
+4. 随记忆一起提交
+
+**自查信号**：改完 SOUL/MEMORY 后 `ls -la` 发现**文件修改时间没变** → 就是改错了文件。
