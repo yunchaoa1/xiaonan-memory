@@ -80,6 +80,15 @@
 > ⚠️ **两条硬规则（官方设计，不是权宜之计）**：① **必须 PTY** —— 非交互 shell 报 `stdin is not a tty`，翻遍 `--help` 无绕过开关；② **禁止管道** —— `| head` 报 `stdout is not a tty`。
 > 技能落点：`D:\Hermes\skills\software-development\agent-browser\`（含官方 7 篇 references + 3 个脚本模板 + 11 条实测坑）；已给 `local-web-capabilities` 加交叉引用（`browser_exec` 挂掉时的第三条路）。
 
+> 📚 **2026-10-11 技能升级：吸收开源项目 `book-to-skill` 的「机制层」**（凡哥发来抖音「书籍转Skill」教程 → 核证到项目 `virgiliojr94/book-to-skill`，**34,484★ / MIT / 2026-10-05 最后推送 / 原生支持 Hermes Agent**）。
+> **判断尺子（凡哥拍板"不用保守"）**：① 是不是我真有的痛 ② 会不会跟现有体系打架 ③ 要不要背重依赖 → **取机制，不取框架**：不装它的技能本体（会跟 `book-distillation` 抢触发词）、不搬 GitHub 发布/跨宿主 symlink（单机不需要）、不背 docling 重依赖。
+> **① `book-distillation` 升 v2**：新增 `scripts/extract_book.py` 提取器（PDF/EPUB/DOCX/HTML/RTF/TXT/MD 全格式降级链，**零重依赖**——用本机已有 pdftotext/python-docx/bs4；`--check` 环境预检 / 坏源跳过 / 扫描版快速失败 / 输出 `full_text.txt` + `metadata.json`（每源 sha256+词数+估算tokens））；产物改**多文件 + 按需加载**（主 SKILL.md <4k tokens + `references/chNN-*.md` 分章 + glossary/patterns/cheatsheet 三件套，走 Hermes 原生 `[ref:]` 机制）；新增 token 预算矩阵（类型×深度）、**成本预检（先报价后生成）**、**大书切片法**（>50k tokens 禁整本读入，grep -n + sed -n）、**折叠更新流程**（新素材并入已有技能）、生成后规范体检；新增 `templates/chapter-template.md`（含我们特有的「反例与失效条件」区块）。
+> **保留不动的判断层**：分诊表（症状→流程）、边界写厚、反例、查重划界、中文触发、双产物 docx、DASHBOARD 回流 —— 它的索引是「术语→章节」＝**检索**，我们的是「症状→流程」＝**判断**，不换。
+> **② `skill-library-maintenance` 获得官方规范体检能力**：取回其 `validate_skill.py`（MIT，脚本头保留出处声明）落到 `scripts/`，`health_check.py` 新增**第 3.5 节**逐技能跑 `--lens hermes`。**首测（115 个启用技能）：desc>60 六十条 / 未知 frontmatter 键二十二条 / body>500 七条 / ERROR 零条**。
+> **③ 顺手修工具误报**：`health_check.py` 把技能文档里反引号内的示例 `\nname:` 当成真脏数据 → 改为先剥行内代码再匹配。
+> **验证证据**：`book-distillation` 规范体检 **0 警告**；全库体检 ✅ **健康**（悬空引用 0 / 脏数据 0 / 疑似重复 0）；提取器实测跑通（pdftotext + tiktoken；例：2 页 PDF → 1,144 字符 / ~1,191 tokens / 2 页）。
+> **⏳ 待办**：那 60 条 description 超标（= "发现税"）建议**单列一轮**瘦身（只砍赘述、中文触发词一个不丢）—— 按凡哥"每轮只改一变量"铁律，不与本次混做。
+
 > 💕 2026-09-17 新增 `mishangwo-attraction-system`（relationships 类）+ `book-distillation`（knowledge-management 类）：**成真《迷上我》全28章蒸馏成果**。
 > **第一步判定：工具书**（混合型——主干是方法，第1-5章与25-28章是心法层）。结构：4条底层机制（安全感=吸引内核／潜沟通＞内容／后情感合理化／吸引是流动）＋**分诊表**（症状→走哪条流程）＋四条主流程（激起兴趣／建立吸引／巩固吸引／确立关系）＋表白失败挽回＋内功（本我vs小我·身份认同·内化五步）＋18技巧工具箱＋**写厚的适用边界**（8条翻车场景＋前提条件＋作者自承局限＋时代差异）＋红线（第1章道德框架：拒绝就是拒绝）。
 > references 三件套：`techniques.md`（技巧的公式/原书例子/出处/翻车条件）· `book-map.md`（28章→概念溯源图）· `barnum-templates.md`（巴纳姆台词，**非本书内容**）。成品：`D:\Documents\我的文档\蒸馏\迷上我_蒸馏skill_v1.0.docx` / `.md`。
