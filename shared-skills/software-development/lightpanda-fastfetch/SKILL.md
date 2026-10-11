@@ -41,7 +41,19 @@ WSL Ubuntu-24.04 内：
 ```
 > ⚠️ WSL 的默认用户是 **root** → 路径是 `/root/lightpanda/`，**不是** `/home/<user>/lightpanda/`
 
-## 用法（Windows 侧一行搞定）
+## ⚡ 批量抓取（配套 `scripts/batch_fetch.py`）
+
+单页用下面的一行命令；**要批量**时用配套脚本（不装 crawl4ai 那种框架，自己串起 Lightpanda + trafilatura）：
+
+```bash
+python D:\Hermes\skills\software-development\lightpanda-fastfetch\scripts\batch_fetch.py urls.txt -o D:\out -j 4 --mode auto
+```
+- `--mode auto`：先用 Lightpanda 的 markdown 导出；正文过短时**自动回退 trafilatura** 提正文（本机已装 2.3.1）
+- 并发 `-j`、**断点续传**（已有同名 .md 就跳过）、输出 `summary.json`
+- **实测（2026-10-11）**：3 个页面并发 → **总共 6 秒**全部成功（cnblogs 正文 16,338 字）
+- ⚠️ **性能瓶颈是 `wsl.exe` 启动开销（约 4 秒/次），不是 Lightpanda 本身（它只要 670ms）**。要更快需改用 Lightpanda 的 `serve` 模式常驻（待优化）
+
+## 用法（Windows 侧一行调用）
 
 ```bash
 # Markdown（最常用）

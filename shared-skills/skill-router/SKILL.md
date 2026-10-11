@@ -71,8 +71,17 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 |--------|------|
 | 抓网页 / 爬取 / 抓数据 / 填表单 / 网页截图 / browser-use / 浏览器自动化 | **agent-browser**（⚠️ 必须 PTY 跑、禁管道；`browser_exec` 挂了就用它顶上） |
 | 搜索/抓取被拒 / 403 / 反爬 / SPA 空白 / web_search 报 Keyless Exa 失败 | **local-web-capabilities**（需要真浏览器交互时叠加 `agent-browser`） |
-| 抓网页 / 批量抓取 / 爬取太慢 / 把这个页面抓下来 | **lightpanda-fastfetch**（WSL 里的 Lightpanda 无头浏览器，实测 **670ms vs wigolo 34s**；⚠️ **强反爬站抓不到**——那种改用 `agent-browser`/Scrapling） |
+| 抓网页 / 批量抓取 / 爬取太慢 / 把这个页面抓下来 | **lightpanda-fastfetch**（WSL 里的 Lightpanda 无头浏览器，实测 **670ms vs wigolo 34s**；⚠️ **强反爬站抓不到**——那种改用下面这条） |
+| **抓不到 / 被拦了 / 403 / 人机验证 / 反爬 / 抖音·小红书这类** | **camoufox-antidetect**（反检测浏览器：**抖音实测 920,392 字节 vs Lightpanda 0 字节**；慢 10–27s，**只用于反爬，不做批量**） |
 | 下载大文件 / BT / 磁力 / 种子 / 批量下载 / 下载太慢 / 断点续传 | **aria2-downloads**（aria2c 引擎在 `D:\Hermes\bin\aria2\`；RPC 客户端 `scripts\a2rpc.py`；**先看技能里的边界表**——视频站走 yt-dlp、HF 模型走 `dl_model_resumable.sh`） |
+
+### 文档/资料类
+| 凡哥说 | 加载 |
+|--------|------|
+| 读这个 PDF / 提取文档内容 / 这个 Word 写了什么 / 转成 Markdown / 扫描件 / 图片里的字 / 资料整理 | **ocr-and-documents**（**先试 `markitdown`**：PDF/DOCX/PPTX/XLSX/图片OCR/音频 一步转 Markdown，2026-10-11 装；转不出再走 pymupdf / marker-pdf 旧流程） |
+| Excel / 表格 / 台账 | **xlsx** |
+| PPT / 幻灯片 / 汇报稿 | **powerpoint** + docx |
+| 生成 PDF / 合并拆分加密 | **pdf** |
 
 ### 维护类
 | 凡哥说 | 加载 |
@@ -93,7 +102,7 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 | 更新ComfyUI | comfyui-update + comfyui |
 | 总控台 / 进度 | project-dashboard + dashboard-tree + dual-agent-memory-sync |
 | 歌词 / Suno | songwriting-and-ai-music |
-| 视频学习 / 分析视频 | video-learning + video-analysis |
+| 视频学习 / 分析视频 / **镜头怎么剪的 / 剪辑节奏 / 切了几个镜头 / 分镜还原** | video-learning + video-analysis（**先跑 PySceneDetect 镜头检测**：纯 CPU·0 显存，42MB 视频 14.4 秒出 50 个镜头，2026-10-11 装） |
 
 ## 输出前自查清单
 

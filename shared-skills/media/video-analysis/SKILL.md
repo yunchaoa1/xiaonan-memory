@@ -14,6 +14,22 @@ Download a video, extract keyframes at regular intervals, and use vision analysi
 - User has a local video file and wants you to analyze it
 - Tutorial/reference video for AI video production techniques
 
+## ⚡ 先跑镜头检测（2026-10-11 新装 PySceneDetect）
+
+本机已装 **PySceneDetect**（`scenedetect` + opencv，**纯 CPU、0 显存**）。**先切镜头、再按镜头抽帧，比"固定间隔抽帧"精准得多**（不会漏掉镜头切换点）；对**短剧/成片的剪辑节奏分析**直接有用。
+
+```bash
+python -c "
+from scenedetect import detect, ContentDetector
+scenes = detect(r'D:\path\video.mp4', ContentDetector(threshold=27.0))
+for i,(s,e) in enumerate(scenes,1):
+    print(i, s.get_timecode(), '->', e.get_timecode())
+"
+```
+实测（2026-10-11）：`人物情绪、动作真实拆分法.mp4`（42MB）→ **检出 50 个镜头 / 14.4 秒**。
+
+**推荐流程**：镜头边界 → 每镜抽首/中/尾帧 → 再走下面的 vision 分析；顺带能算出**每镜时长与切点密度**（节奏感量化）。
+
 ## Workflow
 
 ### Step 1: Get the video

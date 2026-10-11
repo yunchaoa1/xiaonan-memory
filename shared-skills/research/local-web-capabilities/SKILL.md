@@ -30,6 +30,9 @@ metadata:
 | **Scrapling** (MCP, 13 工具) | 自适应解析 + 隐身抓取(tls指纹)绕 Cloudflare | `stealthy_fetch nowsecure.nl` → 200 |
 | **Playwright 直连** | 抖音单条视频音/视频流 | 见另一技能 `video-learning` → `references/douyin-capture.md` |
 | **agent-browser** (CLI, v0.26.0) | 真浏览器交互、复用登录态、链式操作 | 2026-10-11:`doctor` → `4 pass/0 fail`;`open example.com` + `get title/url` + `snapshot -i` **四步全过**（PTY 模式）|
+| **Lightpanda** (WSL, v1.1.0-nightly) | 无头浏览器快速抓取（静态/半静态页、批量） | 博客园 **670ms** vs wigolo **34,450ms**；抖音 0 字节 → 详见 `lightpanda-fastfetch` |
+| **trafilatura** 2.3.1 | 正文清洗层（去掉广告/导航/垃圾） | 326ms 抽出 2,980 字正文 |
+| **批量抓取脚本** (自写) | Lightpanda + trafilatura 串起来跑批 | 3 页并发**总 6 秒**全成 → `lightpanda-fastfetch/scripts/batch_fetch.py` |
 
 ## 用法
 
@@ -75,6 +78,17 @@ python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --progress-bar
 - ❌ 别用 `fetch` 抓 cn.bing.com/search 结果页当搜索——返回的是降级结果,不可用(已实测)
 
 **修复方向(待凡哥拍板)**:给 wigolo 挂代理(如 `HTTPS_PROXY=http://127.0.0.1:<port>` 走本机 v2rayN/Clash)→ DDG/Wikipedia 可达 → 引擎池恢复。
+
+## 2026-10-11 扩容（本轮新装 · 已实测）
+
+- **Lightpanda**（WSL 里的 Zig 无头浏览器）→ 独立技能 `lightpanda-fastfetch`：
+  **静态/半静态页快约 60 倍**（670ms vs wigolo 34s）；强反爬站抓不到（**0 字节，但快速失败不拖时间**）；**不含图形渲染 → 不能截图**
+- **trafilatura 2.3.1**：正文清洗层（326ms/页），已串进 `batch_fetch.py`
+- **aria2c**：下载引擎（大文件/BT/磁力/断点续传）→ 独立技能 `aria2-downloads`
+- **Camoufox**（反检测 Firefox）：**内核已下载、尚未安装/验证** —— 装好并实测通过前，**不要把它写成可用能力**
+- ⚠️ **新发现的瓶颈**：跨 WSL 调 Lightpanda 时，单页开销主要是 **`wsl.exe` 启动（约 4 秒）**，不是引擎本身（670ms）。
+  要更快得改用它的 `serve` 常驻模式（CDP 服务器）—— 待优化项
+- 装新工具的环境规则（**绝不污染 Hermes venv**、镜像表、GitHub 限流绕行）见新技能 **`local-tool-provisioning`**
 
 ## 边界(法律红线,务必守)
 
