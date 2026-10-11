@@ -670,6 +670,14 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 - 日期校正：今天＝2026-10-11（周日）；智提分三轮工作（10.54~10.56）日期由 10-10 更正为 10-11
 - 总图：`D:\Documents\我的文档\思维导图\项目总图.xmind`（138 主题）｜独立：`智提分_落地方案.xmind`（36 主题）
 ---
+### 10.58 提醒已挂：明天完善 OPC 落地导图（10-12 09:30 · 双保险）（2026-10-11 · 小南）
+
+- 凡哥：`提醒我明天完善OPC落地思维导图的完善`
+- 腿1 Hermes cron `ea4a90b5e915`（no_agent 脚本 remind_opc_tu.py · deliver=bot-chat · 10-12T09:30）
+- 腿2 Windows 任务 `Hermes_提醒_完善OPC导图`（Next Run 2026/10/12 9:30 · Ready）
+- 投递已实测：自检任务 11eb6ad62194 触发后日志出现 `delivered to Bot Chat`（验证完已删）
+- ⚠ **发现双调度器互抢**：gateway（Startup 自启 · PID 29264）与桌面版 App 自带调度器并存，触发时报 `Fire claim ownership lost; stale result was discarded`。本次投递未丢；建议二选一：停 gateway（手机飞书会断）或停 App 调度 —— 待凡哥定
+---
 ## 十、集团架构与项目管理攻略（定位：项目主管 → 目标 CTO）（2026-09-13 建档）
 
 ### 10.31 归属口径修正：以日报署名为准（凡哥 2026-09-24）
