@@ -1,6 +1,6 @@
 ---
 name: agent-browser
-description: "Use when 抓网页/爬取/填表单/点击/截图/浏览器自动化时。"
+description: "Use when 抓网页/爬取/填表单/截图/浏览器自动化/browser-use时。"
 version: 1.0.0
 author: 小南
 license: MIT

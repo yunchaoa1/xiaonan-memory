@@ -66,6 +66,12 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 | 十二生肖 / 生肖故事 / 动物文化IP | short-drama-story-engine + worldbuilding；角色数量、文件拆分或长期总控再加 creative-project-structure。先区分史料、地域民俗、后世传说和原创设定，不把固定生肖性格当成事实 |
 | 角色设计 | nanming-ip-design + worldbuilding |
 
+### 技术/抓取类
+| 凡哥说 | 加载 |
+|--------|------|
+| 抓网页 / 爬取 / 抓数据 / 填表单 / 网页截图 / browser-use / 浏览器自动化 | **agent-browser**（⚠️ 必须 PTY 跑、禁管道；`browser_exec` 挂了就用它顶上） |
+| 搜索/抓取被拒 / 403 / 反爬 / SPA 空白 / web_search 报 Keyless Exa 失败 | **local-web-capabilities**（需要真浏览器交互时叠加 `agent-browser`） |
+
 ### 维护类
 | 凡哥说 | 加载 |
 |--------|------|
