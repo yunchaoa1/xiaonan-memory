@@ -23,8 +23,11 @@ import hashlib
 import re
 from pathlib import Path
 
-# 路径自适应 —— 脚本放在 <HERMES_HOME>/scripts/ 下即可，两端无需改代码
-HERMES_HOME = Path(__file__).resolve().parent.parent
+# 路径自适应 —— 脚本放在 <HERMES_HOME>/scripts/ 下即可，两端无需改代码。
+# 也兼容「直接跑仓库里那份」（<HERMES_HOME>/xiaonan-memory/scripts/）：
+# 向上找第一个含 skills/ 的目录当 HERMES_HOME，避免算错后静默空跑。
+_here = Path(__file__).resolve().parent.parent
+HERMES_HOME = _here if (_here / "skills").is_dir() else _here.parent
 SKILLS = HERMES_HOME / "skills"
 SHARED = HERMES_HOME / "xiaonan-memory" / "shared-skills"
 SKIP_DIRS = {"__pycache__", ".git", ".archive", "node_modules", ".venv"}
@@ -133,6 +136,10 @@ def cmd_status():
 def cmd_push(mirror=False):
     names = local_skill_names()
     run = {n: p for n, p in scan(SKILLS).items() if n in names}
+    if not run:
+        print(f"!! 扫描到的自建技能为 0 —— HERMES_HOME={HERMES_HOME} 可能不对。"
+              f"把脚本放到 <HERMES_HOME>/scripts/ 下再跑。**什么也没改。**")
+        return 1
     shr = scan(SHARED)
     SHARED.mkdir(parents=True, exist_ok=True)
 
@@ -167,6 +174,9 @@ def cmd_pull(mirror=False):
         print("!! shared-skills 为空（先在另一端 push，或先 git pull）")
         return 1
 
+    if not scan(SKILLS):
+        print(f"!! 运行目录扫描为 0 —— HERMES_HOME={HERMES_HOME} 可能不对。**什么也没改。**")
+        return 1
     installed, updated, skipped_builtin = [], [], []
     for n, rel in sorted(shr.items()):
         if n in run_before and n not in names:

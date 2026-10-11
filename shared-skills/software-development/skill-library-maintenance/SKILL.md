@@ -96,16 +96,25 @@ curator:
 - 脚本重新 `yaml.safe_load` 全部 SKILL.md，确认无损坏；统计中文描述覆盖 100%。
 - `skill_view` 抽查核心技能加载正常。
 
+## 工具（scripts/）
+
+| 脚本 | 用途 |
+|---|---|
+| `health_check.py` | 一键体检（7 项，见下），退出码 1 = 有异常 |
+| `validate_skill.py` | **单技能按宿主规范审计**：`--lens claude\|copilot\|amp\|hermes\|openclaw\|opencode`；本库日常用 `--lens hermes`。来源：开源项目 `book-to-skill`（MIT，脚本头有出处声明）。health_check 第 3.5 节已自动调用它 |
+| `disable_skills.py` / `fix_dangling_refs.py` | 批量停用 / 批量修悬空引用 |
+
 ## 周体检检查项（凡哥要求长期保持高效精简）
 
 每周检查一次（或凡哥说"检查下技能库"时手动执行）：
-0. **一键体检**：运行 `python D:\Hermes\skills\software-development\skill-library-maintenance\scripts\health_check.py --verbose`（自动检查 YAML/悬空引用/重复对/curator参数，退出码1=有异常）
+0. **一键体检**：运行 `python D:\Hermes\skills\software-development\skill-library-maintenance\scripts\health_check.py --verbose`（自动检查 YAML/脏数据/悬空引用/重复对/**Hermes 官方规范**/curator参数/索引体积，退出码1=有异常）
 1. 技能总数/启用数 vs 上次记录——看有无新增
 2. 新增技能是否与现有技能语义重复（两两比对 description+正文，相似度 >0.6 预警）
 3. 坏引用：`[ref:xxx]` / references/ / scripts/ 是否悬空
 4. YAML 完整性：全部 SKILL.md frontmatter 可解析；**同时查正文脏数据** —— 有没有"字面 `\n` 转义块"（假 frontmatter 被当字符串塞进正文里）。脚本已内置该项（第 2.5 检查）。案例：2026-09-17 `barnum-effect` 的 SKILL.md 正文首行是一整段字面 `\nname:...\nversion:...`，YAML 检查只看第一个 block 所以漏掉 —— 现在会报"正文脏数据"。这类脏块会污染技能索引和加载内容，发现即清理
 5. curator 状态：consolidate 还关着、stale/archive 线还是 36500、参数没被改
-6. 结果处理：正常静默不打扰；异常给凡哥**大白话**报告（新增了啥、哪个和哪个重复、要不要处理），凡哥说"处理"才动手
+6. **Hermes 官方规范**（health_check 第 3.5 节自动跑 `validate_skill.py --lens hermes`，逐技能）：description ≤60 字符、frontmatter 只用 Hermes 认的键（`dependencies` 之类会被**静默忽略**）、正文 ≤500 行。全是 **WARN 软建议**，不阻塞、不进退出码——但超标多了会拖累技能被自动路由的准确率（这就是"发现税"）。清理时**只砍赘述、中文触发词一个不丢**。
+7. 结果处理：正常静默不打扰；异常给凡哥**大白话**报告（新增了啥、哪个和哪个重复、要不要处理），凡哥说"处理"才动手
 
 ## 技能总调度模式（skill-router）
 模糊需求精准调取的解法：主入口技能（description 覆盖全部创作触发词）→ 路由表把"凡哥说 X"映射到"加载 Y+Z+W"→ 跨维度任务逐项加载不遗漏 → 输出前自查清单（维度打勾+双线规则+格式检查）。路由表引用技能若停用，用最近似替代并说明。

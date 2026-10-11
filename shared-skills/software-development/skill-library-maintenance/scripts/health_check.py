@@ -114,7 +114,9 @@ def main():
         name = str(fm.get("name") or p.parent.name)
         if name not in enabled:
             continue
-        hits = junk_pat.findall(text[m.end():])   # 只看正文，不误报 frontmatter 本身
+        # 行内代码块里的示例写法（如技能文档里举例 `\nname:...`）不算脏数据 —— 先剥掉
+        body = re.sub(r"`[^`]*`", "", text[m.end():])
+        hits = junk_pat.findall(body)   # 只看正文，不误报 frontmatter 本身
         if hits:
             dirty.append((name, len(hits)))
     if dirty:
@@ -159,6 +161,55 @@ def main():
             print(f"  疑似重复: {x[0]} <-> {x[1]} (desc_sim={x[2]})")
     else:
         print("疑似重复: 无")
+
+    # 3.5 Hermes 官方规范体检（validate_skill.py --lens hermes）
+    #    来源：book-to-skill 项目 tools/validate_skill.py（MIT，见脚本头）。
+    #    只对启用技能跑。WARN 仅统计展示（软性建议）；ERROR 才算异常。
+    vs = Path(__file__).parent / "validate_skill.py"
+    if vs.exists():
+        kinds = {"desc>60": 0, "未知frontmatter键": 0, "body>500": 0, "命名": 0}
+        errs = []
+        checked = 0
+        py = sys.executable or "python"
+        for p in SKILLS.rglob("SKILL.md"):
+            if ".archive" in p.parts:
+                continue
+            try:
+                m3 = re.search(r"^---\s*\n(.*?)\n---", p.read_text(encoding="utf-8", errors="replace"), re.S)
+                fm3 = yaml.safe_load(m3.group(1)) or {} if m3 else {}
+            except Exception:
+                continue
+            if str(fm3.get("name") or p.parent.name) not in enabled:
+                continue
+            checked += 1
+            try:
+                r = subprocess.run([py, str(vs), "--lens", "hermes", str(p)],
+                                   capture_output=True, text=True, encoding="utf-8",
+                                   errors="replace", timeout=30)
+            except Exception:
+                continue
+            for line in ((r.stdout or "") + (r.stderr or "")).splitlines():
+                s = line.strip()
+                if s.startswith("ERROR"):
+                    errs.append((p.parent.name, s[:110]))
+                elif s.startswith("WARN"):
+                    if "description:" in s:
+                        kinds["desc>60"] += 1
+                    elif "not a recognized" in s:
+                        kinds["未知frontmatter键"] += 1
+                    elif "body:" in s:
+                        kinds["body>500"] += 1
+                    elif "name" in s:
+                        kinds["命名"] += 1
+        print(f"Hermes官方规范({checked}个启用技能): "
+              f"desc>60 {kinds['desc>60']} | 未知键 {kinds['未知frontmatter键']} | "
+              f"body>500 {kinds['body>500']} | 命名 {kinds['命名']}")
+        if errs:
+            problems.append(f"Hermes规范 ERROR {len(errs)} 处")
+            for n, s in errs[:10]:
+                print(f"  ERROR: {n} :: {s}")
+    else:
+        print("Hermes官方规范: 跳过（validate_skill.py 未安装）")
 
     # 4. curator 关键参数（防被改回）
     cfg_path = Path(r"D:\Hermes\config.yaml")
