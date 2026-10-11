@@ -65,6 +65,7 @@
 | 🎨 设计 | logo-generator | 说"设计logo/品牌标志/App图标" |
 | 🧠 **管理·人际** | **carnegie-human-relations** | **凡哥令（2026-09-15）：凡涉及管理 / 带人 / 说服 / 反馈 / 冲突 / 家庭关系，必先加载本技能按六步走，不凭小南自己思路答** |
 | 🔍 **搜索·抓取** | **local-web-capabilities** | **搜索/抓取被拒（403 / 反爬 / SPA 空白 / `web_search` 报 Keyless Exa 失败）时加载：本机 wigolo + Scrapling MCP 零key搜索与反爬抓取栈** |
+| 🤖 **浏览器自动化** | **agent-browser** | **抓网页/爬取/填表单/点击/截图，或 `browser_exec` 挂了（DevToolsActivePort）、要复用 Chrome 登录态时加载：vercel-labs CLI 已内置，快照+@eN引用；⚠️ 必须 PTY 跑、禁管道** |
 
 > 🧠 2026-09-15 新增 `carnegie-human-relations`（management 类）：**《人性的弱点》蒸馏成果**。来源：凡哥从博主处学来的四步蒸馏法（类型判定→方法论提取→skill化→适用边界），小南执行蒸馏并核实原书结构（四部分 30 条 = 3+6+12+9，另中文版第六篇家庭七法）。内容：两条底层前提（人最强烈的渴望是"觉得自己重要"／没人会为你的理由行动）＋六步流程（P0分诊→P1刹车→P2换位→P3找共同点→P4说话结构→P5落到行动）＋输出四件套（开场句/三步话术/让他说出承诺/禁忌三句）＋七种翻车场景＋中式职场适配＋三句自检。references 内含 30 条「原则→动作→禁忌」全表。成品：`D:\Documents\我的文档\蒸馏\人性的弱点_蒸馏skill_v1.0.docx`。
 > ⚠️ **铁律**：管理/人际类问题**先走该技能六步**再答；凡哥纠正过的做法要**回流 patch 到技能**，不能只在对话里说。
@@ -72,6 +73,12 @@
 > 🔍 **2026-10-07 新增 `local-web-capabilities`（research 类）：搜索/抓取卡点一次到位方案。** 已装好并实测：**wigolo MCP**（本地 18 引擎、**零 API key** 搜索 + 浏览器渲染抓取 + 缓存 + research，10 工具）+ **Scrapling MCP**（自适应解析 + 隐身抓取绕 Cloudflare，13 工具），两者均已写入 `D:\Hermes\config.yaml` 的 `mcp_servers` 且 **enabled**（**需新会话才加载工具**）。
 > 关键教训：一切"下载超时"根因 = **国外 CDN / HuggingFace 受限**，解法 = `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright` + `HF_ENDPOINT=https://hf-mirror.com`；npm 装包须加 `--allow-scripts`；Hermes 内置 `browser_exec`（DevToolsActivePort 报错）**不必修**，走这两条即可。抓抖音单条视频仍可用旧法 `media/video-analysis/scripts/douyin_video_fetch.py`（Playwright 直连）。
 > 🌐 **2026-10-07 晚 wigolo 深度验收（新会话实测·副业搜索任务）**：`search` 引擎池降级——DDG/Wikipedia 直连被墙（curl 000）、mojeek/marginalia 对程序请求 403/429 限流，仅 bing 独苗且对机器人返回降级结果 → **中文搜索暂以 Hermes 内置 `web_search`（Exa）为主力**；wigolo **`fetch` ✅（博客园全文实测）/ `research` ✅（standard 深度可用）**；修复方向 = 给 wigolo 挂代理（待凡哥定）。详细结论已回流 `local-web-capabilities` 技能。
+>
+> 🤖 **2026-10-11 新增 `agent-browser`（software-development 类）：浏览器自动化 CLI。** 来源 = 凡哥丢的抖音「硬核开源项目分享 Browser-Use」（小嘉实验室）→ 核对上游：`browser-use/browser-use`（**117,605★**，MIT）。本机实际可用的是 **vercel-labs `agent-browser` v0.26.0**（Apache-2.0，**已内置**在 `D:\Hermes\hermes-agent\node_modules\.agent-browser-*\`）。
+> **结论：不缺工具，缺技能** —— 178 个技能里 0 个讲它。2026-10-11 为抓一条抖音页面**绕了 7 条弯路**（空壳页 → 抖音API被Argus拦 → tikwm被Cloudflare拦 → 解析站404 → 预览面板挂 → `browser_exec` daemon 挂 → 无头Chrome 才拿到标题）。
+> **实测证据**：`doctor` → `4 pass, 0 warn, 0 fail`；`open example.com` + `get title` / `get url` + `snapshot -i` **四步全过（PTY 模式）**。
+> ⚠️ **两条硬规则（官方设计，不是权宜之计）**：① **必须 PTY** —— 非交互 shell 报 `stdin is not a tty`，翻遍 `--help` 无绕过开关；② **禁止管道** —— `| head` 报 `stdout is not a tty`。
+> 技能落点：`D:\Hermes\skills\software-development\agent-browser\`（含官方 7 篇 references + 3 个脚本模板 + 11 条实测坑）；已给 `local-web-capabilities` 加交叉引用（`browser_exec` 挂掉时的第三条路）。
 
 > 💕 2026-09-17 新增 `mishangwo-attraction-system`（relationships 类）+ `book-distillation`（knowledge-management 类）：**成真《迷上我》全28章蒸馏成果**。
 > **第一步判定：工具书**（混合型——主干是方法，第1-5章与25-28章是心法层）。结构：4条底层机制（安全感=吸引内核／潜沟通＞内容／后情感合理化／吸引是流动）＋**分诊表**（症状→走哪条流程）＋四条主流程（激起兴趣／建立吸引／巩固吸引／确立关系）＋表白失败挽回＋内功（本我vs小我·身份认同·内化五步）＋18技巧工具箱＋**写厚的适用边界**（8条翻车场景＋前提条件＋作者自承局限＋时代差异）＋红线（第1章道德框架：拒绝就是拒绝）。

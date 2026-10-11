@@ -20,6 +20,7 @@ metadata:
 - `web_search` 报 `Keyless Exa search failed` → 改用 wigolo 的 `search`
 - `web_extract` 抓不到(403 / SPA 空白 / 需要登录) → wigolo `fetch` 或 Scrapling `stealthy_fetch`
 - `browser_exec` 报 `DevToolsActivePort not found` → **别修它**,直接用下面两条(旧方法 Playwright 直连也能用)
+- 需要**真浏览器交互**(点击/填表/登录/翻页)、或要复用 Chrome 登录态 → 用 **`agent-browser`** CLI(见 `agent-browser` 技能;内置在 `hermes-agent/node_modules/.agent-browser-*`,**必须 PTY 跑**)
 
 ## 能力清单(已验证)
 
@@ -28,6 +29,7 @@ metadata:
 | **wigolo** (MCP, 10 工具) | 本地优先 search/fetch/crawl/extract/cache/research/agent;18 引擎,**零 API key** | `wigolo search`(中/英)均返回真实结果;`fetch` 抖音自动走 browser 渲染拿到标题 |
 | **Scrapling** (MCP, 13 工具) | 自适应解析 + 隐身抓取(tls指纹)绕 Cloudflare | `stealthy_fetch nowsecure.nl` → 200 |
 | **Playwright 直连** | 抖音单条视频音/视频流 | 见另一技能 `video-learning` → `references/douyin-capture.md` |
+| **agent-browser** (CLI, v0.26.0) | 真浏览器交互、复用登录态、链式操作 | 2026-10-11:`doctor` → `4 pass/0 fail`;`open example.com` + `get title/url` + `snapshot -i` **四步全过**（PTY 模式）|
 
 ## 用法
 
