@@ -673,10 +673,17 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 ### 10.58 提醒已挂：明天完善 OPC 落地导图（10-12 09:30 · 双保险）（2026-10-11 · 小南）
 
 - 凡哥：`提醒我明天完善OPC落地思维导图的完善`
-- 腿1 Hermes cron `ea4a90b5e915`（no_agent 脚本 remind_opc_tu.py · deliver=bot-chat · 10-12T09:30）
-- 腿2 Windows 任务 `Hermes_提醒_完善OPC导图`（Next Run 2026/10/12 9:30 · Ready）
+- 腿1 Hermes cron `ea4a90b5e915`（no_agent 脚本 remind_opc_tu.py · deliver=bot-chat · 10-12T11:00（凡哥：9:30 还没到公司 → 改 11 点））
+- 腿2 Windows 任务 `Hermes_提醒_完善OPC导图`（Next Run 2026/10/12 11:00 · Ready（实测弹窗通过））
 - 投递已实测：自检任务 11eb6ad62194 触发后日志出现 `delivered to Bot Chat`（验证完已删）
 - ⚠ **发现双调度器互抢**：gateway（Startup 自启 · PID 29264）与桌面版 App 自带调度器并存，触发时报 `Fire claim ownership lost; stale result was discarded`。本次投递未丢；建议二选一：停 gateway（手机飞书会断）或停 App 调度 —— 待凡哥定
+---
+### 10.59 提醒改点：OPC 导图提醒 09:30 → 11:00（2026-10-11 · 小南）
+
+- 凡哥：`九点三十分我还没到公司，明天11点提醒我`
+- 两腿同步改 11:00：cron `ea4a90b5e915` Next=10-12T11:00；Windows 任务 Next=2026/10/12 11:00（schtasks /Run 实测：Last Result=正在运行，弹窗已弹）
+- 规矩更新：**工作类提醒默认 11:00**（已写进 fange-reminders 技能 + 记忆）；旧默认 9:30 作废
+- ⏳ 小唐那条（10-16 09:30）要不要也挪 11:00？——待凡哥一句话
 ---
 ## 十、集团架构与项目管理攻略（定位：项目主管 → 目标 CTO）（2026-09-13 建档）
 
