@@ -67,3 +67,6 @@ For high-load creative production, split work into a small validated sample befo
 - When multiple dashboard copies exist (`D:\Hermes\DASHBOARD.md` vs `D:\Hermes\xiaonan-memory\DASHBOARD.md`), treat the git-synced `xiaonan-memory` copy as the durable cross-agent source unless the user explicitly says otherwise.
 - **写 DASHBOARD 必须验证落地（2026-09-23 实测踩坑）**：用脚本 `s.replace(锚点, 新块)` 更新时，**锚点字符串对不上会静默什么都不做**——脚本照样打印"已更新"，但 git 会告诉你 `nothing to commit`。三步防呆：① 写入前 `assert 锚点 in s` ② 写入后**读回并逐条检查新章节标题是否存在**（`{标题: 标题 in now}`）③ commit 时看输出——**`nothing to commit` ＝ 你的写入没生效**，回去查锚点，别当成功。
 - DASHBOARD 的章节锚点会随历史改动漂移（如 `### 10.14` 可能并不存在）；不确定时先 `search_files(pattern='^### ', path=DASHBOARD)` 列表头，再挑一个**当前确实存在**的锚点插入。
+- **两台电脑同时写总控台：先查号、再写入、后对账（2026-10-10 实测撞号）**：插入编号章节前先 `grep -n "^### 10\.5" DASHBOARD.md` 看**当前最大号**——另一台机可能已经写了同号条目（本次两边各写了一个「10.53」）→ **自己的条目改到下一个空号**，别去动对方的 ✓。
+- **提交顺序（有本地未提交改动时）**：`git pull --rebase` 会直接报 `error: Please commit or stash them.` 并中止 ✗ → 正确顺序＝`git add -A && git commit` → `git pull --rebase` → `git push` → `git status -sb` 确认无 ahead/behind；**不要**先 pull 后 commit。
+- 用 patch/写文件工具改 DASHBOARD 前**先拉最新**（`git pull`）；被别处（另一台机/子代理）改过而未读就写，工具会提示 `modified by sibling ... never read it` —— 此时先读最新内容再补自己的块，避免覆盖对方发言。
