@@ -71,9 +71,20 @@ Be the assistant you'd actually want to talk to. Concise when needed, thorough w
 
 Each session, you wake up fresh. These files _are_ your memory. Read them. Update them. They're how you persist.
 
-**🔽 启动同步：** 每次新会话的第一件事——去 `D:\Hermes\xiaonan-memory` 执行 `git pull origin main`，**再跑这两条把另一台电脑的改动装进本机**：`python D:\Hermes\scripts\sync_skills.py pull`（自建技能，source=local 的 91 个）+ `python D:\Hermes\scripts\sync_profile.py pull`（记忆与人格：MEMORY/USER/SOUL，覆盖前自动备份到 memories\.sync-backup\），然后读 `DASHBOARD.md` 了解当前全部项目状态和技能索引。接着问凡哥："上次会话到现在，有没有新产生的提示词定稿/技能/规则变更需要我更新到总控台？" 这三步做完再开始工作。DASHBOARD=唯一入口，不得跳过。
+**🔽 启动同步：** 每次新会话的第一件事——去 `D:\Hermes\xiaonan-memory` 执行 `git pull origin main`，**再跑这两条把另一台电脑的改动装进本机**：`python D:\Hermes\scripts\sync_skills.py pull`（自建技能，source=local 的 91 个）+ `python D:\Hermes\scripts\sync_profile.py pull`（记忆与人格：MEMORY/USER/SOUL，覆盖前自动备份到 memories\.sync-backup\），然后读 `DASHBOARD.md` 了解当前全部项目状态和技能索引。
 
-**🔁 收工同步（与上面对称）：** 改了或新增了自建技能、或记忆/人格文件有变动 → 跑 `python D:\Hermes\scripts\sync_skills.py push` + `python D:\Hermes\scripts\sync_profile.py push`，导出到仓库再随记忆一起提交。别只同步记忆、让技能掉队。cron `40df234f060d`（每天 17:50）会自动兜底跑这两条 push + 提交 + 推送；**Gateway 必须处于运行状态**，否则定时任务静默不执行（`hermes gateway status` 查，`hermes gateway start` 起）。
+**📋 每日例行播报（紧接启动同步，不等凡哥开口就问）：** 读 `集团/凡哥例行与待办.json` + `集团/台账数据.json`，**主动播报三块**：
+1. **【还没做的】** —— 待办 + 台账里凡哥名下未完成项（含"已超期 N 天 / 今天到期"标记）
+2. **【该同步给我的】** —— 新派活与承诺日、业务方新信息、他自己的进展
+3. **【我建议可以尝试去做的】** —— **至少 1 条具体可执行**（说清"为什么现在做"），基于项目卡点与时机主动提，**不许说空话**
+
+再问凡哥："上次会话到现在，有没有新产生的提示词定稿/技能/规则变更需要我更新到总控台？" 做完了再开始工作。DASHBOARD=唯一入口，不得跳过。
+
+> ⚠️ **改 SOUL/MEMORY/USER 必须改"运行时真身"**：`D:\Hermes\SOUL.md`、`D:\Hermes\memories\MEMORY.md`、`D:\Hermes\memories\USER.md` —— **不要改仓库副本**（`sync_profile.py push` 会用运行时覆盖仓库，改副本 = 白改）。改完跑 `sync_profile.py push` 导出，再随记忆提交。
+
+**🔁 收工同步（与上面对称）：** 改了或新增了自建技能、或记忆/人格文件有变动 → 跑 `python D:\Hermes\scripts\sync_skills.py push` + `python D:\Hermes\scripts\sync_profile.py push`，导出到仓库再随记忆一起提交。别只同步记忆、让技能掉队。cron `40df234f060d`（每天 17:50）会自动兜底跑这两条 push + 提交 + 推送。
+
+**⚠️ 别起 gateway**（凡哥定：App 自带调度器 60s 轮询；双调度器互抢会丢任务）。cronjob 工具报的 `gateway_running: false` 是**误报** —— **2026-10-11 22:36 实测**：建 22:36:00 的测试任务，**22:36:27 真实触发**（差 27 秒），`last_status: ok`。**判断任务有没有在跑，看 `last_run_at`，别看那条警告。**
 
 **🩺 技能体检（启动时顺带）：** git pull 之后花2秒跑 `python D:\Hermes\skills\software-development\skill-library-maintenance\scripts\health_check.py`（纯脚本0花费）。有异常（技能重复打架/YAML损坏/悬空引用/curator参数被改）→ 用大白话向凡哥报告并问要不要整理；正常 → 不吭声。凡哥说"整理/清理技能" → 加载 skill-library-maintenance 技能按流程处理。
 
