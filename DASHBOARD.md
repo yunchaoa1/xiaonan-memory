@@ -67,6 +67,7 @@
 | 🔍 **搜索·抓取** | **local-web-capabilities** | **搜索/抓取被拒（403 / 反爬 / SPA 空白 / `web_search` 报 Keyless Exa 失败）时加载：本机 wigolo + Scrapling MCP 零key搜索与反爬抓取栈** |
 | 🤖 **浏览器自动化** | **agent-browser** | **抓网页/爬取/填表单/点击/截图，或 `browser_exec` 挂了（DevToolsActivePort）、要复用 Chrome 登录态时加载：vercel-labs CLI 已内置，快照+@eN引用；⚠️ 必须 PTY 跑、禁管道** |
 | 📥 **下载引擎** | **aria2-downloads** | **凡哥说"下载/BT/磁力/种子/批量下载/下载太慢/断点续传"时加载：aria2c v1.37.0 引擎（`D:\Hermes\bin\aria2\aria2c.exe`，2.36MB）+ JSON-RPC 接口 + `scripts\a2rpc.py` 客户端；先看边界表别用错工具** |
+| ⚡ **快速抓取** | **lightpanda-fastfetch** | **凡哥说"抓网页/批量抓取/爬取太慢"时加载：WSL Ubuntu 里的 Lightpanda（Zig 写的无头浏览器，`/root/lightpanda/lp`），实测 **670ms vs wigolo 34,450ms（快约60倍）**；⚠️ 强反爬站（抖音/小红书）抓不到，那种用 `agent-browser`/Scrapling** |
 
 > 🧠 2026-09-15 新增 `carnegie-human-relations`（management 类）：**《人性的弱点》蒸馏成果**。来源：凡哥从博主处学来的四步蒸馏法（类型判定→方法论提取→skill化→适用边界），小南执行蒸馏并核实原书结构（四部分 30 条 = 3+6+12+9，另中文版第六篇家庭七法）。内容：两条底层前提（人最强烈的渴望是"觉得自己重要"／没人会为你的理由行动）＋六步流程（P0分诊→P1刹车→P2换位→P3找共同点→P4说话结构→P5落到行动）＋输出四件套（开场句/三步话术/让他说出承诺/禁忌三句）＋七种翻车场景＋中式职场适配＋三句自检。references 内含 30 条「原则→动作→禁忌」全表。成品：`D:\Documents\我的文档\蒸馏\人性的弱点_蒸馏skill_v1.0.docx`。
 > ⚠️ **铁律**：管理/人际类问题**先走该技能六步**再答；凡哥纠正过的做法要**回流 patch 到技能**，不能只在对话里说。
@@ -103,6 +104,14 @@
 > **写入技能的实测坑**：镜像站常不支持多线程（ghproxy 实测 `CN:1`，`-x16` 形同虚设）· aria2 **不读系统代理**（须显式 `--all-proxy`，本机 7897 当时未监听）· **GitHub releases 直连失败但同期 curl 能通** · Windows `--daemon=true` 不生效（用后台进程）· 原生程序路径须 `D:/` 形式。
 > **边界表（防用错工具）**：视频站 → `yt-dlp`；HF 模型（要逐字节校验）→ `comfyui-env-ops\dl_model_resumable.sh`；网页抓取 → `wigolo`/`scrapling`；**大文件 / BT / 磁力 / 批量 / 断点续传 → aria2c**。
 > **路由**：已挂进 `skill-router`「技术/抓取类」；DASHBOARD 技能索引加「📥 下载引擎」行。**Motrix GUI 留作可选**（凡哥要可视化界面时再装）。
+
+> ⚡ **2026-10-11 新增 `lightpanda-fastfetch`（software-development 类）：吸收抖音「专为AI打造的开源浏览器，比Chrome快9倍」** → 核证项目 `lightpanda-io/browser`（**Zig 从零写**的无头浏览器，不是 Chromium 分叉）。
+> **判定**：技能库无 → 按凡哥规则「**没有就直接吸收**」；**本机能用**（官方原话：无 Windows 原生二进制、要装 WSL 里 —— 本机恰有 WSL2 Ubuntu-24.04 ✓）。
+> **装法**：WSL 内下载 nightly x86_64-linux（**71MB 单二进制** → `/root/lightpanda/lightpanda`）+ wrapper `/root/lightpanda/lp`（内置关遥测 + 路径自适应）；**Windows 侧零改动**，一行 `wsl.exe -d Ubuntu-24.04 -- /root/lightpanda/lp fetch --dump markdown --log-level error "<URL>"` 即可调用。
+> **实测对比（同一页面 · 本机）**：curl 399ms（只有原始 HTML、无提取）｜`wigolo fetch` **34,450ms**（6.3K 字符）｜**Lightpanda 670ms（21,248 字节 markdown）→ 快约 60 倍**。官方基准 9x（933 页 / m5.large）。
+> **边界（已写进技能的实测坑）**：强反爬站抓不到（抖音/今日头条实测 **0 字节**，但**快速失败不拖时间**）｜不含图形渲染 → **不能截图**｜遥测默认开启必须关｜WSL 默认用户是 root，路径在 `/root/`｜跨 WSL 传参要用 `-- <绝对路径>` 直接执行，**别套 `bash -lc`**（引号会被外层吃掉，踩过）。
+> **定位**：补上了我们缺的那一档 —— 此前只有「curl 快但无提取」与「wigolo 有提取但 34 秒」两极，现在有了「**快 + 有 JS 引擎 + 有提取**」。
+> **路由**：已挂 `skill-router`「技术/抓取类」；DASHBOARD 技能索引加「⚡ 快速抓取」行。**可选加强**（本次未做）：项目自带 MCP server 与 CDP server（Playwright 可直接连，WSL 自动转发 localhost），需要时再做原生集成。
 
 > **⏳ 待办**：那 60 条 description 超标（= "发现税"）建议**单列一轮**瘦身（只砍赘述、中文触发词一个不丢）—— 按凡哥"每轮只改一变量"铁律，不与本次混做。
 
