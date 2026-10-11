@@ -71,6 +71,7 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 |--------|------|
 | 抓网页 / 爬取 / 抓数据 / 填表单 / 网页截图 / browser-use / 浏览器自动化 | **agent-browser**（⚠️ 必须 PTY 跑、禁管道；`browser_exec` 挂了就用它顶上） |
 | 搜索/抓取被拒 / 403 / 反爬 / SPA 空白 / web_search 报 Keyless Exa 失败 | **local-web-capabilities**（需要真浏览器交互时叠加 `agent-browser`） |
+| 下载大文件 / BT / 磁力 / 种子 / 批量下载 / 下载太慢 / 断点续传 | **aria2-downloads**（aria2c 引擎在 `D:\Hermes\bin\aria2\`；RPC 客户端 `scripts\a2rpc.py`；**先看技能里的边界表**——视频站走 yt-dlp、HF 模型走 `dl_model_resumable.sh`） |
 
 ### 维护类
 | 凡哥说 | 加载 |

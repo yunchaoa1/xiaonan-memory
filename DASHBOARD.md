@@ -66,6 +66,7 @@
 | 🧠 **管理·人际** | **carnegie-human-relations** | **凡哥令（2026-09-15）：凡涉及管理 / 带人 / 说服 / 反馈 / 冲突 / 家庭关系，必先加载本技能按六步走，不凭小南自己思路答** |
 | 🔍 **搜索·抓取** | **local-web-capabilities** | **搜索/抓取被拒（403 / 反爬 / SPA 空白 / `web_search` 报 Keyless Exa 失败）时加载：本机 wigolo + Scrapling MCP 零key搜索与反爬抓取栈** |
 | 🤖 **浏览器自动化** | **agent-browser** | **抓网页/爬取/填表单/点击/截图，或 `browser_exec` 挂了（DevToolsActivePort）、要复用 Chrome 登录态时加载：vercel-labs CLI 已内置，快照+@eN引用；⚠️ 必须 PTY 跑、禁管道** |
+| 📥 **下载引擎** | **aria2-downloads** | **凡哥说"下载/BT/磁力/种子/批量下载/下载太慢/断点续传"时加载：aria2c v1.37.0 引擎（`D:\Hermes\bin\aria2\aria2c.exe`，2.36MB）+ JSON-RPC 接口 + `scripts\a2rpc.py` 客户端；先看边界表别用错工具** |
 
 > 🧠 2026-09-15 新增 `carnegie-human-relations`（management 类）：**《人性的弱点》蒸馏成果**。来源：凡哥从博主处学来的四步蒸馏法（类型判定→方法论提取→skill化→适用边界），小南执行蒸馏并核实原书结构（四部分 30 条 = 3+6+12+9，另中文版第六篇家庭七法）。内容：两条底层前提（人最强烈的渴望是"觉得自己重要"／没人会为你的理由行动）＋六步流程（P0分诊→P1刹车→P2换位→P3找共同点→P4说话结构→P5落到行动）＋输出四件套（开场句/三步话术/让他说出承诺/禁忌三句）＋七种翻车场景＋中式职场适配＋三句自检。references 内含 30 条「原则→动作→禁忌」全表。成品：`D:\Documents\我的文档\蒸馏\人性的弱点_蒸馏skill_v1.0.docx`。
 > ⚠️ **铁律**：管理/人际类问题**先走该技能六步**再答；凡哥纠正过的做法要**回流 patch 到技能**，不能只在对话里说。
@@ -94,6 +95,14 @@
 > ④ 顺手清掉 `mishangwo` frontmatter 里残留的已归档 `barnum-effect`。
 > **验证**：5 个相关技能规范体检 **0 ERROR**（`skill-router` / `working-with-fange` 各自的历史长描述属第 3 步待办）。
 > **⚠️ 诚实的边界**：Hermes 无关键词规则引擎，自动触发＝语义判断＝**概率性**，永远不是 100%。所以日常靠 A+B+C 自动带出，**关键场合凡哥点名**（"按卡耐基六步说" / `/skill carnegie-human-relations`）作确定性兜底，双保险。
+
+> 📥 **2026-10-11 新增 `aria2-downloads`（software-development 类）：吸收抖音「Motrix」视频**（凡哥发来 → 核证开源项目 `agalwood/Motrix`，官网 **56,319★**，架构 `React UI → app core → engine adapter → **aria2**`）。
+> **判定**：技能库无、本机无 → 按凡哥规则「**没有就直接吸收**」。
+> **吸收方式（延续"取机制不取框架"）**：**只装 2.36MB 的 aria2c 引擎**（`D:\Hermes\bin\aria2\aria2c.exe`，v1.37.0 实测），**没装 ~100MB 的 Motrix Electron GUI** —— "接入你的智能体"的本质就是 aria2 的 CLI + JSON-RPC，GUI 只是壳。
+> **实测证据（全部真跑通，非纸面）**：① CLI 多线程下载成功（走 ghproxy，2.39MB / 357KiB/s）；② **RPC 三连**：`aria2.getVersion` → 1.37.0（自身列出 BitTorrent/Metalink/SFTP 等特性）、`aria2.addUri` → 返回 gid、`aria2.tellStatus` → `status: complete` 且**文件真实落盘**（3.9MB）；③ 配套脚本 `scripts\a2rpc.py` 实测 `version`/`add`/`list`/`all` 全过。
+> **写入技能的实测坑**：镜像站常不支持多线程（ghproxy 实测 `CN:1`，`-x16` 形同虚设）· aria2 **不读系统代理**（须显式 `--all-proxy`，本机 7897 当时未监听）· **GitHub releases 直连失败但同期 curl 能通** · Windows `--daemon=true` 不生效（用后台进程）· 原生程序路径须 `D:/` 形式。
+> **边界表（防用错工具）**：视频站 → `yt-dlp`；HF 模型（要逐字节校验）→ `comfyui-env-ops\dl_model_resumable.sh`；网页抓取 → `wigolo`/`scrapling`；**大文件 / BT / 磁力 / 批量 / 断点续传 → aria2c**。
+> **路由**：已挂进 `skill-router`「技术/抓取类」；DASHBOARD 技能索引加「📥 下载引擎」行。**Motrix GUI 留作可选**（凡哥要可视化界面时再装）。
 
 > **⏳ 待办**：那 60 条 description 超标（= "发现税"）建议**单列一轮**瘦身（只砍赘述、中文触发词一个不丢）—— 按凡哥"每轮只改一变量"铁律，不与本次混做。
 
