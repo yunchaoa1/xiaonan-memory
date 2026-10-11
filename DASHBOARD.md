@@ -69,6 +69,7 @@
 | 📥 **下载引擎** | **aria2-downloads** | **凡哥说"下载/BT/磁力/种子/批量下载/下载太慢/断点续传"时加载：aria2c v1.37.0 引擎（`D:\Hermes\bin\aria2\aria2c.exe`，2.36MB）+ JSON-RPC 接口 + `scripts\a2rpc.py` 客户端；先看边界表别用错工具** |
 | ⚡ **快速抓取** | **lightpanda-fastfetch** | **凡哥说"抓网页/批量抓取/爬取太慢"时加载：WSL Ubuntu 里的 Lightpanda（Zig 写的无头浏览器，`/root/lightpanda/lp`），实测 **670ms vs wigolo 34,450ms（快约60倍）**；⚠️ 强反爬站（抖音/小红书）抓不到，那种用下面这条** |
 | 🕵️ **反检测抓取** | **camoufox-antidetect** | **凡哥说"抓不到/被拦了/403/人机验证/反爬/抖音小红书"时加载：Camoufox 反检测浏览器（定制 Firefox，指纹在 C++ 层伪造），**抖音实测 920,392 字节 vs Lightpanda 0 字节**；⚠️ 慢 10–27s，只用于反爬、不做批量** |
+| 🔐 **验证码处理** | **captcha-solving** | **凡哥说"验证码/滑块/人机验证/过不去/一直弹验证"时加载：三层 —— ①**不触发**（Camoufox / Scrapling.StealthyFetcher）②**本地识别**（`ddddocr`：字符 3/3 实测、滑块/点选/GPU 齐全）③**云服务=付费兜底，未采用**；⚠️ 短信类无解、行为风控只能靠不触发** |
 
 > 🧠 2026-09-15 新增 `carnegie-human-relations`（management 类）：**《人性的弱点》蒸馏成果**。来源：凡哥从博主处学来的四步蒸馏法（类型判定→方法论提取→skill化→适用边界），小南执行蒸馏并核实原书结构（四部分 30 条 = 3+6+12+9，另中文版第六篇家庭七法）。内容：两条底层前提（人最强烈的渴望是"觉得自己重要"／没人会为你的理由行动）＋六步流程（P0分诊→P1刹车→P2换位→P3找共同点→P4说话结构→P5落到行动）＋输出四件套（开场句/三步话术/让他说出承诺/禁忌三句）＋七种翻车场景＋中式职场适配＋三句自检。references 内含 30 条「原则→动作→禁忌」全表。成品：`D:\Documents\我的文档\蒸馏\人性的弱点_蒸馏skill_v1.0.docx`。
 > ⚠️ **铁律**：管理/人际类问题**先走该技能六步**再答；凡哥纠正过的做法要**回流 patch 到技能**，不能只在对话里说。
@@ -120,9 +121,19 @@
 > **Camoufox 安装踩坑（已写进技能）**：① **`Cache\.0.5_FLAG` 缺失 → `camoufox path/fetch` 判定为"旧版不兼容数据"并 `rmtree` 全删**（**吃过一次**：装好又消失；手动装完必须建这个空文件）；② GitHub API 限流会卡死安装 → 用 ghproxy 直下 release（**1.3GB**）；③ uBlock 扩展 451 失败**不影响抓取**。
 > **⚠️ 环境教训（重要，已定规矩）**：往 **Hermes 自己的 venv** 装 `crawl4ai` 造成 `snowballstemmer` 版本冲突（Hermes 要 `3.1.1` / crawl4ai 要 `2.2.x`）→ **已卸载修复，`pip check` 干净**。**规矩：重包一律装独立环境（已建 `D:\Hermes\venvs\media`），不碰 Hermes 环境。**
 > **明确弃用（附理由）**：`crawl4ai`（与 Lightpanda+trafilatura 重叠，且污染环境）｜`whoogle-search`（**项目已死**，Google 封了它）｜`cloudscraper` / `playwright-stealth` / `undetected-chromedriver`（**停更 1 年+，对现版 Cloudflare 已失效**）｜`Jina Reader`（内容发第三方）。
-> **诚实的硬伤**：**验证码 —— 开源界无解**（只能人工或付费打码）；**登录仍需凡哥先登一次**（Camoufox 可持久化 profile 复用他的会话）。
+> **诚实的硬伤**：~~验证码 —— 开源界无解~~ ❌ **此结论当天即被推翻，见下方"🔐 验证码认知修正"条**（ddddocr 等开源方案可用；**只有短信类确实无解**）；**登录仍需凡哥先登一次**（Camoufox 可持久化 profile 复用他的会话）。
 > **🚨 安全记录**：调研中发现 GitHub 存在**仿冒仓库**（名字近似知名项目、星数虚高，疑似 SEO 农场）→ **定规矩：只装官方仓库，绝不装来路不明的同名包**。
 > **路由**：已挂 `skill-router`：`camoufox-antidetect` 进「技术/抓取类」；**新增「文档/资料类」节**（PDF/Word/Excel/PPT → 先试 markitdown，**原先 `ocr-and-documents` 完全不在路由表里，是断点**）；视频行补「**镜头怎么剪的 / 剪辑节奏 / 切了几个镜头**」触发词。
+
+> 🔐 **2026-10-11 验证码认知修正**（凡哥拿一条抖音视频问「博主说有绕过验证码的方法，你是不是没学到」逼出来的 —— **我此前答"开源界无解"是错的**）：
+> **博主原话（转写音频得到）**：讲的是 **Browser-Use**，"面对访问拦截，它提供了完善的**云端隔离浏览器**支持，轻松突破验证码限制"。
+> **核查结论**：那是 **Browser Use Cloud 付费服务**（$0.02/浏览器小时），**不是开源算法**；其**官方文档自己写着** *"no browser configuration guarantees that every CAPTCHA can be avoided or solved"*。
+> **社区真相（打脸旧结论）**：① **ddddocr** 字符 ~92% / 滑块 ~87%（免费开源）② **FlareSolverr** 90.38% / **Byparr（Camoufox 后端）** 92.16% 过 Cloudflare ③ **Scrapling 0.4.15（本机早就装着）自带 Camoufox 后端 + 自动 Turnstile 求解** —— **能力一直在手上，我却说"无解"**。
+> **处置（六步已走完）**：装 **`ddddocr`**（自造字符图 3/3 识别实测；`classification`/`detection`/`slide_match`/`use_gpu` 能力齐全）→ 新建技能 **`captcha-solving`** → 挂 `skill-router`（触发词「验证码/滑块/人机验证/过不去/一直弹验证」）→ 本记录。
+> **三层口径**：①**不触发**（优先；Camoufox / Scrapling.StealthyFetcher）②**本地识别**（ddddocr）③**云服务**（付费，未采用）。
+> **诚实边界**：短信验证码❌无解｜行为风控只能靠"不触发"｜企业级（极验/顶象）难度高｜**出口 IP 常是决定性变量**（代理没开时很多站必弹）。
+> **方法论教训**：①**别把"某类难"说成"全部无解"**；②采信单一调研源（子代理）不自查，等于自己违反"不盲信二手结论"的规矩；③**手上已有的工具要盘点清楚**，别一边喊缺能力一边把现成的放着。
+> **附带验证**：本次为"听到口播内容"完整跑通了「**Camoufox 截直链 → 下载 → ffmpeg 提音频 → faster-whisper 转写**」链路（脚本 `D:\Hermes\cache\dy_transcribe.py`），修掉了两个坑：抖音需 cookie/直链截获；HF 直连超时→本地缓存模型 + `HF_HUB_OFFLINE`。
 
 > **⏳ 待办**：那 60 条 description 超标（= "发现税"）建议**单列一轮**瘦身（只砍赘述、中文触发词一个不丢）—— 按凡哥"每轮只改一变量"铁律，不与本次混做。
 

@@ -73,6 +73,7 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 | 搜索/抓取被拒 / 403 / 反爬 / SPA 空白 / web_search 报 Keyless Exa 失败 | **local-web-capabilities**（需要真浏览器交互时叠加 `agent-browser`） |
 | 抓网页 / 批量抓取 / 爬取太慢 / 把这个页面抓下来 | **lightpanda-fastfetch**（WSL 里的 Lightpanda 无头浏览器，实测 **670ms vs wigolo 34s**；⚠️ **强反爬站抓不到**——那种改用下面这条） |
 | **抓不到 / 被拦了 / 403 / 人机验证 / 反爬 / 抖音·小红书这类** | **camoufox-antidetect**（反检测浏览器：**抖音实测 920,392 字节 vs Lightpanda 0 字节**；慢 10–27s，**只用于反爬，不做批量**） |
+| **验证码 / 滑块 / 人机验证 / 过不去 / 一直弹验证** | **captcha-solving**（三层：①**不触发** → Camoufox / Scrapling.StealthyFetcher ②**本地识别** → `ddddocr`（字符 3/3 实测、滑块/点选/GPU 都在）③云服务=**付费兜底，未采用**；⚠️ **短信类无解、行为风控只能靠不触发**） |
 | 下载大文件 / BT / 磁力 / 种子 / 批量下载 / 下载太慢 / 断点续传 | **aria2-downloads**（aria2c 引擎在 `D:\Hermes\bin\aria2\`；RPC 客户端 `scripts\a2rpc.py`；**先看技能里的边界表**——视频站走 yt-dlp、HF 模型走 `dl_model_resumable.sh`） |
 
 ### 文档/资料类

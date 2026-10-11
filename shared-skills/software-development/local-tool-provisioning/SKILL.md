@@ -108,6 +108,10 @@ python -m venv "D:/Hermes/venvs/media"           # ✅ 原生 D:/ 形式
    curl -sIL -m 25 "<拼出来的URL>" | grep -iE "^(HTTP/|content-length)"
    ```
 3. 确认后再下载；**大文件用 `aria2c --continue=true`**（断了能续，见 `aria2-downloads`）
+4. **下下来只是第一步 —— 还要手工装进它的缓存布局**：目录名规则、`version.json` / `config.json` 的
+   字节、**以及"缺了就会被整个删光"的标志文件**（Camoufox 的 `.0.5_FLAG` —— 这个坑真吃过一次）。
+   → **完整配方见 `references/manual-offline-install.md`**（1.31 GB 实战走通；
+   收尾已实测：抖音 **920,392 字节**，同站 Lightpanda 是 0 字节）
 
 ## 坑（都踩过）
 
