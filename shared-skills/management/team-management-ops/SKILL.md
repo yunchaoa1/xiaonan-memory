@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [management, performance-review, reporting, process]
-    related_skills: [working-with-fange, fange-execution-team, project-dashboard]
+    related_skills: [working-with-fange, carnegie-human-relations, fange-execution-team, project-dashboard]
 ---
 
 # 团队管理执行（凡哥 · 技术项目主管视角｜目标 CTO）
@@ -24,6 +24,7 @@ metadata:
 
 ## When to Use（何时加载）
 凡哥提到：绩效考核 / **定性考核 · 评分尺子 · 任务台账 · 归档规则** / 每日工作日志 / 周报月报 / 带人 / 一对一 / 任务表 / 排期 / 盯进度 / "人事那边要" / 给 CEO 汇报 / 招人 / 项目进展口径 / 板块协同 → **加载本技能**。
+（**"话该怎么说"的部分叠加 `carnegie-human-relations`**：凡涉及带人 / 反馈 / 说服 / 冲突 / 拒绝，先走卡耐基六步再答 —— 凡哥 2026-09-15 明令。考核制度怎么定走本技能，开口怎么说走卡耐基。）
 （凡哥 2026-09-13 起接管集团 AI 技术交付（板块=传媒/OPC 平台/教育/科技），**对外身份＝技术项目主管，CTO 是成长目标**；直属小团队见 DASHBOARD「十、集团架构与项目管理攻略」。）
 
 ## 0. 交付纪律（三条硬规则，先过这三条再动手）

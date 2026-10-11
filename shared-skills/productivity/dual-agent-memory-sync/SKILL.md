@@ -106,19 +106,24 @@ xiaonan-memory\shared-skills\      唯一编辑源（Git 同步，含 INDEX.md �
 家里的技能目录                     运行副本
 ```
 
-两个脚本（配套工具，**已随仓库同步到 `xiaonan-memory\scripts\`**，放在 `<HERMES_HOME>/scripts/` 下即可，路径自适应不需要改代码 —— 家里端从仓库副本跑同一份）：
+两个脚本（配套工具，**已随仓库同步到 `xiaonan-memory\scripts\`**）：
 - `python scripts\sync_skills.py status|push|pull` —— 技能，只导 source=local
 - `python scripts\sync_profile.py status|push|pull` —— 记忆与人格三件套
+
+> ⚠️ **跑哪一份**：优先用 `<HERMES_HOME>\scripts\` 下那份（SOUL.md 里写死的路径）。仓库副本 `xiaonan-memory\scripts\` 自 2026-10-11 起也能直接跑（已改成位置自适应），但**改脚本时要两份一起改**，否则又漂移。
 
 **自动兜底**：cron `40df234f060d` 每天 17:50 跑两条 push + git 提交 + 推送（**需 Gateway 在运行**，`hermes gateway status` 查）。
 **开工安装**：SOUL.md 启动规则已写死 —— git pull 后跑两条 pull（profile 的 pull 会先备份到 `memories\.sync-backup\`）。
 
-**踩过的 4 个坑（都能复现，别再踩）**：
+**踩过的 5 个坑（都能复现，别再踩）**：
 
 1. **`.gitignore` 里的 `skills/`** —— 标着"OpenClaw 系统文件"，按名字匹配**任意层级**的 skills 目录，导致整个技能目录从未进过仓库。`shared-skills` 名字不同所以不受影响。
 2. **技能名 ≠ 目录名** —— `creative/writing-opc-entry-test/` 里的技能名是 `writing-opc-entry`（Hermes 以 frontmatter 的 `name` 为准，不是目录名）。**用目录名扫描会漏 5 个技能**（91 变成 85）。扫描器必须读 frontmatter。
 3. **找错记忆文件** —— 真正在用、memory 工具在写的是 `D:\Hermes\memories\MEMORY.md`；`D:\Hermes\MEMORY.md` 是 6 月的废弃副本。找错就会以为"记忆在同步"其实两头各写各的。
 4. **builtin 混在同一批目录里** —— `creative/`、`software-development/` 等目录同时装着自建技能和 Hermes 自带技能，必须用 `hermes skills list` 的 Source 列筛 `local`，不能整目录复制。
+5. **技能同步"静默空跑"（2026-10-11 实测，最阴）** —— 脚本原用 `HERMES_HOME = Path(__file__).resolve().parent.parent`；从仓库副本 `xiaonan-memory\scripts\` 跑时算出来的是**仓库自己**（少一层）→ `SKILLS`/`SHARED` 指向不存在的目录 → 打印 `push: 新增 0 个 []` / `更新 0 个 []`，**看着像成功，实际什么都没同步，也不报错**。我改完技能跑它，直到 `git show --stat HEAD` 只看见 DASHBOARD/SOUL、**没有技能文件**才露馅。
+   **三条防身规则**：① 认 `status` 输出——`运行目录 D:\Hermes\skills 里的自建技能: 0` 就是路径算错了；② **刚改完技能，push 报"更新 0 个"是红旗，不是好消息**；③ 用 `git show --stat HEAD` 确认提交里**真有技能文件**，别只看 `git push` 成功。
+   **已修**：改为向上找第一个含 `skills/` 的目录当 HERMES_HOME（两份副本都改了），且 scan 结果为 0 时**明确报错退出**（`**什么也没改。**`）。
 
 完整审计清单见`references/shared-skill-sync-audit.md`。
 

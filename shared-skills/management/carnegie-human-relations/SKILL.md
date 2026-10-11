@@ -1,6 +1,6 @@
 ---
 name: carnegie-human-relations
-description: Use when 管理/带人/人际沟通/说服/反馈时。先走卡耐基六步再答。
+description: 管理/带人/人际沟通/说服/反馈/冲突/拒绝时用。先走卡耐基六步再答。
 version: 1.0.0
 author: 小南
 license: internal

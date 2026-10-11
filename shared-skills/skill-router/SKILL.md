@@ -77,12 +77,17 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 |--------|------|
 | 清理技能 / 技能体检 / 整理技能库 / 技能打架 | skill-library-maintenance（十步流程：盘点→重复检测→停用→合并→修引用→补描述→同步路由表→验证→更新总控台→git同步） |
 
+### 管理/人际类（凡哥令：先加载对应技能，不凭小南自己思路答）
+| 凡哥说 | 加载 |
+|--------|------|
+| 管理 / 带人 / 人际沟通 / 说服 / 反馈 / 冲突 / 拒绝 / 家庭关系 / 怎么开口 | **carnegie-human-relations**（先走卡耐基六步：P0分诊→P1刹车→P2换位→P3找共同点→P4说话结构→P5落到行动）；涉及考核/带团队/汇报再叠加 **team-management-ops** |
+| 帮我回复 / 怎么回她 / 追女生 / 表白 / 她冷淡了 / 聊天卡住 | **mishangwo-attraction-system**（迷上我四步骤分诊；**原 barnum-effect 已并入本技能并归档**） |
+
 ### 其他业务
 | 凡哥说 | 加载 |
 |--------|------|
 | 爽剧 / 剧本 / 短剧故事 | short-drama-story-engine |
 | 网站复刻 | website-cloning + sparkart-clone |
-| 帮我回复 / 怎么回她 | barnum-effect |
 | 更新ComfyUI | comfyui-update + comfyui |
 | 总控台 / 进度 | project-dashboard + dashboard-tree + dual-agent-memory-sync |
 | 歌词 / Suno | songwriting-and-ai-music |

@@ -87,6 +87,14 @@
 > **② `skill-library-maintenance` 获得官方规范体检能力**：取回其 `validate_skill.py`（MIT，脚本头保留出处声明）落到 `scripts/`，`health_check.py` 新增**第 3.5 节**逐技能跑 `--lens hermes`。**首测（115 个启用技能）：desc>60 六十条 / 未知 frontmatter 键二十二条 / body>500 七条 / ERROR 零条**。
 > **③ 顺手修工具误报**：`health_check.py` 把技能文档里反引号内的示例 `\nname:` 当成真脏数据 → 改为先剥行内代码再匹配。
 > **验证证据**：`book-distillation` 规范体检 **0 警告**；全库体检 ✅ **健康**（悬空引用 0 / 脏数据 0 / 疑似重复 0）；提取器实测跑通（pdftotext + tiktoken；例：2 页 PDF → 1,144 字符 / ~1,191 tokens / 2 页）。
+> 🎯 **2026-10-11 蒸馏技能「自动触发」加固**（凡哥问"我需要的时候你能自动用这两本蒸馏的能力帮到我吗" → 查 `D:\Hermes\skills\.usage.json` 实测：`carnegie-human-relations` 用过 **3 次**（最近 10-07）、`mishangwo-attraction-system` **0 次**）：
+> ① 两条 description 改**中文触发词最前**并补口语说法（卡耐基加"冲突/拒绝"，迷上我加"她冷淡"）；
+> ② **`skill-router` 新增「管理/人际类」路由节** + **修掉悬空路由**（旧表 `帮我回复→barnum-effect` 指向的是**已归档**技能，改指 `mishangwo-attraction-system`）；
+> ③ 交叉引用：`team-management-ops`（frontmatter related_skills + When to Use 里的引导句"话怎么说走卡耐基"）、`working-with-fange`（related_skills）；
+> ④ 顺手清掉 `mishangwo` frontmatter 里残留的已归档 `barnum-effect`。
+> **验证**：5 个相关技能规范体检 **0 ERROR**（`skill-router` / `working-with-fange` 各自的历史长描述属第 3 步待办）。
+> **⚠️ 诚实的边界**：Hermes 无关键词规则引擎，自动触发＝语义判断＝**概率性**，永远不是 100%。所以日常靠 A+B+C 自动带出，**关键场合凡哥点名**（"按卡耐基六步说" / `/skill carnegie-human-relations`）作确定性兜底，双保险。
+
 > **⏳ 待办**：那 60 条 description 超标（= "发现税"）建议**单列一轮**瘦身（只砍赘述、中文触发词一个不丢）—— 按凡哥"每轮只改一变量"铁律，不与本次混做。
 
 > 💕 2026-09-17 新增 `mishangwo-attraction-system`（relationships 类）+ `book-distillation`（knowledge-management 类）：**成真《迷上我》全28章蒸馏成果**。

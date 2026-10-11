@@ -5,6 +5,30 @@
 
 ---
 
+## 第 0 步：只要标题/简介/话题，先试这条（10 秒 · 2026-10-11 实测）
+
+**只想知道"这条视频讲的是什么项目/什么内容"时，根本不用起 Chrome + CDP：**
+
+```bash
+wigolo fetch "https://www.douyin.com/video/<id>" --force-refresh --json
+```
+
+**实测**：输出的 `evidence[].title` 直接给出**完整视频简介**（含 `#话题标签`）——本次就是靠它锁定开源项目名 `book-to-skill`；`canonical_url` 同时确认视频 ID。**别急着上重方案，这一步能省掉整条 CDP 链。**
+
+**URL 形态决定成败**（同机同时实测，同一视频）：
+
+| URL 形态 | 结果 |
+|---|---|
+| `douyin.com/video/<id>` | ✅ 真实标题 + 简介全文 |
+| `douyin.com/user/self?...&modal_id=<id>&showTab=like` | ❌ 登录壳（"登录后即可观看喜欢、收藏的视频"）|
+| `iesdouyin.com/share/video/<id>/` | ❌ 同上，登录壳 |
+
+判据：输出里 `content_completeness.level: "shell"` + `reason: "app_shell"` ＝ **登录壳，不是内容**，别当正文用；但 `evidence` 里可能仍带标题/简介，先翻那里再决定是否升级方案。
+
+**什么时候才需要下面的 CDP 全链**：要**音/视频流、抽帧、口播转写**的时候。
+
+---
+
 ## 为什么 yt-dlp 在抖音上走不通
 
 | 尝试 | 实际报错 | 说明 |

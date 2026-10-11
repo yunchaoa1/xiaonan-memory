@@ -1,13 +1,13 @@
 ---
 name: mishangwo-attraction-system
-description: 凡哥问怎么回复她/怎么吸引她/追女生/表白时用。迷上我四步骤分诊。
+description: 怎么回复她/吸引她/追女生/表白/她冷淡时用。迷上我四步骤分诊。
 version: 1.0.0
 author: 小南
 license: internal
 metadata:
   hermes:
     tags: [恋爱, 吸引, 聊天, 心理, 成真, 迷上我]
-    related_skills: [barnum-effect, book-distillation, carnegie-human-relations]
+    related_skills: [book-distillation, carnegie-human-relations]
 ---
 
 # 迷上我 · 吸引操作系统

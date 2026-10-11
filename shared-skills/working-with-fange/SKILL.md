@@ -1,6 +1,9 @@
 ---
 name: working-with-fange
 description: How to work effectively with 凡哥 on creative projects, world-building, and daily operations. Covers communication style, project workflow, and avoiding common mistakes.
+metadata:
+  hermes:
+    related_skills: [carnegie-human-relations, team-management-ops, book-distillation]
 ---
 
 # Working with 凡哥
