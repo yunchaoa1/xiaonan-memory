@@ -32,7 +32,7 @@ H3(16G):一采960×544/15s≈4.5分;前POST/free;详见av-generation-troubleshoo
 §
 装自定义节点:requirements常不全→扫.py import对比stdlib找缺包(comfy/folder_paths/nodes属自带)。H3加速=H3-Turbo+v4 LoRA(4-8步)。
 §
-诺镜=Angel大模型·Novin ai1.0(影剧工坊)·Novin agent(小李/小唐);帧格=浪浪椰APP(=漫剧发布平台)
+诺境=Angel大模型·Novin ai1.0(影剧工坊)·Novin agent(小李/小唐);帧格=浪浪椰APP(=漫剧发布平台)
 §
 凡哥=集团技术项目主管(低调,CTO为目标);小何=何锦波(后端框架),小吴=吴伟俊(前端UI),小李=李林(大模型上下文溢出·LangGraph全局+子图),小唐=唐光辉(多agent体系);考核见DASHBOARD。
 §
