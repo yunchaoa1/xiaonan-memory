@@ -22,7 +22,8 @@ for sec in doc.sections:                      # 窄边距，多塞点内容
 
 
 def add_runs(p, text):
-    """**加粗** 内联解析"""
+    """**加粗** 内联解析（顺带去掉行内代码反引号）"""
+    text = text.replace("`", "")
     for i, part in enumerate(re.split(r"\*\*(.+?)\*\*", text)):
         if not part:
             continue
@@ -74,9 +75,10 @@ while i < len(lines):
     elif ln.startswith("> "):
         p = doc.add_paragraph()
         p.paragraph_format.left_indent = Pt(18)
-        r = p.add_run(ln[2:])
-        r.italic = True
-        r.font.color.rgb = RGBColor(0x59, 0x59, 0x59)
+        add_runs(p, ln[2:])
+        for r in p.runs:
+            r.italic = True
+            r.font.color.rgb = RGBColor(0x59, 0x59, 0x59)
     elif re.match(r"^\s*[-*] ", ln):
         p = doc.add_paragraph(style="List Bullet")
         add_runs(p, re.sub(r"^\s*[-*] ", "", ln))
