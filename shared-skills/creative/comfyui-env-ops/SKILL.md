@@ -692,6 +692,8 @@ CUDA OOM 会**打死 `prompt_worker` 线程**（日志 `Exception in thread Thre
 云端 Linux（RTX 5090）升级 + LTX-2.5 放大部署全程：`references/cloud-linux-upgrade-ltx25.md`
 **云端环境从零重建**（控制台选型 / 装系统盘 / ComfyUI v0.37.0 / 锁版插件批 / 20 插件对照清单 / 状态标注）：`references/cloud-instance-rebuild.md`
 H3 生态模型来源/大小/公模库路径/放置目录总表（配 UP 工作流模型时先查它）：`references/h3-model-sourcing.md`
+
+**H3 并发/多用户部署 与 云·本地算力报价**（**"ComfyUI 只能跑 1 个人"的根因＝它是单用户工作流引擎，官方推荐的是 SGLang；** 官方 SGLang 启动命令、官方承认"未公布精确显存延迟"这条审核立身之本、1×4090 24G / 2×5090 TP2 / 8×B200 三档实测、`batching_max_size`/DP/TP/Ulysses 并发手段、阿里云 L20 全线价（2×L20=15,222/月）与抢占式 1 折、L20 整机 ≈¥33,500、**2×4090-48G 与 2×L20 同为 96GB 显存**但 4090 无 FP8/NVLink —— 凡哥问"影剧工坊并发怎么搞/租服务器多少钱/本地买什么设备"时先读它）：`references/minimax-h3-concurrency-and-cloud-pricing.md`
 UP 小黄瓜 H3 全能生视频工作流（V3/V4）结构解剖——槽位索引、一采/二采双链、提示词组、开关语义：`references/up-h3-workflow-structure.md`
 UI 格式工作流编辑实录（改连线/加节点/分组布局的完整配方与踩坑）：`references/comfyui-ui-format-editing.md`
 0.35 官方核心节点参数迁移（`BlockSparseAttention` widget 整体错位）＋ `llama_cpp` 的 GLIBCXX 依赖修法：`references/035-node-migration.md`
