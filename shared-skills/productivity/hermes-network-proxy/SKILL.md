@@ -264,8 +264,16 @@ hermes chat -q "只根据像素识别图中文字" --image "D:/path/test.png" --
 | edge-tts 7.2.7 / 7.2.8 | ❌ 都挂 | 不是包旧（旧经验"403 就升级"已失效） |
 | **新地址 `api.msedgeservices.com`** | ✅ 出音频 | ← **真正的修法** |
 
-**修法（本地一行补丁，上游 PR #491 截至 2026-10-12 未合并）**：
-改 `D:\Hermes\hermes-agent\venv\Lib\site-packages\edge_tts\constants.py`
+**修法（已落地 2026-10-13；上游 PR #491 截至 edge-tts 7.2.8 仍未合并）**：
+直接跑现成脚本，别手改（幂等、自动备份、自带真实合成自检）：
+
+```bash
+python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py            # 打补丁 + 自检
+python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py --verify   # 只查状态 + 试合成
+python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py --revert   # 还原
+```
+
+它改的是 `D:\Hermes\hermes-agent\venv\Lib\site-packages\edge_tts\constants.py`：
 
 ```python
 WSS_URL = (
@@ -276,10 +284,14 @@ WSS_URL = (
 `TRUSTED_CLIENT_TOKEN` 值不变（`6A5AA1D4EAFF4E9FB37E23D68491D6F4`），换个 query 名传给新主机；
 `VOICE_LIST` 不用改；`Sec-MS-GEC` / `ConnectionId` 由 `communicate.py` 照旧追加。音频仍 24kHz 单声道 MP3。
 
-**⚠️ 两个坑**
+**⚠️ 三个坑（第 3 条最容易误判，2026-10-13 实测踩到）**
 1. `communicate.py` 是 `from .constants import WSS_URL` 直接导入的 —— 临时验证**必须同时改
    `edge_tts.constants` 和 `edge_tts.communicate` 两个模块属性**，只改前者不生效（报错 URL 仍打老地址，会误判成"新地址也不行"）。
-2. `pip install -U edge-tts` 会**覆盖掉这行补丁** → 升级后必须重打。
+2. `pip install -U edge-tts` 会**覆盖掉这行补丁** → 升级后重跑脚本。
+3. ★ **改完必须重启 Hermes 桌面 App**。`tools/tts_tool.py` 的 `_import_edge_tts()` 是懒加载，模块一旦进了
+   `sys.modules` 就再也不读盘 —— 磁盘改了、App 进程里还是老地址。**在 `terminal` 里测能过是因为每次都是新进程，
+   极易误判成"已经修好了"**。判断有没有重启成功：让 Hermes 播报一次，报错 URL 里还有
+   `speech.platform.bing.com` = 没重启。（桌面 App 后端 = `hermes_cli.main serve` 进程，随 App 一起重启。）
 
 **验证标准 = 真出一段非 0 字节音频**（只看"没报错"不够）：
 ```bash
