@@ -1,6 +1,6 @@
 ---
 name: hermes-network-proxy
-description: Hermes 网络、Provider 与视觉路由——v2rayN/Clash 代理、OpenAI Codex OAuth、动态模型目录、主模型原生视觉和辅助视觉排障。
+description: Hermes 网络、Provider 与语音/视觉路由——v2rayN/Clash 代理、OpenAI Codex OAuth、动态模型目录、TTS 语音播报失败排障、主模型原生视觉和辅助视觉排障。
 ---
 
 # Hermes 网络、Provider 与视觉路由
@@ -12,6 +12,7 @@ description: Hermes 网络、Provider 与视觉路由——v2rayN/Clash 代理�
 - 模型库出现新模型，需要判断是否真能调用
 - 图片能上传但 OCR 错、`vision_analyze` 失败、视觉走错供应商
 - 主模型、辅助视觉、cron 的模型状态互相不一致
+- 语音播报失败、`TTS chunk N failed (edge)`、`WSServerHandshakeError: 403`
 
 ## 先拆成四层，禁止混查
 
@@ -240,6 +241,73 @@ hermes chat -q "只根据像素识别图中文字" --image "D:/path/test.png" --
 ---
 
 ## 常见诊断
+
+### 语音播报全挂：`TTS chunk N failed (edge)` / `WSServerHandshakeError: 403`（2026-10 微软换端点）
+
+**症状**：语音播报报 `403, Invalid response status, url='wss://speech.platform.bing.com/...readaloud/edge/v1?...Sec-MS-GEC=...'`。
+本机 TTS 通道 = `config.yaml` 的 `tts.provider: edge` / `tts.edge.voice: zh-CN-XiaoxiaoNeural`。
+
+**根因（2026-10-12 实测）**：微软把 Edge「大声朗读」的**合成 WebSocket** 从
+`speech.platform.bing.com` 迁到了 **`api.msedgeservices.com`**（Edge 155 走的新地址）。
+老地址 2026-10 初起对大量地区返 403，10-12 起美国也开始。
+**与本地网络 / 代理 / IP / 令牌 / 包版本 / 系统时钟全部无关。**
+
+**先按这个矩阵排除，别重复乱试**（每一项都真跑过）：
+
+| 探针 | 结果 | 结论 |
+|---|---|---|
+| `voices/list` HTTPS（同 headers） | ✅ 200 / 170KB | **音色列表还好 → 别误判成"网断了"** |
+| 老地址枚举 140/141/142/143/144 版本号、或不带 | ❌ 全 403 | 不是 `Sec-MS-GEC-Version` 过期 |
+| 带 / 不带 `Sec-MS-GEC` | ❌ 全 403 | 不是 DRM 令牌算错 |
+| 走本机代理（换出口 IP） | ❌ 仍 403 | 不是地区墙 / 不是 IP 被封 |
+| 本机时钟 vs 服务端 `Date` 头 | 偏差 2.5s | 不是时钟偏移 |
+| edge-tts 7.2.7 / 7.2.8 | ❌ 都挂 | 不是包旧（旧经验"403 就升级"已失效） |
+| **新地址 `api.msedgeservices.com`** | ✅ 出音频 | ← **真正的修法** |
+
+**修法（本地一行补丁，上游 PR #491 截至 2026-10-12 未合并）**：
+改 `D:\Hermes\hermes-agent\venv\Lib\site-packages\edge_tts\constants.py`
+
+```python
+WSS_URL = (
+    "wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1"
+    f"?Ocp-Apim-Subscription-Key={TRUSTED_CLIENT_TOKEN}"
+)
+```
+`TRUSTED_CLIENT_TOKEN` 值不变（`6A5AA1D4EAFF4E9FB37E23D68491D6F4`），换个 query 名传给新主机；
+`VOICE_LIST` 不用改；`Sec-MS-GEC` / `ConnectionId` 由 `communicate.py` 照旧追加。音频仍 24kHz 单声道 MP3。
+
+**⚠️ 两个坑**
+1. `communicate.py` 是 `from .constants import WSS_URL` 直接导入的 —— 临时验证**必须同时改
+   `edge_tts.constants` 和 `edge_tts.communicate` 两个模块属性**，只改前者不生效（报错 URL 仍打老地址，会误判成"新地址也不行"）。
+2. `pip install -U edge-tts` 会**覆盖掉这行补丁** → 升级后必须重打。
+
+**验证标准 = 真出一段非 0 字节音频**（只看"没报错"不够）：
+```bash
+python -c "
+import asyncio, edge_tts
+async def m(): await edge_tts.Communicate('语音测试','zh-CN-XiaoxiaoNeural').save('t.mp3')
+asyncio.run(m())"
+ls -l t.mp3    # 应 10~20KB
+```
+
+完整证据链（探针脚本、403 响应头、上游 issue/PR 时间线、locale 相关的附带小修）见
+`references/edge-tts-403-endpoint-migration.md`。
+
+### 上游服务端改动 → 直接查 issue/PR 时间线（通用手法）
+
+多个用户/地区**同一时间**一起挂、且本地换参数怎么试都不动 → 大概率上游改了服务端。
+别继续在本地瞎试，去问上游仓库 —— **当天的 open PR 常常就是现成答案**：
+
+```bash
+curl -s "https://api.github.com/repos/<owner>/<repo>/issues?state=all&sort=created&direction=desc&per_page=10" \
+ | python -c "import sys,json;[print(i['created_at'][:10],'|',i['state'],'|',i['title']) for i in json.load(sys.stdin)]"
+curl -s "https://api.github.com/repos/<owner>/<repo>/pulls?state=all&sort=created&direction=desc&per_page=5" \
+ | python -c "import sys,json;[print(i['number'],i['state'],i['title'],'\n',(i.get('body') or '')[:800]) for i in json.load(sys.stdin)]"
+curl -sL "https://patch-diff.githubusercontent.com/raw/<owner>/<repo>/pull/<N>.diff"
+```
+流程：**先本地 monkeypatch 验证通过 → 再决定是否落到安装目录 / 是否等官方发版**。
+⚠️ 注意 issue 列表里**同名旧 issue 可能是上一轮的、已被关闭的**（本次 #458 是 1 月的旧 403，
+其"升级到 7.2.7"的结论对 10 月这轮完全无效）—— 看 `created_at` 挑当天/本周的那条。
 
 ### GitHub 直连被墙 → 装软件走另一条路（2026-09-23 实测）
 

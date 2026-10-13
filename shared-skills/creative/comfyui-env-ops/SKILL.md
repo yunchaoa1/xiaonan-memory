@@ -693,7 +693,7 @@ CUDA OOM 会**打死 `prompt_worker` 线程**（日志 `Exception in thread Thre
 **云端环境从零重建**（控制台选型 / 装系统盘 / ComfyUI v0.37.0 / 锁版插件批 / 20 插件对照清单 / 状态标注）：`references/cloud-instance-rebuild.md`
 H3 生态模型来源/大小/公模库路径/放置目录总表（配 UP 工作流模型时先查它）：`references/h3-model-sourcing.md`
 
-**H3 并发/多用户部署 与 云·本地算力报价**（**"ComfyUI 只能跑 1 个人"的根因＝它是单用户工作流引擎，官方推荐的是 SGLang；** 官方 SGLang 启动命令、官方承认"未公布精确显存延迟"这条审核立身之本、1×4090 24G / 2×5090 TP2 / 8×B200 三档实测、`batching_max_size`/DP/TP/Ulysses 并发手段、阿里云 L20 全线价（2×L20=15,222/月）与抢占式 1 折、L20 整机 ≈¥33,500、**2×4090-48G 与 2×L20 同为 96GB 显存**但 4090 无 FP8/NVLink —— 凡哥问"影剧工坊并发怎么搞/租服务器多少钱/本地买什么设备"时先读它）：`references/minimax-h3-concurrency-and-cloud-pricing.md`
+**H3 并发/多用户部署 与 云·本地算力报价**（**"ComfyUI 只能跑 1 个人"的根因＝它是单用户工作流引擎，官方推荐的是 SGLang；** 官方 SGLang 启动命令、官方承认"未公布精确显存延迟"这条审核立身之本、1×4090 24G / 2×5090 TP2 / 8×B200 三档实测、`batching_max_size`/DP/TP/Ulysses 并发手段、阿里云 L20 全线价（2×L20=15,222/月）与抢占式 1 折、**试跑 3 天成本估算（抢占式 ¥500–900 / 常规 ¥2,200–5,800）**、L20 整机 ≈¥33,500、**市场在售整机清单（L20 / 4090-48G 魔改 / RTX PRO 6000 96G / 8卡5090）**、**10 人并发公开参照（8卡5090＝256GB＝"十余人同步"）**、**2×4090-48G 与 2×L20 同为 96GB 显存**但 4090 无 FP8/NVLink —— 凡哥问"影剧工坊并发怎么搞/租服务器多少钱/本地买什么设备"、**或要审核小李小唐的并发方案**时先读它（含按凡哥 2026-10-12 口径校准的 A/B/C 三层审核清单：**并发验证＝租几天试跑、禁纸面推演；本地部署只算设备采购价，不核算电费/机房/折旧**）：`references/minimax-h3-concurrency-and-cloud-pricing.md`
 UP 小黄瓜 H3 全能生视频工作流（V3/V4）结构解剖——槽位索引、一采/二采双链、提示词组、开关语义：`references/up-h3-workflow-structure.md`
 UI 格式工作流编辑实录（改连线/加节点/分组布局的完整配方与踩坑）：`references/comfyui-ui-format-editing.md`
 0.35 官方核心节点参数迁移（`BlockSparseAttention` widget 整体错位）＋ `llama_cpp` 的 GLIBCXX 依赖修法：`references/035-node-migration.md`

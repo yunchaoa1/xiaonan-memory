@@ -148,6 +148,20 @@ xiaonan-memory\shared-skills\      唯一编辑源（Git 同步，含 INDEX.md �
    **正确工序**：① **改运行时那份**（`D:\Hermes\SOUL.md`、`D:\Hermes\memories\MEMORY.md`、`D:\Hermes\memories\USER.md`）；② `sync_profile.py status` 看差异是否符合预期；③ `sync_profile.py push` 导出到仓库；④ **再 `status` 一次，必须三对全"一致 OK"**；⑤ 随记忆一起 commit + push。
    **与坑 6 同源**：**"命令没报错" ≠ "改动生效了"** —— 涉及两份副本的文件，改完必须**回源头确认**（`status` / `git ls-files` / `git show --stat`），别只看命令成功。
 
+8. **在 `terminal` 里敲 Windows 反斜杠路径 = 路径被吃成粘连乱码（2026-10-12 实测，**每次新会话跑启动同步都会撞**）** —— SOUL.md 启动规则里写的是 `python D:\Hermes\scripts\sync_skills.py pull`，但本机 `terminal` 工具走的是 **bash（git-bash/MSYS）且 MSYS 路径转换已禁用**，未加引号的反斜杠被当作转义符吃掉：
+   ```
+   $ python D:\Hermes\scripts\sync_skills.py pull
+   python.exe: can't open file 'D:\\Hermes\\xiaonan-memory\\Hermesscriptssync_skills.py': [Errno 2]
+   ```
+   注意它**还把当前工作目录前言拼了进去**，看起来像"脚本找不到"，极易误判成脚本缺失或克隆不全。
+   **正确写法 = 一律正斜杠**（Windows 原生程序照样认）：
+   ```bash
+   python D:/Hermes/scripts/sync_skills.py pull
+   python D:/Hermes/scripts/sync_profile.py pull
+   python D:/Hermes/skills/software-development/skill-library-maintenance/scripts/health_check.py
+   ```
+   **三条防身**：① 命令里凡有 `D:\…` 一律手改成 `D:/…`；② 报错文本里出现**没有反斜杠的粘连路径**（`Hermesscripts…`、`Hermesskills…`）= 就是这个坑，**别去查文件在不在，先换斜杠**；③ `cd /d/Hermes/xiaonan-memory && python D:/Hermes/scripts/…` 这种混用是对的 —— bash 内置 `cd` 吃 `/d/…`，**原生 python 吃 `D:/…`**，两者不互通（`python /d/Hermes/...` 同样会失败）。
+
 完整审计清单见`references/shared-skill-sync-audit.md`。
 
 ## 新实例上线
@@ -256,3 +270,16 @@ op3: C 这条 → B 的内容      # 连锁错位…
 2. **改完必须回读核对**：`read_file D:\Hermes\memories\MEMORY.md`，数条目、看有没有错位/缺失。⚠️ 工具返回的 `usage`（字数）和 `entry_count` **只说明写了，不说明写对了**。
 3. **`old_text` 太短/太通用 → 整批不落地**：本次想用 `。` 删掉一个空条目，报 `'。' matched multiple distinct entries`，而 operations 是**全有或全无（all-or-nothing）** —— 一条不匹配，**整批一条都不写**。定位要用**足够长且唯一**的片段（长句尾部、带专有名词的句子）。
 4. **要腾空间就在同一批里压缩旧条目**：上限按**批次最终结果**校验（不是中间态），所以「删两条 + 改短一条 + 加一条」可以**一次过** —— 比新开一条、分两批省事得多。把冗长条目改短、把同主题并进一条，是扩容首选。
+
+## ⚠️ 凡哥说「今天没做完的明天继续提醒我」→ 改数据，别新建 cron（2026-10-12 实测）
+
+`集团\凡哥例行与待办.json` 是**提醒的唯一数据源**（11:00 例行提醒 + 17:30 下班提醒脚本都读它；详见 `fange-reminders`）。所以「顺延到明天」是一个**改数据**的动作，不是加定时任务：
+
+1. **顺延**：当天到期、状态仍为 `待办` 的项，在 `备注` 前插 `⚠️ <日期> 未完成顺延 | ` —— ⚠️ **`状态` 保持 `待办` 不变**，改成别的值它就不再弹
+2. **要明天绷的项**：`截止` 改到明天。筛选规则是「`截止` < 今天 = 已超期 / == 今天 = 今天到期」，**截止不改就永远不弹**
+3. **凡哥点名「包括这个问题」** → 那个项也要一起改到明天，**别只顺延、忘了他点名的**
+4. **改完用 `execute_code` 跑一遍筛选逻辑打印"明天会弹什么"**，再跑 `python /d/Hermes/scripts/remind_fange_daily.py` 看脚本真实输出 —— **两处对上才算数**（JSON 里"看起来对"不算）
+5. 回话分段给他：`今天该做没做` / `明天到期` / `后天到期`，并点明唯一前提是 App 保持运行
+
+⚠️ **顺延会累积**：项本身永不自删，只覆盖日期标记 → 几天后清单会膨胀。**过几天主动问一句"这几条还留着吗"**。
+⚠️ **`_前提条件` 段**也在同一份 JSON 里（App 须运行 / 17:50 依赖 API 余额 / App 重启会补跑）—— 动这个文件时别把它删掉。
