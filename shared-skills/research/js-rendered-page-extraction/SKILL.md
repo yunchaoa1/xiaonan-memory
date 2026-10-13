@@ -35,10 +35,15 @@ metadata:
 | # | 手段 | 什么时候够 |
 |---|---|---|
 | 1 | `web_extract` | SSR / 静态页 |
-| 2 | 强制渲染类抓取（如 wigolo `fetch --force-refresh --mode=stealth`） | 文档化的 force-render 路径，见 `local-web-capabilities`。**本轮未验证**，按需试 |
-| 3 | `browser_exec` | 能用时最省事（截图自动进视野）；daemon 起不来就下一步 |
-| 4 | ⭐ **`agent-browser` CLI** | **本类任务最可靠的一层**（真浏览器 + 无障碍树快照） |
-| 5 | **截图 → `vision_analyze`** | **布局类问题非它不可**，见下 |
+| 2 | ⭐ **直取前端包**——`curl` 站点 `/assets/index-*.js` + 正则抽 `path:"…"` 与中文文案串 | **免浏览器、最快**；只想知道「全站有哪些页面 / 功能词」时这一层就够（2026-10-13 实测：**15 条路由 + 236 条中文文案**一次到手） |
+| 3 | 强制渲染类抓取（如 wigolo `fetch --force-refresh --mode=stealth`） | 文档化的 force-render 路径，见 `local-web-capabilities`。**本轮未验证**，按需试 |
+| 4 | `browser_exec` | 能用时最省事（截图自动进视野）；daemon 起不来就下一步 |
+| 5 | ⭐ **`agent-browser` CLI** | **本类任务最可靠的一层**（真浏览器 + 无障碍树快照） |
+| 6 | **Playwright 直连**（本机已装 `playwright` python） | 要**逐路由真渲染**取正文/截图、而 4/5 两层当下不可用时：`chromium.launch()` → 逐路由 `goto(..., wait_until="networkidle")` + `inner_text("body")` + `full_page` 截图（2026-10-13 实测一把跑通 13 个路由，全程不需交互） |
+| 7 | **截图 → `vision_analyze`** | **布局类问题非它不可**，见下 |
+
+第 2 层与第 6 层的**可复制代码**（15 路由抽法、登录墙识别、凡哥给的存档 HTML 抽正文）：
+`project-topology-diagrams` → `references/站点取全量-路由与文案抽取.md`。
 
 ⚠️ `open_preview` / `read_preview` / `drive_preview` 对重 SPA **可能超时无响应** —— 试一次不成就走阶梯 4，**别在预览窗上耗轮次**。
 
@@ -98,6 +103,8 @@ node "$BIN" close --all
 6. **只抓文本就写对标结论** → 布局类结论必须回头看截图。
 7. **收工不 close** → 留 daemon 和 Chrome 进程，记得 `close --all`。
 8. **页面一变还用旧 ref** → `@eN` 每次快照重分配，操作前重新 `snapshot`。
+9. **只抓首页就下结论** → SPA 首页常常只是营销页。**先抽路由表**（阶梯第 2 层），再逐路由抓；同一段文字在多个路由重复出现＝**登录墙**（2026-10-13 实测：`/workbench` `/wallet` `/onboarding` 渲染出的都是同一个登录页）。
+10. **把前端包里抓到的中文串直接当页面结构** → ⚠ **枚举级**（含格式模板、时间单位、报错提示），只能当**功能词表**，要按路由分组后才写成结构。
 
 ---
 
