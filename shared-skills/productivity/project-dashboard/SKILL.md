@@ -53,6 +53,28 @@ A well-formed DASHBOARD.md has:
 - 旧版 pptx 被 WPS 打开时会锁定 → 删不掉；让凡哥关掉旧标签页再清理（换版即清的惯例）。
 - 术语统一：日报里的"智题分"按口径写作**智提分**；日报卡点与之前口径不一致时，**先问凡哥是同一问题还是新问题**，别自己判断。
 
+## 凡哥口述 → 落账流水线（2026-10-13 实测 · 一次会话记了 12 条）
+
+凡哥在聊天里口述项目进展/决定（"X 已经搞定""Y 交给了谁""Z 不急"）时，**每一条当场落账**，别攒到最后。固定四步：
+
+1. **先查重再写**：在 `集团/台账数据.json` ＋ `集团/凡哥例行与待办.json` 里 grep 关键词 —— 本次搜"元气森林|浪浪椰"发现**台账里 0 条**（他以为派下去了、账上却没有）。查重同时避免重复记。
+2. **写台账**（字段 `work_date / 人 / 项目 / 节点 / 内容 / 状态 / 承诺 / 实际 / 备注 / 来源`）：
+   - `来源` 必须写出处：`凡哥 10-13 口述（群里下达）` / `会议纪要` —— 追责与核对全靠它
+   - **人未定就填「待确认」，别按岗位猜**；他后面说了再补（本次 3 条待确认最后都补齐）
+   - 状态用 `待办 / 进行中 / 已完成 / 已作废`；**他说"没有这个计划"就置「已作废」＋备注原因，不要静默删行**（删了以后没人知道为什么没有）
+   - 每次改完打印 `len(rows)` 对账（本次 62 → 73）
+
+3. **改待办清单**（`集团/凡哥例行与待办.json`）：他说"已经做了/发了"→ `状态:"已完成"` ＋ `实际:"日期"`；正在做的＝`进行中`
+   - ⚠️ **`截止` 字段是活的**：填成**今天** → **17:30 下班提醒会自动带上这条**（实测 `REMIND_TODAY=2026-10-13 python D:\Hermes\scripts\remind_fange_eod.py`，输出里确实有）→ 当天"要核实的事"用这招，**不必新建 cron**
+   - `备注` 写清"卡在谁 / 什么时候催 / 下一步"（例：服务器那条写"前一步＝李林唐光辉的计划，承诺 10-14，已挂 16:00 催办提醒，cron 714d70b72beb"）
+4. **回话带对账 ＋ git 提交**：条数变化（台账 62→73、待办 15→9）＋ commit 号；不要只答"已记录"
+
+**⏰ 提醒时刻分两档**（2026-10-13 实测）：**提醒凡哥本人去核实＝11:00**；**催别人交东西＝对方下班前 2 小时（16:00）**（凡哥原话「好的，下午四点提醒我」，催的是"明天下班前交并发方案"）—— 催办要留给对方处理时间。
+
+**⚠️ 节奏铁律**（凡哥 2026-10-13 原话「**一件一件的过，任何事情都是一件一件的来，一步一步的做**」）：报完清单**停住等他挑一件**，一件走完（记账＋回话）再问下一件；**别一次抛多件、别一口气给多个方案**。细则见 `working-with-fange`。
+
+📎 案例与"跨条推导"模式（12 条口述的落账样本、五类合并读结论、回话模板）：`references/凡哥口述落账-案例.md`
+
 ## Execution State Integrity
 
 For delegated or multi-stage work, the dashboard must distinguish at least: planned, dispatched, running, artifact_saved, independently_verified, blocked, and completed. A todo marked `in_progress` is not evidence that a worker is running. A worker's completion message is not evidence that an artifact exists. Promote a stage only after checking its concrete handle: an existing file with size/content, a command result, a URL/ID, or an independent verification result. If a task times out or is truncated, keep it blocked/unfinished until the handle is verified; do not record it as complete.
@@ -70,3 +92,10 @@ For high-load creative production, split work into a small validated sample befo
 - **两台电脑同时写总控台：先查号、再写入、后对账（2026-10-10 实测撞号）**：插入编号章节前先 `grep -n "^### 10\.5" DASHBOARD.md` 看**当前最大号**——另一台机可能已经写了同号条目（本次两边各写了一个「10.53」）→ **自己的条目改到下一个空号**，别去动对方的 ✓。
 - **提交顺序（有本地未提交改动时）**：`git pull --rebase` 会直接报 `error: Please commit or stash them.` 并中止 ✗ → 正确顺序＝`git add -A && git commit` → `git pull --rebase` → `git push` → `git status -sb` 确认无 ahead/behind；**不要**先 pull 后 commit。
 - 用 patch/写文件工具改 DASHBOARD 前**先拉最新**（`git pull`）；被别处（另一台机/子代理）改过而未读就写，工具会提示 `modified by sibling ... never read it` —— 此时先读最新内容再补自己的块，避免覆盖对方发言。
+- **⚠️ 大段中文写盘会被静默截断（2026-10-13 一次会话踩了 5 次）**：`write_file`、`patch` 的 `new_string`、`execute_code` 里的长中文字符串，**常常只落前半段** —— 文件里留下半句 + `...)` / `...[truncated]` 字样（python 文件＝`SyntaxError`，markdown＝结构错乱）。可靠姿势：
+  1. **先落小骨架再分段填**：用 `# @@NEXT@@` 哨兵占位 → 每段 **≤约 1.5KB** → 一次 `patch` 把哨兵换成「本段内容 + 哨兵」→ 每段看 `lint: ok`
+  2. **哨兵必须停在最后一块之后**：否则每段都插到最前面 → 顺序倒挂（本次 DASHBOARD 出过"旧章节标题被顶掉、正文挂到新标题下"的错位）
+  3. **DASHBOARD 插新章节优先用「行式插入」**（比 patch 长中文块安全）：`ls = open(p, encoding='utf-8').read().split('\n')` → `i = next(k for k,l in enumerate(ls) if l.startswith('### 10.7x '))` → `ls[i:i] = blk` → `open(p,'w',encoding='utf-8').write('\n'.join(ls))`
+  4. **写后必核三件**：grep 新标题在不在 · 读回该段有没有半句/`[truncated]` 残留 · `git commit` 输出**不能是 `nothing to commit`**
+  5. **python 字符串里别嵌双引号**（`"…没有\"演示\"这个计划…"` → `SyntaxError`）→ 中文引号一律用「」
+- **DASHBOARD 的 §10.x 编号续号**：插入前先 `search_files(pattern='^### 10\.', path=DASHBOARD)` 看当前最大号（本次跑到 §10.80）；一次会话可能连插十几条（10.67–10.80），每条保持「标题 + 3–6 条要点」的固定形态，别写成大段散文。

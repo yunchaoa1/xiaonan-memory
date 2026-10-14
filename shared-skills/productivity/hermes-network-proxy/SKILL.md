@@ -13,6 +13,7 @@ description: Hermes 网络、Provider 与语音/视觉路由——v2rayN/Clash �
 - 图片能上传但 OCR 错、`vision_analyze` 失败、视觉走错供应商
 - 主模型、辅助视觉、cron 的模型状态互相不一致
 - 语音播报失败、`TTS chunk N failed (edge)`、`WSServerHandshakeError: 403`
+- **改了 `venv/Lib/site-packages/**` 或升级依赖后，App 里行为照旧没变化**（十有八九是桌面 App 没真重启）
 
 ## 先拆成四层，禁止混查
 
@@ -288,10 +289,10 @@ WSS_URL = (
 1. `communicate.py` 是 `from .constants import WSS_URL` 直接导入的 —— 临时验证**必须同时改
    `edge_tts.constants` 和 `edge_tts.communicate` 两个模块属性**，只改前者不生效（报错 URL 仍打老地址，会误判成"新地址也不行"）。
 2. `pip install -U edge-tts` 会**覆盖掉这行补丁** → 升级后重跑脚本。
-3. ★ **改完必须重启 Hermes 桌面 App**。`tools/tts_tool.py` 的 `_import_edge_tts()` 是懒加载，模块一旦进了
-   `sys.modules` 就再也不读盘 —— 磁盘改了、App 进程里还是老地址。**在 `terminal` 里测能过是因为每次都是新进程，
-   极易误判成"已经修好了"**。判断有没有重启成功：让 Hermes 播报一次，报错 URL 里还有
-   `speech.platform.bing.com` = 没重启。（桌面 App 后端 = `hermes_cli.main serve` 进程，随 App 一起重启。）
+3. ★ **改完必须重启 Hermes 桌面 App**（**且"重启"极可能是假的** —— 详见下一节，务必先看）。
+   `tools/tts_tool.py` 的 `_import_edge_tts()` 是懒加载，模块一旦进了 `sys.modules` 就再也不读盘 ——
+   磁盘改了、App 进程里还是老地址。**在 `terminal` 里测能过是因为每次都是新进程，极易误判成"已经修好了"**。
+   判断有没有重启成功：让 Hermes 播报一次，报错 URL 里还有 `speech.platform.bing.com` = 没重启。
 
 **验证标准 = 真出一段非 0 字节音频**（只看"没报错"不够）：
 ```bash
@@ -304,6 +305,42 @@ ls -l t.mp3    # 应 10~20KB
 
 完整证据链（探针脚本、403 响应头、上游 issue/PR 时间线、locale 相关的附带小修）见
 `references/edge-tts-403-endpoint-migration.md`。
+
+### ★ 桌面 App 的「重启」是假的 → 改 site-packages 后必须「真重启」（2026-10-14 实测）
+
+**通用教训（不限 TTS）**：凡是改 `venv/Lib/site-packages/**`、或任何**在 import 期加载**的文件，
+`hermes_cli.main serve` 后端进程**必须真重启**才生效。**在 `terminal` 里另起进程测通 ≠ App 内生效。**
+
+**坑**：桌面板点窗口右上角 X **只是收进托盘，进程根本没退**。桌面板带 **`Tray` + `requestSingleInstanceLock`**
+（在 `apps/desktop/release/win-unpacked/resources/app.asar` 里 grep 得到），关窗后再点图标 = 把**老实例唤回来**。
+所以用户说"我重启过了"可能压根没重启 —— 2026-10-14 实测：5 个 `Hermes.exe` + 后端 `serve` 的
+`CreationDate` **全是 `2026/10/12 14:30:38-39`，20 小时没变**，而"重启"是当天上午做的。
+
+**判定唯一标准 = 进程启动时间**（窗口开关、日志里出现 `[boot] Finalizing desktop startup` 都不算证据）：
+
+```bash
+powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { \$_.Name -eq 'Hermes.exe' -or (\$_.Name -eq 'python.exe' -and \$_.CommandLine -match 'hermes_cli\.main\s+serve') } | Select-Object ProcessId,Name,CreationDate | Format-Table -AutoSize"
+```
+
+比对规则：`CreationDate` 必须**晚于**改动文件的 mtime，才算真重启。
+
+**两种真重启方式**：
+
+1. 让用户手动退：**托盘图标右键 → 退出**（不是点 X）。App 自己的文案也这么说：
+   `当前运行的应用在此功能加入前启动。请退出并重新打开 Hermes，然后回到此处。`
+2. 跑现成脚本（推荐，可替用户远程做）：
+
+```bash
+powershell -NoProfile -Command "Start-Process powershell -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File','D:\Hermes\scripts\restart_hermes_app.ps1','-DelaySeconds','90') -WindowStyle Hidden"
+```
+
+`scripts/restart_hermes_app.ps1`（本技能自带，换电脑不丢）：等 N 秒（留给 Agent 把话说说完）→
+杀全部 `Hermes.exe` + 后端 `serve` + `scrapling-mcp` → 等进程真退干净（单实例锁释放，最多 30s）→
+重新拉起 `Hermes.exe` → 把重启前后进程 `CreationDate` 写进日志。自带刹车：`D:\Hermes\logs\restart_cancel.flag`
+存在则放弃；exe 不存在则**一个进程都不杀**。日志 `D:\Hermes\logs\restart_app.log`。
+
+**⚠️ 替用户重启前必须先讲清代价**：脚本会杀掉宿主进程 → **当前窗口会自己关掉再开**，且会打断**其它会话**
+正在跑的轮次。先发一条消息说明执行时间与取消方式，再用 `-DelaySeconds`（≥60s）兜住；**禁止静默执行**。
 
 ### 上游服务端改动 → 直接查 issue/PR 时间线（通用手法）
 
