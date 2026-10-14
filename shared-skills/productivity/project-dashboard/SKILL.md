@@ -75,6 +75,8 @@ A well-formed DASHBOARD.md has:
 
 📎 案例与"跨条推导"模式（12 条口述的落账样本、五类合并读结论、回话模板）：`references/凡哥口述落账-案例.md`
 
+📎 **服务器/算力类口述**（服务器交给谁管、租哪家、当月要租哪几台、买什么设备、多少钱）→ 落账后按技能 **`compute-capacity-procurement`** 处理（审核五要素、硬伤预判清单、报价必须索取完整账单、租 vs 买对比）。
+
 ## Execution State Integrity
 
 For delegated or multi-stage work, the dashboard must distinguish at least: planned, dispatched, running, artifact_saved, independently_verified, blocked, and completed. A todo marked `in_progress` is not evidence that a worker is running. A worker's completion message is not evidence that an artifact exists. Promote a stage only after checking its concrete handle: an existing file with size/content, a command result, a URL/ID, or an independent verification result. If a task times out or is truncated, keep it blocked/unfinished until the handle is verified; do not record it as complete.
@@ -98,4 +100,6 @@ For high-load creative production, split work into a small validated sample befo
   3. **DASHBOARD 插新章节优先用「行式插入」**（比 patch 长中文块安全）：`ls = open(p, encoding='utf-8').read().split('\n')` → `i = next(k for k,l in enumerate(ls) if l.startswith('### 10.7x '))` → `ls[i:i] = blk` → `open(p,'w',encoding='utf-8').write('\n'.join(ls))`
   4. **写后必核三件**：grep 新标题在不在 · 读回该段有没有半句/`[truncated]` 残留 · `git commit` 输出**不能是 `nothing to commit`**
   5. **python 字符串里别嵌双引号**（`"…没有\"演示\"这个计划…"` → `SyntaxError`）→ 中文引号一律用「」
-- **DASHBOARD 的 §10.x 编号续号**：插入前先 `search_files(pattern='^### 10\.', path=DASHBOARD)` 看当前最大号（本次跑到 §10.80）；一次会话可能连插十几条（10.67–10.80），每条保持「标题 + 3–6 条要点」的固定形态，别写成大段散文。
+- **DASHBOARD 的 §10.x 编号续号**：插入前先 `search_files(pattern='^### 10\\.', path=DASHBOARD)` 看当前最大号（本次跑到 §10.80）；一次会话可能连插十几条（10.67–10.80），每条保持「标题 + 3–6 条要点」的固定形态，别写成大段散文。
+- **⚠️ 改账忘了落盘（2026-10-13 实测踩坑）**：用 `execute_code` 改 JSON 时只在内存里改 dict、然后 `print("已结项")` ＝ **等于没改**。必须 `json.dump(...)` 写回文件，**再从磁盘重读复核**（打印剩余条数/条目）后才向凡哥回话。本次曾口头报"日报时间已结项"，文件里其实还是"待办"，凡哥下一轮问起才发现 → 之后凡哥提到某条"怎么没销账"时，先怀疑这个。
+- **凡哥问「你上次说过 X，还记得吗 / 再发我一份」**：**不要凭记忆复述**——先 `read_file` 读原档（方案/审核依据/台账），从文件里重新组织后再发；结构性方案同时落一份可转发文件到 `D:\Documents\我的文档\`，回话带绝对路径 + `MEDIA:`。

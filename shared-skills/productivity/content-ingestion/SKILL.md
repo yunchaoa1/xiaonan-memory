@@ -42,15 +42,26 @@ metadata:
 ## 视频吸收的标准动作（照抄即可）
 
 ```bash
-# 1) 抓页面文字（标题/描述/评论）
-python "D:\Hermes\skills\software-development\camoufox-antidetect\scripts\camoufox_probe.py" "<视频页URL>"
+# 1) 抓页面文字（标题·文案·点赞·发布时间·评论区）—— 本技能自带，专治抖音
+python "D:\Hermes\skills\productivity\content-ingestion\scripts\dy_page.py" "<视频页URL>"
+#    输出 dy_page_<tag>.html（整页 1.5MB，留给正则挖数据）+ dy_page_<tag>.txt（全部可见文字）
+#    ⚠️ 抖音正文开头全是页脚/导航，真信息在中段 —— 必须整页存，别只看 probe 的前 400 字
 
-# 2) 一步到位：截直链 → 下载 → 提音频 → 转写（自制脚本）
-python "D:\Hermes\cache\dy_transcribe.py" "<视频页URL>"
+# 2) 一步到位：截直链 → 下载 → 提音频 → 转写
+python "D:\Hermes\skills\productivity\content-ingestion\scripts\dy_transcribe.py" "<视频页URL>"
 #    内部：Camoufox 截 .mp4 直链 → urllib 下载 → ffmpeg 16k 单声道 → faster-whisper 转写
 #    ⚠️ 坑：① 抖音需 cookie（yt-dlp 读 Chrome cookie 常被锁 → 用 Camoufox 截链绕过）
-#           ② HF 直连超时 → 本机已有 medium/small 模型，用本地路径 + HF_HUB_OFFLINE=1
-#           ③ large-v3 缓存是空壳，medium 完整可用
+#           ② HF 直连超时 → 脚本已内置 HF_HUB_OFFLINE=1 + 自动挑本地完整模型
+#           ③ large-v3 缓存是空壳（1KB 空目录）→ medium 完整（1.5G），脚本自动优先 medium
+#           ④ 【2026-10-14 踩】别跑 D:\Hermes\cache\dy_transcribe.py 的旧副本（写死 large-v3，必卡
+#              HF 超时 ~80s 后崩）；只跑上面技能目录里这份。cache 副本是历史遗留，已同步但不要引用
+#           ⑤ 【实测铁证 2026-10-14】凡哥的分享链接形如
+#              https://www.douyin.com/user/self?...&modal_id=<id>（个人主页弹窗形式）
+#              → 原形抓 3 次都只有 ~1.1K 字符（只渲染出页脚，主视频根本没出来）；
+#              → 换成 https://www.douyin.com/video/<id> 第 1 次就拿到 3.1K（主视频文案+评论）
+#              收到抖音链接，先做这个替换，省一整轮。dy_page.py 已内置 3 次重试兜底
+#           ⑥ 抖音 SPA 每次渲染内容不同（同一 URL 三次：4579/3249/1637/1115 字符都见过）
+#              → 抓完先看字符数，<2000 基本是空壳，别当成"没内容"就下结论
 ```
 
 ## 验收标准（怎么知道"吸全了"）
