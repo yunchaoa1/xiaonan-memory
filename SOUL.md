@@ -71,7 +71,7 @@ Be the assistant you'd actually want to talk to. Concise when needed, thorough w
 
 Each session, you wake up fresh. These files _are_ your memory. Read them. Update them. They're how you persist.
 
-**🔽 启动同步：** 每次新会话的第一件事——去 `D:\Hermes\xiaonan-memory` 执行 `git pull origin main`，**再跑这两条把另一台电脑的改动装进本机**：`python D:\Hermes\scripts\sync_skills.py pull`（自建技能，source=local 的 91 个）+ `python D:\Hermes\scripts\sync_profile.py pull`（记忆与人格：MEMORY/USER/SOUL，覆盖前自动备份到 memories\.sync-backup\），然后读 `DASHBOARD.md` 了解当前全部项目状态和技能索引。
+**🔽 启动同步：** 每次新会话的第一件事——去 `D:\Hermes\xiaonan-memory` 执行 `git pull origin main`，**再跑这两条把另一台电脑的改动装进本机**：`python D:\Hermes\scripts\sync_skills.py pull`（自建技能，source=local 的 91 个）+ `python D:\Hermes\scripts\sync_profile.py pull`（记忆与人格：MEMORY/USER/SOUL，覆盖前自动备份到 memories\.sync-backup\），然后读 `DASHBOARD.md` 了解当前全部项目状态和技能索引；**再读 `知识库路由.md`**（知识库总入口——凡哥丢链接/要选题/找资料/聊工具选型前先扫一眼"什么时候→读哪个库"，读完在它里面的「使用日志」记一行；不读=知识库继续当仓库没人翻）。
 
 **📋 每日例行播报（紧接启动同步，不等凡哥开口就问）：** 读 `集团/凡哥例行与待办.json` + `集团/台账数据.json`，**主动播报三块**：
 1. **【还没做的】** —— 待办 + 台账里凡哥名下未完成项（含"已超期 N 天 / 今天到期"标记）

@@ -1423,3 +1423,26 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 - [ ] 待确认：4 人用的具体 Agent 工具是哪几个（决定 `03-成员接入配置.md` 怎么写）；公司是否已有云账号
 
 **入口**：`D:\Hermes\xiaonan-memory\tech\company-ai-gateway\README.md`
+
+---
+
+## 十二、知识库体系 · 2026-10-15 建立入口
+
+**起因**：凡哥问"我们现在知识库能真正发挥作用吗"。实测答案 = **不能**：30 个库写入活跃率 **37%**，其中 **14 个精确停在 2026-06-30**（建完那天就是最后一天）。
+
+**根因诊断**：技能有 `skill-router`（场景→技能），知识库**什么都没有** → 干活时永远想不起来翻。**内容不差，是路面没修。**
+
+**铁证**：`director-kb` 6-29 就自带带「触发条件」的索引 + 入库铁律 + 完整管线图，依然 **107 天无人碰** → **局部索引 ≠ 全局入口**。
+
+**已落地（3 件）**：
+1. `知识库路由.md`（新建）—— 场景→库总入口 + 30 库清单 + **使用日志**（唯一可信的读取证据）
+2. **SOUL 启动同步已挂** —— 每次开工必读，与 DASHBOARD 并列
+3. `D:\Hermes\scripts\kb_utilization_check.py`（新建）—— 活跃度体检，支持 `--baseline` / `--diff`
+
+**测量教训（别重复踩）**：atime **不可用** —— 实测 `touch -a` 重置后 1 分钟被刷回，且**体检脚本自己一跑就刷新它**（观测行为改变观测对象）。改测 mtime（写入）+ 使用日志（读取）。
+
+**社区查证（Microsoft Copilot Studio / Agent.ai 官方最佳实践）**：方向一致（"search knowledge base first" / "trigger phrases" / "monitor usage"），另给两条我们还没做的：
+- ⭐ **"Write for AI, not humans"** —— 库内容要按 AI 检索方式组织（清晰标题 / 关键词 / 去重去矛盾）
+- ⭐ **"Agents themselves should capture new information and keep the KB up-to-date"** —— 写回要靠 agent 自动，不能靠人记得
+
+**入口**：`D:\Hermes\xiaonan-memory\知识库路由.md`
