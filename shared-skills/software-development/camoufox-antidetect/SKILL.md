@@ -65,3 +65,53 @@ with Camoufox(headless=True, humanize=True) as browser:
 4. **uBlock 扩展下载失败（451）**：`addons.mozilla.org` 被限制；报错但**不影响抓取**，可忽略。
 5. **首次启动慢**（要下 fpgen 模型）、**二次启动快**。
 6. **GeoIP 未装**：不传 `geoip=` 即可用；要用需单独下数据库。
+
+---
+
+## 小红书实测（2026-10-15，小南）
+
+### 必须登录
+
+未登录时搜索页正文只有「登录后查看搜索结果」+ 登录框，**有效内容 0 字**。
+搜索引擎也救不了（`site:xiaohongshu.com` 几乎无索引）。
+
+**登录档做法**（登录一次，以后无头复用）：
+
+```python
+from camoufox.sync_api import Camoufox
+with Camoufox(headless=True, humanize=True,
+              persistent_context=True,
+              user_data_dir=r"D:\Hermes\data\camoufox\xhs-profile") as ctx:
+    page = ctx.pages[0] if ctx.pages else ctx.new_page()
+```
+
+有头模式打开 → 自动点 `text=登录` → 手机扫码。实测 **75 秒**检测到登录成功。
+
+⚠️ **登录态判断别信 cookie 名** —— 小红书给**未登录访客也发 a1/webId**，按 cookie 判会 100% 误报。
+**正确判据**：页面出现 `登录后查看` / `登录后推荐` / `手机号登录` = 未登录；`section.note-item` 数量 > 3 = 已登录。
+
+### ⚠️ 风控阈值（实测踩到，血泪）
+
+**几分钟内访问 27 个博主主页 + 十几次搜索 → 触发风控**：
+
+| 页面 | 被拦表现 |
+|---|---|
+| 博主主页 | **硬拦截**：302 到 `website-login/captcha`，标题 `Security Verification`，滑块 "Drag the arrow to complete the puzzle" |
+| 搜索结果 | **软降级**：页面正常打开、无验证码，但 `note-item: 0`（内容不渲染）、`user-links` 只剩自己 |
+
+- **两种都解不了**：滑块无人能解；软降级只能等冷却。**硬试只会加重风控。**
+- **安全节奏（建议，待验证）**：每次请求间隔 **15–45 秒随机**；单次会话 ≤10 个主页；别连续刷主页。
+- 触发后**立即停手**，冷却期通常几十分钟至数小时。
+
+### 抓取要点
+
+- 搜索页 tab：`全部 / 图文 / 视频 / 用户`，切换用 `page.get_by_text("用户", exact=True).first.click()`
+- 笔记卡片：`section.note-item`；标题 `a.title`；作者 `a[href*="/user/profile/"]`；点赞 `.count`
+- **链接必须带 `xsec_token`**（不带访问不了，且 token 有时效）
+- 「用户」tab 的卡片文本是**换行分隔**（不是 `|`）：`昵称\n更新时间\n小红书号\n认证标签\n粉丝・N\n笔记・N\n关注`
+- 结果质量警告：搜「男士穿搭 / 夏季穿搭」这类大众词，**大量女装号 + 清仓店铺号**混入；**小众细分词**（如"胖男生穿搭""大码男装"）反而更对口
+- **粉丝量 ≠ 权威**：高粉丝号常见同质化营销矩阵（两个号简介一字不差）、刷量号（同一标题重复 10 遍）
+
+### 配套脚本（本机已存）
+
+`D:\Hermes\scripts\` 下：`xhs_login.py`（登录档）、`xhs_search_probe.py`、`xhs_crawl_notes.py`、`xhs_find_bloggers.py`、`xhs_profile_probe.py`

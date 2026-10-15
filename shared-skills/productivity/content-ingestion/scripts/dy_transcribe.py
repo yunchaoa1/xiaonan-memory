@@ -97,10 +97,17 @@ def main() -> int:
     else:
         print(f"SKIP 已有视频 {os.path.getsize(mp4):,} 字节")
 
-    # 3) 提音频
+    # 3) 提音频（2026-10-15 踩：ffmpeg 静默失败时脚本崩在 getsize 上，看不到原因）
     wav = os.path.join(CACHE, f"dyv_{tag}.wav")
-    subprocess.run(["ffmpeg", "-y", "-i", mp4, "-vn", "-ac", "1", "-ar", "16000", wav],
-                   capture_output=True)
+    if os.path.exists(wav):
+        os.remove(wav)
+    r = subprocess.run(["ffmpeg", "-y", "-i", mp4, "-vn", "-ac", "1", "-ar", "16000", wav],
+                       capture_output=True, text=True, errors="ignore")
+    if r.returncode != 0 or not os.path.exists(wav):
+        print(f"FAIL ffmpeg 提音频失败（returncode={r.returncode}）")
+        print("--- ffmpeg stderr 尾部 ---")
+        print((r.stderr or "")[-1500:])
+        return 1
     print(f"OK 音频 {os.path.getsize(wav):,} 字节 -> {wav}")
 
     # 4) 转写
