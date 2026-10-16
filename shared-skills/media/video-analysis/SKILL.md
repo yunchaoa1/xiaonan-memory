@@ -103,6 +103,20 @@ Benchmark numbers (红果爆款漫剧实测): 93.2% speech coverage, 177 chars/m
 
 **Pitfall:** native python does NOT translate MSYS paths — pass `D:/...` style paths to scripts (`/d/Hermes/...` becomes `D:\d\Hermes\...`).
 
+## 🔎 Provenance hunting — "这个东西出自哪里？"
+
+When the ask is **not** "what does this video say" but "**identify what's being shown**" (a desktop pet, a tool, a rig, a project), the spoken track usually does **not** name it — **the answer is in the pixels**. Worked case: 2026-10-15, a "桌面伴侣" video → identified as **Vidu S**.
+
+1. **Contact sheet first, for the overall layout**: `ffmpeg -y -i v.mp4 -vf "fps=1/2,scale=420:-1,tile=4x4" -frames:v 1 sheet.jpg` (one cell per 2 s).
+2. **Then single frames at native size + a `region` crop for anything small.** ⚠️ **Never read small text off a contact sheet** — at ~420 px per cell I misread `MiniMax Design` as "Mixbook" and `Grok Bot` as "Geek Bot". Always confirm the exact wording with `vision_analyze(region=[x1,y1,x2,y2])` on a full-size frame (`-ss <t> -frames:v 1`).
+3. **Read these three places first** — this is what cracked it:
+   - **Burned-in captions / corner watermarks.** The frame carried `AI生成数字人 | Vidu S`, and that *was* the answer. Note it was part of the **video content**, not the platform UI — so it never appears in scraped page text.
+   - **Desktop icon labels.** They reveal the author's real toolchain (`OBS Studio`, `直播伴侣`, `数字人直播助手`, …). A screencast is a free inventory of the author's environment — read every icon name.
+   - Window titles, address bar, taskbar, on-screen buttons.
+4. **Don't stop at the name** — go verify it against an authoritative source (official site / launch post / review). Here that upgraded "Vidu S" into: a **commercial** product (not open source) from 生数科技, ¥2.8/min, 540P/25fps, real-time frame-by-frame generation — which is the actual reason it looked smooth. Name alone ≠ answer.
+5. **Timing hint**: a ticking timer in a corner (e.g. `02:53 → 03:25`) means the recording is a **live session**, not a rendered clip — say so in the answer.
+6. **Scraped page text will not contain on-screen words.** Grepping the saved HTML for the desktop-icon names returned nothing (they exist only in pixels). Don't conclude "no lead found" from an empty grep of the page — go to frames.
+
 ## Pitfalls
 
 1. **B站/Douyin blocking** — search/listing endpoints may return 412, but direct downloads of public single videos (by av/BV id) usually work **without cookies or proxy**: use `--no-check-certificates`, and `--force-ipv4` if SSL issues persist. Only after direct download also fails, ask the user to download locally. (Verified 2026-09: B站 direct download of public 短剧/漫剧 audio+video OK.)
