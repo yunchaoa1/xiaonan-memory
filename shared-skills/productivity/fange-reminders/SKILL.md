@@ -27,9 +27,10 @@ metadata:
 print("⏰ 提醒：…\n① …\n② …")
 ```
 ```
-cronjob(action='create', name='提醒·…', schedule='2026-10-16T09:30:00',
+cronjob(action='create', name='提醒·…', schedule='2026-10-19T11:00:00',
         no_agent=True, script='remind_<主题>.py', deliver='bot-chat')
 ```
+- ⚠ **一次性任务只有 120 秒宽限**：电脑/App 过点没开 → 任务被删、一次都不投（见坑 6）→ 关键提醒优先塞进循环提醒正文，或配 Windows 任务计划兜底
 - ⚠ **deliver 必须显式写 `bot-chat`**：不写默认 `local`＝只存本地、**不推送**（等于没提醒）
 - 时刻选**上午 11:00**（2026-10-11 凡哥定：`九点三十分我还没到公司，明天11点提醒我` → **工作类提醒默认 11:00，别再默认 9:30**）；承诺期最后一天提醒（能当天就去催），不要等过了期限
 
@@ -55,3 +56,7 @@ schtasks /Create /TN "Hermes_提醒_<主题>" /TR "wscript.exe \"D:\Hermes\scrip
 3. **日期先核星期**：`date -d "2026-10-17" "+%A"`——凡哥把 10-17（周六）说成"下周五"过；核完在回复里点出来并给出建议日期
 4. **余额风险**：大模型版 cron 遇 402 Insufficient Balance 直接失败 → 纯提醒一律 `no_agent`
 5. **别双报**：同一件事只留一个 cron；改需求时先 `cronjob(action='list')` 找旧的删掉
+6. **⚠️ 一次性任务（one-shot）只有 120 秒宽限 —— 过点就被删、永不触发（2026-10-16 实测）**
+   实测：10-16 09:30 的「核实小唐三块」一次性任务，电脑/App 当时没开着（App 14:51 才启动）→ 被判定 `run time outside grace window (120s)` → **任务被直接删除、一次都没投递**，只在 `D:\Hermes\cron\output\<job_id>\` 留一条"removed before firing"记录，**不会主动告诉你**（等于静默丢失）。
+   对照：**循环任务宽限是 7200 秒（2 小时）** —— 同一天 11:00 的每日提醒 App 起来后自动 `missed its scheduled time … Running now` 补跑投递了 → **日常两条（11:00 / 17:30）是稳的，脆的只有一次性任务**。
+   **对策**：① 关键提醒优先塞进**循环提醒的正文**（承诺到期就写进 11:00 例行提醒/下班提醒的数据源），别单开一次性 ② 非要一次性 → 同时建 **Windows 任务计划**（三板斧 #2）兜底 ③ 每次 App 启动后扫一眼 `D:\Hermes\cron\output\`，见到 removal 记录就立刻补挂 ④ **承诺期最后一天的提醒，前一天先 `action='list'` 确认任务还在、`last_run_at` 对得上**
