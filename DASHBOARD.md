@@ -1509,3 +1509,14 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 - ⭐ **"Agents themselves should capture new information and keep the KB up-to-date"** —— 写回要靠 agent 自动，不能靠人记得
 
 **入口**：`D:\Hermes\xiaonan-memory\知识库路由.md`
+
+---
+
+### 10.10 周一材料工具（2026-10-18 建 · 配合「每周一例会 · 周为工作周期」新制）
+
+- **一条命令出周汇总底稿**：`python D:\Hermes\scripts\gen_weekly_summary.py [起日 止日]`（不传参＝上一周周一～周日）
+  → 输出 `D:\Documents\我的文档\周汇总_<起>_<止>.md`
+- **只读数据源**：`集团/台账数据.json`（任务/项目/承诺/卡点）+ `集团/凡哥例行与待办.json`（待办）
+- **内容**：本周数字（按人/按项目）· 日报覆盖 · 没消掉的卡点 · 未结承诺清单（带超期天数）· 三条建议（按数据挑，不套话）
+- **周一要交的三样**：① 周汇总 ② 承诺交付节点清单（第四节即可）③ CEO 一页纸周报（从汇总提炼，凡哥审后发）
+- 首次产出：`周汇总_2026-10-12_2026-10-18.md`（37 条台账 / 9 条未结承诺）
