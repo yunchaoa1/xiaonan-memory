@@ -1,6 +1,6 @@
 ---
 name: local-tool-provisioning
-description: 装工具/库/CLI/模型到本机时用。环境隔离决策树+实测验证。
+description: 装工具/库/CLI/模型到本机、或评估别人发来的成品包能不能装时用。含换皮套壳验明正身+环境隔离决策树+实测验证。
 version: 1.0.0
 author: 小南
 license: internal
@@ -25,6 +25,43 @@ command -v <cli>                                                    # 系统里�
 python -c "import importlib.util as u; print(bool(u.find_spec('<pkg>')))"
 ```
 **别重复装已有的东西**；也别凭印象说"本机没有"，查了再说。
+
+## 铁律 0.5 · 别人发来的成品包，先验明正身再谈装
+
+凡哥常从微信/群里拿到一个 zip 或安装包，丢过来问「**这是什么项目 / 我能不能直接用**」。
+**别读宣传页、别照 README 的产品名下结论** —— 按这 5 处查，全程只读不改：
+
+1. **包内自证文件**：`README.md`、`*版本.txt`、`【先看我】*.pdf`、**`开源许可/`** 目录。
+   换皮包通常留着一张 `修改说明.md`，里面直说**上游项目名 + 许可证 + 改了哪几个文件**。
+2. **引擎真身**：`pyproject.toml` / `package.json` 的 dependencies，
+   再 `grep -n "npm install\|pip install\|git clone" setup.sh setup.ps1` —— 上游引擎必现形
+   （实例：`npm install -g openclaw@latest`）。
+3. **上 GitHub 核上游**：有仓库名就 `web_search "github <org>/<repo>"`，确认真的存在、许可证、
+   star 量级。**没核到就不能说"这是开源的"**（凡哥尺子：禁推测）。
+4. **判定商业模式**：换皮 + 中文一键装 + 傻瓜手册 + **机器码激活**（一机一码、离线验签、带到期日）
+   = 卖「装好能用 + 出事有人管」，技术本体开源免费。这句要直说，别替卖家美化。
+5. **授权闸在哪**：`grep -rn "license\|激活\|machine" <pkg>/`，看是不是 web 入口和 CLI 都卡。
+   **卡住的这步 agent 过不去** —— 只能凡哥本人找发件人换码，我负责把机器码读出来给他。
+
+### 「能不能直接用」照三段答，别只答能/不能
+
+| 段 | 谁干 | 我怎么答 |
+|---|---|---|
+| 装环境 | **我** | 当场查前置 `command -v node npm ffmpeg` + `python -V`，报齐不齐、大概多久 |
+| 大模型 Key / 账号 | **凡哥** | 给具体一家 + 充多少钱起，别让他自己研究 |
+| 激活码 / 授权 | **凡哥**（找发件人） | 说清机器码怎么来、一机一码、到期要续 |
+
+### 装机前三个附加动作
+
+- **先把包从微信缓存目录复制到 D 盘再装**：`...\xwechat_files\<id>\msg\file\...` 是只读的，
+  微信一清缓存就没了。
+- **查本机有没有同名旧引擎**（`command -v openclaw` 等）：安装脚本多是「有就跳过」→
+  版本漂移必报错，先升级再装。
+- **确认它用自己的独立配置目录**（例 `~/.openclaw-<profile>/`），别让它的全局 npm 包装到
+  Hermes 头上（见铁律 1）。
+
+> 实战案例（CUPID superAI 3.0 = 浙大 Easel 换皮 + openclaw 引擎 + 机器码授权）：
+> `references/rebranded-package-triage.md`
 
 ## 铁律 1 · 绝不往 Hermes 自己的 venv 装带复杂依赖树的包 ⚠️
 
