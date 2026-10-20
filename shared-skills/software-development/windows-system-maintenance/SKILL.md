@@ -71,7 +71,10 @@ ProgramData TOP、C:\Windows 关键子目录、用户隐藏缓存点、已重定
 
 ## 本机基线（2026-10-20 实测，复查时先核对是否已变）
 
-- Windows 11 **家庭版** build **26200**，内存 **31.4 GB**，C: 298.7G（当时仅剩 33.7G）、D: 624G
+- Windows 11 **家庭版** build **26200**，内存 **31.4 GB**，C: 298.7G、D: 624G
+- **2026-10-20 一天下来的 C 盘曲线**（同一天多轮，别把旧数字当现状）：
+  起始 **33.7G** → 清完软件 39.1G → 缓存改路径+清空 58.0G → 系统垃圾 63.1G →
+  搬软件缓存(junction) 76.3G → 搬浏览器内核 **81.1G**。**当日净腾 47.4GB**，软件 99→69 个。
 - **已经重定向好了**（别重复做）：桌面 `D:\admin桌面`、文档 `D:\Documents`、下载 `D:\下载`、
   图片/视频/音频 → `D:\数字资产\{图片资产,视频资产,音频资产}`、**TEMP/TMP（用户+系统）→ `D:\Temp`**
 - D 盘既有目录（接在它们上，别另起一套）：`Program Files`、`Program Files (x86)`、`Programs`、
@@ -90,8 +93,13 @@ ProgramData TOP、C:\Windows 关键子目录、用户隐藏缓存点、已重定
   C 盘 33.7G → **39.1G**，D 盘 112.4G → **134.8G**（合计 **27.8G**，其中 Ollama 17G 模型占大头）。
 - **Ollama 17GB 模型已删**（2026-10-20 凡哥确认「删」；`D:\Program Files\Ollama` 整个目录清空，
   D 盘 118.24 → 134.76GB。教训：卸载器不删模型，卸完必须量残留目录）
-- **下一步最大单点**：Chrome 的 9.7G 数据全在 C 盘（Service Worker 一项就 3.5G），飞书 7G、QQ 6.9G、
-  汽水音乐 5.1G 同理 → 走 junction 搬去 `D:\AppData\`。
+- **2026-10-20 同日另完成（别重复诊断）**：植入自启已清除（`Bctive`/`Wctive`/`security_cad.exe`/
+  `jaiwcdzzydmz.exe`）、启动文件夹路径已修复、开机启动精简到「微信/飞书/豆包/便签 + 3 个系统项」、
+  GlideX(手机投屏) 与 Virtual Pet(虚拟宠物) 已卸、`\BeyondNetTunnel` 计划任务已删。
+  AURA 灯效与风扇监控**凡哥要求保留**。详见 `references/injected-persistence-response.md`。
+- **下一步最大单点（2026-10-20 收工时仍剩）**：Chrome 9.5G + 飞书 7.0G + QQ/Tencent 6.9G + WPS 2.0G =
+  **25.5G** 还在 C 盘，**必须关掉那四个软件才能搬**（Chrome 的 Service Worker 一项就 3.5G）。
+  约到位一次搬完可到 **105G 左右**。汽水音乐 / 剪映 / 直播伴侣 / playwright+camoufox 内核**已搬完**。
 - 详细审计数字见 `references/disk-audit-2026-10.md`；社区工具取舍见 `references/community-tools.md`
 
 ### winget 必须走全路径
@@ -134,14 +142,26 @@ powershell -NoProfile -Command "
 
 **③ 目录 junction**（软件完全无感，它以为还在 C 盘）——**junction 不需要管理员**（符号链接才需要）：
 ```bash
-# 先退出该软件的所有进程，再：
-robocopy "C:\Users\bobby\AppData\Roaming\LarkShell" "D:\AppData\LarkShell" /E /COPYALL /R:1 /W:1
-# 核对两边大小一致后，删源目录，再建链接
+# 顺序：复制 → 验源已空 → 建链（反了就是数据丢失）
+robocopy "C:\Users\bobby\AppData\Roaming\LarkShell" "D:\AppData\LarkShell" /E /MOVE /R:1 /W:1 /NFL /NDL /NJH /NJS /NP
 cmd //c mklink /J "C:\Users\bobby\AppData\Roaming\LarkShell" "D:\AppData\LarkShell"
 ```
 ⚠️ **顺序不能反**：复制 → 核对 → 删源 → 建链。反了就是数据丢失。
 ⚠️ 搬之前必须确认进程已退出（`Get-Process <名>` / 任务管理器），占用中的目录搬必失败。
 ⚠️ 出事回滚：删链接用 `cmd //c rmdir "链接路径"`（**只删链接，不删内容**，千万别用 `del /s`）。
+
+**2026-10-20 实战**：11 个目录、合计 **18GB** 搬成功（camoufox_dl 1.22 / codex-runtimes 1.3 /
+SodaMusic 5.06 / JianyingPro 2.34 / ms-playwright 2.5 / camoufox 2.39 / webcast_mate 1.97 /
+UC 0.7 / Quark 0.65）。两条必须记住的坑：
+
+- **`/MOVE` 遇占用会\"半成功\"**：文件复制过去了，源端被锁的 dll 删不掉 → 源目录不空 →
+  如果脚本无条件接着建 junction 会失败，结果是 **C 盘空壳 + D 盘完整副本 + 没有链接**，
+  软件读不到数据（webcast_mate 就这样翻的车，当时日志只写\"原目录仍有残留\"，没写\"链接失败\"，
+  所以我差点报告成\"搬好了\"）。→ **建链前必须验\"源目录剩余 = 0\"；不为 0 就不建链，明确记成未完成。**
+- **占用者可能不是这个软件本身**：webcast_mate（抖音直播伴侣）的虚拟摄像头 dll 被 **Chrome** 加载
+  （浏览器把它当摄像头设备用），所以关直播伴侣没用，得关 Chrome 或重启。
+  查占用：`Get-Process | Where-Object { $_.Modules.FileName -like '*<关键字>*' }`
+- 搬完**逐个核 `LinkType`**：`(Get-Item $p -Force).LinkType` 要等于 `Junction`，否则等于没搬。
 
 **④ 注册表**（少量场景）：已知文件夹重定向在
 `HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders`（本机已做过，别再动）。
@@ -250,13 +270,63 @@ EXE="/c/Program Files (x86)/dotnet-core-uninstall/dotnet-core-uninstall.exe"
 
 ## 证据手法
 
-- **可疑 exe 先验签，别喊毒**：
+- **可疑 exe 先验签 —— 但签名有效 ≠ 没问题（重要纠错）**：
   ```bash
   powershell -NoProfile -Command "(Get-AuthenticodeSignature 'C:\x.exe').Status; (Get-AuthenticodeSignature 'C:\x.exe').SignerCertificate.Subject"
   ```
-  2026-10-20 实例：C 根一个乱码名 145MB `jaiwcdzzydmz.exe` 看着像恶意文件，验签 `Valid` +
-  `CN="Douyin Vision Co., Ltd."` → 是抖音系安装包残留，不是毒。**签名主体就是结论。**
+  ⚠️ **2026-10-20 我在这条上判错过一次，必须记住：** C 根那个乱码名 138MB `jaiwcdzzydmz.exe`，
+  验签 `Valid` + `CN="Douyin Vision Co., Ltd."`，我当时下结论「抖音安装包残留，不是毒」。
+  **同一天晚些时候发现它是植入事件的一部分**——和 `Bctive`/`Wctive` 是同一分钟（20:23）投放的。
+  → **签名只排除"这是病毒"，不排除"这是偷偷塞进来的东西"。**
+  判"无害"要多看三样：**① 放的位置正不正常**（系统盘根目录 / Public 目录 = 可疑）
+  **② 创建时间有没有和别的可疑物同一分钟** **③ 有没有配套的自启机制**。
+  完整判据与清除流程见 `references/injected-persistence-response.md`。
 - 报空间一律给**实测 GB**，不给"大概"，并说清是"回收"还是"清掉会重新长回来"。
+
+## 启动项与持久化审计（凡哥说"开机慢"、或清理触及自启时必跑）
+
+一句话跑完整套只读审计：
+
+```bash
+powershell -NoProfile -ExecutionPolicy Bypass -File "<技能目录>/scripts/check_persistence.ps1"
+# 出 D:\Temp\persistence_audit.txt：启动夹路径 / 三处启动项 / Run+RunOnce / 计划任务 /
+# 运行中的非系统服务 / Public 目录 / 浏览器调试端口 / explorer 拉起的进程
+```
+
+**为什么必须单独成章**：2026-10-20 清理开机启动时，顺手核了一下"启动文件夹到底在哪"，
+就挖出一整套 2026-07-12 投放的隐蔽自启（改注册表把启动夹指向 `C:\Users\Public\Documents\Wctive`、
+用爱奇艺签名的 `security_cad.exe` 伪装、目录加 DENY 删除锁）。**完整证据链与清除命令见
+`references/injected-persistence-response.md`。**
+
+### 四条硬知识（记这四条就够用）
+
+1. **启动夹路径要回注册表核，不能信 `GetFolderPath('Startup')`**
+   —— 那个 API 是被注册表值算出来的，注册表被骗它也跟着骗你。
+   正常值 = `%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`；
+   出现 `Public` 或末尾带 `\u0000` 就是被动手脚了（NUL 是规避手法，打印时要 `-replace "`0",'<NUL>'` 才看得见）。
+
+2. **只查 Run 键会漏**。持久化至少五处：启动文件夹 / Common Startup / Run+RunOnce / **计划任务** / 服务。
+   `Win32_StartupCommand` 的 `Location` 字段直接告诉你在哪一处。
+   本机实例：`beyond_tunnel` 就是靠**计划任务** `\BeyondNetTunnel` 自启的，Run 键里根本没有。
+
+3. **ACL 锁：显式 DENY 优先于管理员权限**，`Access denied` 删不掉时先看 `icacls`。
+   看到 `BUILTIN\Users:(OI)(CI)(DENY)(DE,DC)` 就按这个顺序拆：
+   `icacls /remove:d "BUILTIN\Users" /t` → `/reset` → `takeown /r /d y` → `/grant "*S-1-5-32-544:(OI)(CI)F"` → 删。
+   **顺序不能换，`/remove:d` 必须第一步。**
+
+4. **`--remote-debugging-address=0.0.0.0` 是安全漏洞**，不是普通启动项：
+   绑全网卡等于**局域网谁都能接管浏览器**。本机 `EdgeDebug` 就是这个，已删；
+   真要调试改成 `127.0.0.1`。
+
+### 关启动项的分寸（凡哥 2026-10-20 定的口径）
+
+- **他点名的才留**：微信 / 飞书 / 豆包 / 好用便签。其余第三方自启一律取消。
+- **但系统/驱动级别当垃圾关**：`RtkAudUService`（Realtek 声卡，关了**可能没声音**）、
+  `SecurityHealth`（Windows 安全中心）、`Hermes_Gateway`（Hermes 自启）——**默认保留并说明理由**。
+- 动手前把要保留/要关的两列**先报给他过一遍**（他这次就是自己点的名），别自作主张。
+- 取消用"隔离"不用"直接删"：快捷方式移到 `D:\Documents\_隔离_<日期>\`，Run 键值先写进
+  `run-backup.txt` 再删 —— **他随时能反悔**。
+- 删软件后**回头扫计划任务**，否则留一堆指向空路径的僵尸任务（本机 `\BeyondNetTunnel` 就是这样）。
 
 ## 诚实边界（凡哥重视，别糊弄）
 
@@ -308,10 +378,13 @@ EXE="/c/Program Files (x86)/dotnet-core-uninstall/dotnet-core-uninstall.exe"
 - 本技能：**磁盘/路径/清理/装升降卸软件/系统设置**（这台机器怎么治理）
 - `local-tool-provisioning`：**装哪个工具、装哪个 venv、依赖会不会打架**（装东西的决策树）
 - `comfyui-env-ops`：ComfyUI 版本/模型/CUDA 那摊
-- 支撑文件：`scripts/scan_disk.ps1`（只读侦察）、`templates/batch_uninstall.ps1`（批量卸载脚本模板）、
+- 支撑文件：`scripts/scan_disk.ps1`（只读磁盘侦察）、`scripts/check_persistence.ps1`（启动项/持久化只读审计）、
+  `templates/batch_uninstall.ps1`（批量卸载脚本模板）、
   `references/software-inventory-2026-10.md`（99 个软件清单、已清/待清、判断依据）、
   `references/disk-audit-2026-10.md`（首次审计实证）、
   `references/community-tools.md`（社区方案取舍与"已死"名单）、
   `references/dotnet-runtime-cleanup.md`（.NET 假成功实证 + dotnet-core-uninstall 语法坑，含三次参数写错记录）、
   `references/data-bearing-app-recovery.md`（带用户数据的软件被误删后怎么救回：备份取舍 → 挂代理取官网真链 →
-  验签 → 静默装回原路径 → 回填 data/image → 看程序日志确认读库）
+  验签 → 静默装回原路径 → 回填 data/image → 看程序日志确认读库）、
+  `references/injected-persistence-response.md`（被植入的隐蔽自启：五项检测 / 签名有效≠安全 /
+  ACL DENY 删除锁的拆除顺序 / 修复启动夹路径 / 善后三件事）
