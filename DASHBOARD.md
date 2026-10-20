@@ -51,6 +51,7 @@
 | 🔀 总调度 | skill-router | 任何创作需求先加载（路由表拆解） |
 | 👥 团队 | fange-execution-team | 复杂任务、多员工执行、质检与返工 |
 | 🛠 维护 | skill-library-maintenance | 说"清理技能/技能体检" |
+| 🧹 **系统维护** | **windows-system-maintenance** | **说"C盘满了/清C盘/哪些软件用不上/卸软件/搬缓存到D盘/系统体检/整理文件"时加载：磁盘·路径·清理·装升降卸全流程（2026-10-20 立，实证 99→69 个软件、腾 27.8GB）；⚠️ pagefile 100GB 凡哥亲定禁动；带用户数据的软件先备份再问** |
 | 📚 蒸馏 | book-distillation | 说"蒸馏这本书/蒸成skill" |
 | 提示词 | prompt-interview | 说"给我镜N提示词" |
 | 提示词 | prompt-master-pipeline | 说"写提示词" |
