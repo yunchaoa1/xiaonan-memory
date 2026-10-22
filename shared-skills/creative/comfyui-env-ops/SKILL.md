@@ -150,6 +150,7 @@ df -h; echo ---; ls -la /home/waas/ /home/personal_share/ /home/teams/ 2>/dev/nu
 完整重建配方（控制台选型表 / 安装命令序列 / 锁版插件批 / 20 插件对照清单 / 收尾步骤）：`references/cloud-instance-rebuild.md`。
 
 完整官方摘录（存储矩阵 / 镜像vs实例 / 共享空间细节 / 端口表 / 官方URL清单）：`references/waas-cloud-storage-and-mirroring.md`。
+**云电脑（waas）实例上「启动 ComfyUI / 起整套平台」的现成命令链**（OPC 影剧工坊部署实证：`/root/h3-0300/start-comfyui.sh` 带 flock 防重、`/opt/opc-platform/start-all.sh` 幂等六服务编排、端口与日志路径、验证 curl、以及「0.37 部署脚本没带 `--disable-cuda-malloc`，别凭记忆加」）：`references/waas-opc-platform-startup.md`。凡哥问「云电脑启动 comfyui 的命令」先读它，别现场翻备份。
 **云扉官方部署脚本 + 云扉OS 界面地图 + 跨账号共享两条官方路 + 文档站抓取手法 + 云上拉模型工具坑**（官方 `/etc/waas-script/*.sh` 逐脚本解读、`sync_share_models.sh` = 共享盘"挂上即用"的实现、官方 vs 自建布局差异、界面入口逐个定位、新账号"环境在模型全没"处置顺序、H3 缺模型公开源）：`references/waas-official-deploy-and-share.md`。
 
 ## 为某工作流升级 ComfyUI：切「最小含所需节点」的版本（2026-09-29 云端实测）

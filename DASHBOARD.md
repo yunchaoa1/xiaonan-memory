@@ -1630,3 +1630,27 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 - **内容**：本周数字（按人/按项目）· 日报覆盖 · 没消掉的卡点 · 未结承诺清单（带超期天数）· 三条建议（按数据挑，不套话）
 - **周一要交的三样**：① 周汇总 ② 承诺交付节点清单（第四节即可）③ CEO 一页纸周报（从汇总提炼，凡哥审后发）
 - 首次产出：`周汇总_2026-10-12_2026-10-18.md`（37 条台账 / 9 条未结承诺）
+
+---
+
+### 10.11 视频提示词技能大合并 · H3 一条 / LTX 删 / Seedance 隔离（2026-10-22 · 小南）
+
+**起因**：小李那边出的片子台词不按提示词说、听着含糊；凡哥问「为什么分这么多个 skill、能不能合成一个」→ 拍板三件事。
+
+**决策（凡哥原话口径）**：
+1. **只要 H3 的，合并成 1 条**
+2. **LTX 直接删除 —— 对我们没用**
+3. **Seedance 隔离掉 —— 没明说「用 Seedance」时不许翻出来**
+
+**产物（唯一入口）**：`D:\Hermes\skills\h3-video-prompt\`
+- 主文件 `SKILL.md` 约 18KB：三步流程（采访 10 项 → 官方六段 → 自检 13 项）+ 台词八条铁律 + 表演真实感 + 镜头切点 + 占框尺度 + 方位锚点 + 参考图纪律 + 官方语法 12 条 + 导演分段 + 禁用词表
+- `references/` 13 份按需查阅：官方 Singularity 规范 EN、ref2va 官方全文、全能参考结构、Turbo LoRA、分镜生产级规范、词库索引、五问推导、OPC 节点契约、旧技能全文底稿（表演/镜头/采访/词典各一份）
+
+**删掉**：`ltx-video-prompt`（本机 + 仓库副本；git 历史 `c911693` 可恢复）
+**隔离**：30 个 `seedance-*` + `seedance-director` → `D:\Hermes\xiaonan-memory\skills-archive\seedance\`（含《README-隔离说明》，写明恢复命令）；Hermes 扫不到、路由表不再指向
+**引用同步改**：skill-router 路由表（提示词/分镜/表演/视频全部指向 h3-video-prompt；Seedance 改为「明说才装回」；LTX 标弃用）、aimixer-h3-director、short-drama-story-engine、scene-image-generation、opc-creative-skill-authoring、screenplay-to-15s-storyboard-opc-test、prompt-rule-handoff、working-with-fange
+
+**实测（2026-10-22）**：按新技能写单镜示例，脚本 8 项检查全 PASS —— 六段字段齐全 / `<d>[Chinese] ` 空格 / 台词句末标点 / `(S1)` 稳定说话人 / 单镜 no cuts / 占框+留白 / 六段全英文（仅 `<d>` 内中文）/ 1243 字符 ≤7000。`hermes skills list` 已识别为 local enabled。
+
+**给小李**：只给一个文件夹 `D:\Hermes\skills\h3-video-prompt`（主文件 + references），不用挑、不用装 30 个。
+**教训**：29 个 seedance 子是外部开源包原样搬进没做减法；拆分不是错（按模型分线避免规则串味），「散成 29 个入口」才是错。

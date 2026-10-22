@@ -554,7 +554,7 @@ metadata:
 | 38 | **设备描述矛盾** | 上文写Pocket3下文写手机→全文统一。Pocket3是单镜头无前置。不描述设备操作 |
 | 39 | **抽象词/拟型词** | 笑意收进眼睛→眼角弯了弯。视线跳了半拍→视线落了一下。下眼睑→下眼皮 |
 | 40 | **描述目的不描述动作** | 确认构图→删。调整角度→删。只写动作过程，不写为什么 |
-| 41 | **设备知识不准确** | Pocket3没有前置镜头只有一颗镜头。写之前查 `ltx-video-prompt/references/` 里的设备规格 |
+| 41 | **设备知识不准确** | Pocket3没有前置镜头只有一颗镜头。写之前查 `h3-video-prompt/references/五问推导框架.md` 里的设备表 |
 | 42 | **memory tree覆盖不全** | 展示记忆时必须同时扫描 Hermes内存+Git仓库文件目录+技能列表。南溟岛/心理学词库曾在repo里但未被列出 |
 | 43 | **网页复刻时脑补UI元素** | 星火智画复刻时主页背景图尺寸是我猜的(竖屏→实际横屏)。不确定尺寸就说"需要确认"，不要编 |
 | 44 | **克隆站批量生成占位符** | 用execute_code批量建了31个模板页——凡哥说"不要瞎猜，去核对实际情况"。每页必须截图+源码验证后才写 |
@@ -595,7 +595,7 @@ metadata:
 | 84 | **回答模型/环境问题前先读 runtime 元数据（2026-08-06）** | 凡哥问\\\"你现在是什么模型\\\"，我凭记忆答\\\"DeepSeek\\\"——实际当前是 agnes-2.5-flash。凡哥纠正\\\"那个是deepseek，你现在是agens 2.5 flash\\\"。正确：模型/环境状态类问题先查`hermes config show`和系统提示的 runtime 元数据，不凭印象回答。 |
 | 85 | **ComfyUI工作流：API格式 vs Workflow格式（2026-08-06·H3教训）** | 凡哥给的H3 JSON是**API格式**（只有inputs/class_type）——不支持`groups`/`pos`画布元素，强加后ComfyUI节点全消失。要画布分组必须让凡哥从ComfyUI导出**Workflow格式**。API格式只能改参数（steps/sampler/新增节点）。 |
 | 86 | **改工作流必须从原文件改，不能Python重新生成（2026-08-06）** | 凡哥给H3 JSON让\\\"基础上改\\\"→我重生成→丢失原完整138节点提示词(5320字符)。正确：`search_files`找原文件路径（`D:\\下载\\minimax_h3_全能参考生视频.json`）→在原文件上改4处→另存`_加速版.json`。 |
-| 87 | **H3加速=Turbo LoRA：4步替代25步（2026-08-06）** | `larryvrh/MiniMax-H3-Turbo-Lora`（2026-08-05发布，744MB）→`ComfyUI/models/loras/`。改动：steps 25→4、sampler res_multistep→euler、新增LoadLora节点、Guider/Scheduler的model改接LoRA输出。音频爆音需DualClockSampler。详见`ltx-video-prompt/references/minimax-h3-turbo-acceleration.md`。 |
+| 87 | **H3加速=Turbo LoRA：4步替代25步（2026-08-06）** | `larryvrh/MiniMax-H3-Turbo-Lora`（2026-08-05发布，744MB）→`ComfyUI/models/loras/`。改动：steps 25→4、sampler res_multistep→euler、新增LoadLora节点、Guider/Scheduler的model改接LoRA输出。音频爆音需DualClockSampler。详见`h3-video-prompt/references/h3-turbo-lora-acceleration.md`。 |
 | 88 | **H3分辨率：宽高必须32倍数（2026-08-06）** | 1280×720无效（720÷32=22.5）。用1280×704/736或ResolutionSelector(0.92MP)→1312×736。帧数17对齐：`max(5, round(a*24)) + (5 - (max(5, round(a*24)) % 17)) % 17`。 |
 | 89 | **Agnes视觉：image模型≠看图片（2026-08-06）** | `agnes-image-2.1-flash`是图像**生成**模型，做`vision_analyze`报400（\\\"Use /v1/images/generations\\\"）。看图用`agnes-2.5-flash`。Hermes `auxiliary.vision`配置已修正。 |
 | 90 | **GPT-5.6费率/DeepSeek V4 Flash-0731（2026-08-06）** | Codex学分/百万token：Sol输入125/输出750、Terra 50/300、Luna 5/30（1000额度=PHP2260≈¥113，1USD≈26.9额度）。DeepSeek-V4-Flash-0731（2026-07-31）Agent基准远超V4-Pro-Preview（Terminal Bench 82.7/Toolathlon 70.3），原生支持Responses API适配Codex，Pro未升级——Flash现在是DeepSeek最强Agent模型且更便宜。 |
@@ -606,7 +606,7 @@ metadata:
 | 95 | **验证"是否生效"看运行日志的关键行（2026-08-07·TE-Speed）** | 用户跑了40分钟没加速效果——日志里`grep TE-Speed\|acceleration`**没有**`acceleration xx%`行=节点没接上，跑的是纯25步。验证TE-Speed生效的唯一证据是日志里的`TE-Speed-MiniMaxH3(OSS): acceleration xx.x%`。跑之前先确认工作流文件里真的有TESpeedMiniMaxH3节点（`python -c "import json; wf=json.load(open('工作流.json')); print([k for k,v in wf.items() if 'TE' in str(v.get('class_type',''))])"`）。 |
 | 96 | **变更后出问题，归因必须指向变更本身——不怪基线（2026-08-07·凡哥两次怒斥脑补）** | SageAttention升级2.2.0后H3工作流OOM，我张口就怪"模型太大/VAE加载5次/分辨率太高"——凡哥怒斥："你又在脑补""没加速之前工作流是可以跑的，加速了跑不了了？你不扯呢么"。**铁律：变更前能跑→变更后不能跑→根因100%在变更本身**（本次=SageAttention从1.0.6升2.2.0，旧版ImportError让节点从未生效，升级后fp8真挂上→分配18.5GB爆16GB卡）。正确：先查日志时间线（谁在什么时刻分配显存），把变更组件设为disabled逐步验证，禁止把锅甩给没变过的基线配置。 |
 | 97 | **GPU"不工作"先查nvidia-smi+日志时间线，不猜原因（2026-08-07）** | 用户问"显卡没有工作是为什么"，我先推断Triton编译/显存满——实际要拿事实：`nvidia-smi`（GPU 0%但显存15.3/16GB被模型占满）+ `curl /queue`（1个任务在跑）+ 日志时间线（SageAttention挂载→主模型加载→OOM）。**先取数据再开口**，数据不足就诚实说"还没定位到，需要逐步验证"，而不是编一个听起来合理的解释。 |
-| 98 | **操作不按 skill 驱动、临时拍板流程（2026-09-02·凡哥两次纠正）** | 凡哥说"一切出问题都要从skill入手""又忘记以skill为本了吗？""我的意思是还是按照skill去驱动你操作"。正确：①操作前先加载对应 skill 按规则执行（分镜→screenplay-to-15s-storyboard-opc-test、故事板→qwen-image-storyboard-keyframe-opc-test、H3提示词→minimax-h3-shot-prompt、导演台执行→aimixer-h3-director）；②出问题先改 skill 规则再用改后 skill 重测，不靠"这次记住改一下"；③验证策略/流程决策（跑哪些组、怎么验证）同样以 skill 规则为准，不自己临时发明。 |
+| 98 | **操作不按 skill 驱动、临时拍板流程（2026-09-02·凡哥两次纠正）** | 凡哥说"一切出问题都要从skill入手""又忘记以skill为本了吗？""我的意思是还是按照skill去驱动你操作"。正确：①操作前先加载对应 skill 按规则执行（分镜→screenplay-to-15s-storyboard-opc-test、故事板→qwen-image-storyboard-keyframe-opc-test、H3提示词→h3-video-prompt、导演台执行→aimixer-h3-director）；②出问题先改 skill 规则再用改后 skill 重测，不靠"这次记住改一下"；③验证策略/流程决策（跑哪些组、怎么验证）同样以 skill 规则为准，不自己临时发明。 |
 | 99 | **不会操作却先说"会"，瞎改用户工作流（2026-09-02·凡哥愤怒）** | 凡哥问节点/工作流怎么用（一采二采开关 confirm_first_pass），我答"会"→实际断 refine、改输出口，跑出的结果与交付版不符。凡哥原话："每个节点在hugging face上有作者说明书的，我还问了你一遍，你还说会，结果瞎改工作流"。正确：先读作者 tooltip/本地代码注释/HF 文档确认机制再操作；工作流结构/节点/开关一律不动，只换 prompt 内容。 |
 | 100 | **诊断不核对凡哥已给的实测基线（2026-09-02）** | 凡哥明说"我一共生成两次14秒的，第二次是正常"，我却振振有词诊断"模型环境声弱→低频嗡"怪模型——实际单段干净版音频正常，问题只在多段版。正确：凡哥的实测结果（哪版正常/哪版有问题）是最优先证据，归因必须先对照它——单段正常→问题在多段相关因素，不得跳过这个事实编原因。 |
 | 101 | **凡哥说"慢/异常"时催速而不是找核心问题（2026-09-04）** | 子代理跑得慢，我先 steer 催速——凡哥拦下："别着急，我们要找到核心问题，这个工作是skill驱动这么做的吗？"根因=分镜 skill 是推演式+API 晚高峰，催速无意义。正确：凡哥报告异常时先诊断根因（skill 执行路径/skill 形态/API 延迟），用证据说话，不催速不救火。 |
@@ -687,11 +687,5 @@ metadata:
 ### 命名规则：`角色名_场景_内容.md`
 三个维度都能用`search_files`精准定位。
 
-### LTX 2.3 多图参考生视频专用模板
-凡哥说"多图参考生视频"或"LTX视频提示词"→加载技能`ltx-video-prompt`，按模板生成。铁律：
-- 全英文输出
-- 脸型必须基于参考图用`vision_analyze`分析，不可脑补
-- 三张参考图分别描述：人物+道具+场景
-- 台词用中文嵌入：`speaks in Chinese: "台词"`
-- 禁止出现：subtitle, text, caption, speech bubble
-- Video Content段：先动作→台词→后续动作→物理动态→镜头运动
+### LTX 已弃用（2026-10-22 凡哥令）
+LTX 线不再路由，模板与规则随 `ltx-video-prompt` 技能一并删除。生视频统一走 H3（`h3-video-prompt`）。

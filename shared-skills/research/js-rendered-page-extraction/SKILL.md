@@ -115,6 +115,20 @@ node "$BIN" close --all
 
 ---
 
+13. **在 `page.evaluate()` 的 JS 里做字符串分割/正则** → Python 三引号与 JS 转义互相打坏，报 `SyntaxError: Invalid or unexpected token`（2026-10-21 连踩两次：`body.split('\\n')`、含 `\\s` 的正则全炸，各浪费一轮）。
+    ✅ **正确姿势：`text = page.inner_text("body")` 把正文拿回 Python，切分和正则全部用 Python 做**；JS 里只留最简取值（`el.innerText`、`el.getAttribute('data-sku')`）。
+    → 这正是上面「阶梯第 6 层」的写法：`goto(...)` + `inner_text("body")`，本来就不该在 JS 里解析文本。
+
+14. **用 `terminal(background=true)` 起的 Chrome 会被主脚本连带杀死** → 脚本一中断（超时 / Ctrl+C），浏览器和登录态一起完蛋，得重新扫码登录（2026-10-21 一个任务里死了三次）。
+    ✅ 用 PowerShell 真正分离进程：
+    ```bash
+    powershell -NoProfile -Command "Start-Process '<chrome.exe 路径>' -ArgumentList '--remote-debugging-port=9222','--remote-allow-origins=*','--user-data-dir=<独立目录>','<URL>'"
+    ```
+    - **`--remote-allow-origins=*` 必需**，否则 CDP 连 WebSocket 报 **403**
+    - 登录态靠独立 `--user-data-dir` 持久化，进程重启后**不用重新扫码**（实测有效）
+    - 探活：`curl -s -m 5 http://localhost:9222/json/version`；连接被拒（exit 7）＝已死
+    - ⚠️ `cmd //c start "" "..."` 在 git-bash 下会掉进交互式 cmd，**不可靠**，用上面的 powershell 版
+
 ## Verification Checklist
 
 - [ ] 正文**不是**只有页脚/备案链接（否则说明抓的是空壳）

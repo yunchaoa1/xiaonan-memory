@@ -1,6 +1,6 @@
 ---
 name: video-learning
-description: Learn from video content — download, extract frames, analyze visually, synthesize into documentation. Use when the user shares a video link or asks you to study a video for pipeline/knowledge integration.（中文触发：从视频学习内容（下载、抽帧、分析、总结）时加载）
+description: 凡哥发抖音/B站/YouTube 链接要学习拉片时加载。抖音固定先用 wigolo fetch 抓 douyin.com/video/<id>（见 references/douyin-capture.md），别上 camoufox。Learn from video content — download, extract frames, analyze visually, synthesize into documentation. Use when the user shares a video link or asks you to study a video for pipeline/knowledge integration.（中文触发：从视频学习内容（下载、抽帧、分析、总结）时加载）
 platforms: [windows]
 ---
 

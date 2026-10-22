@@ -1,5 +1,20 @@
 # 抖音视频抓取（CDP 方案 · 2026-09-21 实测全链跑通）
 
+## 🚨 凡哥发抖音链接时的固定动作（2026-10-21 复盘，别再走弯路）
+
+**第一个动作永远是这条，不许先上 camoufox / browser_use / yt-dlp：**
+
+```bash
+cd ~ && timeout 150 wigolo fetch "https://www.douyin.com/video/<id>" --force-refresh --json 2>&1 | tail -50
+```
+
+- URL 一律换成 `douyin.com/video/<id>` 形态（`modal_id=` / `/user/self?...` / `jingxuan?modal_id=` 全是登录壳）
+- 这一步就能拿到**标题 + 完整简介 + 话题标签**，44 秒左右
+- **2026-10-21 实际踩过的错**：绕去用 camoufox 抓 `jingxuan?modal_id=` 和 `share/video/`，两次都只拿到推荐列表 / 登录壳，白白耗掉十几分钟。**wigolo fetch 一次就中。**
+
+**要正文内容（口播讲了什么）才往下走 CDP 全链**，流程见下面第 1～6 步。全程约 5 分钟：
+起 Chrome(9222) → playwright connect_over_cdp → 抓 network → 提取 media-video/media-audio → curl 带 UA+Referer 下载 → ffmpeg 合流 → faster-whisper large-v3 转写。
+
 **什么时候用**：凡哥发来抖音链接要你学习／拉片，而 yt-dlp 拿不到。
 **结论先行**：抖音不是"cookie 不够"，是**接口签名**问题——绕开的办法不是补 cookie，而是**借一个真浏览器会话，从网络层取带签名的 CDN 直链**。
 

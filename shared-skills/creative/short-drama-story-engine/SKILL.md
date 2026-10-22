@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [short-drama, story, screenplay, emotional-payoff, serial-fiction, ai-comic]
-    related_skills: [shot-language, prompt-master-pipeline, seedance-director, character-vlog-pipeline]
+    related_skills: [h3-video-prompt, character-vlog-pipeline]
 ---
 
 # Short Drama Story Engine
@@ -35,7 +35,7 @@ Load this skill when the user asks to:
 
 Do not use this skill for:
 
-- 已确认剧本的镜头拆分：转 `shot-language`；
+- 已确认剧本的镜头拆分：转 `h3-video-prompt`；
 - 单纯生成图片或视频提示词：转对应模型技能；
 - 世界观资料管理：转 `world-building`；
 - 角色Vlog文案拆镜：转 `character-vlog-pipeline`。
@@ -641,11 +641,8 @@ See `references/medium-adaptation.md`.
 
 After the script is approved, hand off rather than duplicating downstream rules:
 
-- Production-level shot design → `shot-language`;
-- Character/scene/prop assets → image and scene skills;
-- Seedance → `seedance-director`;
-- LTX → `ltx-video-prompt`;
-- MiniMax H3 or model-specific full-reference prompt → `prompt-master-pipeline` references.
+- Production-level shot design + MiniMax H3 prompts → `h3-video-prompt` (single entry point for all video prompts);
+- Character/scene/prop assets → image and scene skills.
 
 Before handoff, mark scenes that are high-risk for AI generation: crowds, disasters, children, object handoffs, complex body contact, water, rapid costume/age changes, and multiple simultaneous speakers.
 

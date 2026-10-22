@@ -10,7 +10,7 @@ metadata:
 
 # AIMixer H3 导演台（执行层）
 
-凡哥本地 **H3 专用实例=便携版 ComfyUI 0.30.0（D:\SDkecheng\ComfyUI_windows_portable，端口 18189，python_embeded 在便携根目录，启动：`cd ComfyUI_windows_portable && ./python_embeded/python.exe -s ComfyUI/main.py --port 18189`）**——它是凡哥认定的 H3 无噪音干净版，装了完整 H3 套件（Director/DualClockSampler/SolAttn_triton/TE-Speed）。主版 0.30.2（D:\SDkecheng\ComfyUI，18188）跑 H3 一采曾 6 小时零产出（batch timeout），**跑 H3 一律便携版 0.30.0，不碰主版**。提示词内容本身由 `minimax-h3-shot-prompt` 编译；本 skill 管**执行层**。
+凡哥本地 **H3 专用实例=便携版 ComfyUI 0.30.0（D:\SDkecheng\ComfyUI_windows_portable，端口 18189，python_embeded 在便携根目录，启动：`cd ComfyUI_windows_portable && ./python_embeded/python.exe -s ComfyUI/main.py --port 18189`）**——它是凡哥认定的 H3 无噪音干净版，装了完整 H3 套件（Director/DualClockSampler/SolAttn_triton/TE-Speed）。主版 0.30.2（D:\SDkecheng\ComfyUI，18188）跑 H3 一采曾 6 小时零产出（batch timeout），**跑 H3 一律便携版 0.30.0，不碰主版**。提示词内容本身由 `h3-video-prompt` 编译；本 skill 管**执行层**。
 
 ## 官方一采工作流（凡哥 2026-09-04 定：按官方方式，别自己改）
 
@@ -191,6 +191,6 @@ metadata:
 3. 组提示词漏写 `<Picture 4>` 引用 → 故事板挂上但模型不锚定（S09 曾踩）。
 4. 公共提示词里给每组故事板各写一个 `<Picture N>` 定义 → 多组同 slot 时产生冲突重复定义；只写一个通用 `<Picture 4>`。
 5. cache/images 里的参考图会被清理，生成故事板后立即 cp 到 ComfyUI/input/（场景四宫格曾丢失导致 image_generate 报 io_error）。
-6. 多段 r2v 组间**零画面上下文**（报告："Segment continuity: OFF — r2v/v2v/rv2v use stock ReferenceToVideo"）：每组提示词必须**自包含**（开头直接写该组起始画面状态：人物位置/道具状态/姿势），**禁止"XX之后""承接上段"式跨段承接词**（曾致"递了两次纸巾"——下组把上组尾动作重演）；跨组连续动作（递纸巾）必须在一组内闭环（详见 minimax-h3-shot-prompt 的 Self-Contained Group Prompts 规则）。
+6. 多段 r2v 组间**零画面上下文**（报告："Segment continuity: OFF — r2v/v2v/rv2v use stock ReferenceToVideo"）：每组提示词必须**自包含**（开头直接写该组起始画面状态：人物位置/道具状态/姿势），**禁止"XX之后""承接上段"式跨段承接词**（曾致"递了两次纸巾"——下组把上组尾动作重演）；跨组连续动作（递纸巾）必须在一组内闭环（详见 h3-video-prompt 的导演分段章节）。
 7. 工作流结构/节点/开关一律不动（凡哥只授权换 prompt 内容）；想切换流程（如只跑一采）走 confirm_first_pass 开关，不靠改图。
 8. **Director 警告 `gen segment #N task=r2v has no reference media — will behave like t2v/t2i` = 段执行时 timeline 里没读到参考图引用**——即使 Director UI 里"看得到图"也可能发生（图只挂在 UI 展示层/公共参数未启用 commonEnabled=false/图没写进段或公共 refs）。r2v 参考图必须落在**公共参数 refs（commonEnabled=true）或素材组内 refs** 至少一处，否则人物锁不定、按 t2v 跑。诊断顺序：先查公共参数启用开关 → 把图直接拖进要跑的素材组卡片图位（组级引用最稳）→ 上传后切走再切回确认图还在 → 重跑看日志警告消没消。⚠️ 2026-09-09 全加速版首测遇此（凡哥 UI 传图仍警告），正解仍在 UI 实测确认中——未闭环前先按上法排查，别写死结论。

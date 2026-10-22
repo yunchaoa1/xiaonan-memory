@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [storyboard, shot-list, opc, fifteen-second, continuity]
-    related_skills: [screenplay-to-15s-storyboard-opc-test, shot-language]
+    related_skills: [screenplay-to-15s-storyboard-opc-test, h3-video-prompt]
 ---
 
 # Screenplay to 15s Storyboard

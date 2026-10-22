@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [opc, ai-manga, skill-authoring, screenplay, storyboard, image-prompt, minimax-h3]
-    related_skills: [short-drama-story-engine, shot-language, prompt-master-pipeline, image-prompt, scene-image-generation]
+    related_skills: [short-drama-story-engine, h3-video-prompt, image-prompt, scene-image-generation]
 ---
 
 # OPC 漫剧创作 Skill 制作总类

@@ -12,45 +12,34 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 1. 凡哥需求涉及创作/制作（提示词、分镜、镜头、运镜、情绪、动作、台词、生图、视频、MV、Seedance、LTX）时，**第一步先加载本技能**。
 2. 按下方路由表拆解凡哥需求涉及哪些维度，**逐项加载对应技能**（可以一次加载多个）。
 3. 加载完对着"输出前自查清单"打勾，缺维度就补加载，**不遗漏才输出**。
-4. 双线规则冲突时以对应技能正文为准：LTX线=英文/全正向/禁否定词；Seedance线=中文/可处理否定。
+4. 视频提示词**只有一个入口 = h3-video-prompt**（H3 主线）。Seedance 已隔离（凡哥明说才装回）；LTX 已弃用删除，不再路由。
 
 ## 路由表（凡哥说 → 加载）
 
-### 提示词类
+### 提示词类（唯一入口 = h3-video-prompt）
 | 凡哥说 | 加载 |
 |--------|------|
-| 镜N提示词 / 给我镜N | prompt-interview（先采访缺项）→ prompt-master-pipeline（八站流水线）→ ltx-video-prompt（弗雷法+定稿模板） |
-| 写提示词 / 出提示词 | prompt-master-pipeline → prompt-dictionary（查词库） |
-| 抽象情绪词（"氛围感""难过"） | prompt-dictionary（19情绪×265近义词，拆物理动作） |
-| 避坑/检查提示词 | ltx-video-prompt 自检清单 + seedance-antislop（去AI套话） |
+| 写提示词 / 出提示词 / 视频提示词 / 镜N提示词 / 给我镜N / H3 / 海螺 / minimax_h3 / 全能参考 | **h3-video-prompt**（唯一入口：采访 → 官方六段 → 自检；台词格式、表演真实感、镜头切点、占框尺度全在里面） |
+| 抽象情绪词（"氛围感""难过""委屈"） | **h3-video-prompt**（内含词库索引，真身在 `D:\Hermes\xiaonan-memory\prompts\dictionary\`） |
+| 避坑 / 检查提示词 / 自检 | **h3-video-prompt** 第 2 步自检 + 禁用词表 |
 
 ### 分镜/镜头类
 | 凡哥说 | 加载 |
 |--------|------|
-| 出分镜 / 分镜方案 | shot-language（景别/运镜决策）→ 按维度补：运镜/情绪/动作/台词 |
-| 运镜 / 镜头怎么动 | seedance-camera（Seedance线）+ ltx-video-prompt（LTX线运镜铁律：小缓慢/≤45°/禁远景） |
-| 景别 / 特写中景 | shot-language + seedance-camera |
-| 镜头语言 / 镜头分析 | shot-language |
+| 出分镜 / 分镜方案 / 镜头语言 / 运镜 / 景别 / 镜头方案 | **h3-video-prompt**（镜头与切点章节 + `references/ai-short-drama-production-storyboard.md`） |
+| 分镜还原 / 看别人片子怎么剪的 | video-learning + video-analysis（**先跑 PySceneDetect**：纯 CPU·0 显存） |
 
 ### 表演类（人物）
 | 凡哥说 | 加载 |
 |--------|------|
-| 表情 / 情绪表达 | prompt-dictionary + ltx-video-prompt（表情递进：笑意→收拢→泛红→涣散） |
-| 动作 / 肢体 / 走位 | seedance-motion + ltx-video-prompt（人物动态铁律：三步法/视线轨迹） |
-| 台词 / 说话 / 口型 | seedance-audio + seedance-characters + ltx-video-prompt（台词{}格式/声线规则） |
-| 角色一致性 | seedance-characters |
+| 表情 / 情绪表达 / 动作肢体 / 台词 / 说话 / 口型 / 角色一致性 | **h3-video-prompt**（表演真实感 + 台词铁律两章：微表情时间链、四维同步、发声方式、`<d>[Chinese] 台词</d>` 格式） |
 
 ### 视频生成类
 | 凡哥说 | 加载 |
 |--------|------|
-| Seedance（任意） | seedance-director（总入口）→ 按需求补子技能 |
-| Seedance 续集/接镜 | seedance-continuation + seedance-sequence |
-| Seedance 报错/崩了 | seedance-troubleshoot + seedance-filter |
-| Seedance 灯光 | seedance-lighting |
-| Seedance 风格/特效 | seedance-style + seedance-vfx |
-| Seedance 版权/名人 | seedance-copyright |
-| LTX（任意） | ltx-video-prompt（总入口） |
-| MV / 歌曲视频 | ltx-video-prompt（MV分镜方法论：空镜/叙事/对口型分配）|
+| H3 出片 / 跑工作流 / 导演台连拍 | **h3-video-prompt**（导演分段章节）+ creative/aimixer-h3-director + comfyui-env-ops |
+| **Seedance（只在凡哥明说「这次用 Seedance」时）** | 先装回来：`cp -r "D:\Hermes\xiaonan-memory\skills-archive\seedance\"* "D:\Hermes\skills\creative\"` → 再 seedance-director。**没明说一律不装、不读、不引用**（2026-10-22 凡哥令） |
+| LTX（任意） | **已弃用删除**，不再路由（2026-10-22 凡哥令：对我们没用） |
 
 ### 生图类
 | 凡哥说 | 加载 |
@@ -119,8 +108,8 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 
 - [ ] 凡哥需求涉及哪些维度？（镜头/运镜/情绪/动作/灯光/台词/风格/角色/场景/道具/音乐/剧情）
 - [ ] 每个维度对应的技能都加载了吗？（路由表逐项核对）
-- [ ] 双线规则确认：LTX线英文全正向禁否定词；Seedance线中文可否定
-- [ ] 输出格式：纯文本不带代码框；台词{}包裹；参考图标签原样保留
+- [ ] 提示词走 h3-video-prompt 了吗？（采访 → 六段 → 自检，三步不许跳）
+- [ ] 输出格式：纯文本不带代码框；台词在 `<d>[Chinese] ...</d>` 内；参考图标签原样保留
 - [ ] 不确定的缺项先采访凡哥，不脑补
 
 ## 注意事项
