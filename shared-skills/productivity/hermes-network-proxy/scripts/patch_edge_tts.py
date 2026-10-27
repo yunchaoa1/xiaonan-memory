@@ -1,168 +1,164 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""确保 Hermes 的 edge TTS 语音播报可用（幂等）。
+
+2026-10-27 定论：403 的正解是 edge-tts >= 7.3.0（PR #492 Sec-MS-GEC v2 令牌）。
+早期"把 WSS_URL 改成 api.msedgeservices.com"的打法已废弃 —— 那个网关会把公共
+TRUSTED_CLIENT_TOKEN 当订阅键，频繁 429 限流。
+
+用法：
+    python patch_edge_tts.py            # 确保 >= 7.3（必要时升级）+ 真实合成自检
+    python patch_edge_tts.py --verify   # 只查状态 + 试合成
+    python patch_edge_tts.py --revert   # 强制重装官方 wheel，冲掉任何手改
+
+退出码 0 = 可用。
 """
-patch_edge_tts.py —— 修复 edge-tts 语音合成 403（2026-10 微软换接口）
-
-背景（2026-10-12 实测）:
-    微软 Edge「大声朗读」的合成 WebSocket 从
-        wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1
-    迁到新地址，老地址自 2026-10 起对多数地区返回 403，2026-10-12 起美国也 403。
-    Edge 155 走的新地址 = api.msedgeservices.com/tts/cognitiveservices/websocket/v1
-    新地址同样接受老 token，但要以 Ocp-Apim-Subscription-Key 传。
-    音色列表接口（VOICE_LIST）仍在老地址正常工作，不要改。
-
-上游: rany2/edge-tts PR #491（本脚本落地时尚未合并进 7.2.8）。
-
-为什么需要脚本（而不是改一次就完）:
-    `pip install -U edge-tts` 会覆盖 constants.py，补丁丢失 → 语音播报再次 403。
-    任何 edge-tts 升级后重跑本脚本即可。幂等，可反复执行。
-
-⚠️ 跑完必须重启 Hermes 桌面 App —— edge_tts 是 App 进程里懒加载的，
-   进程不重启则内存中仍是老常量（磁盘改了也不生效）。实测过。
-
-用法:
-    python D:/Hermes/scripts/patch_edge_tts.py            # 打补丁（幂等）
-    python D:/Hermes/scripts/patch_edge_tts.py --verify   # 只看状态并真实合成一条
-    python D:/Hermes/scripts/patch_edge_tts.py --revert   # 还原备份
-"""
+from __future__ import annotations
 
 import argparse
-import datetime as _dt
-import glob
 import os
-import shutil
+import subprocess
 import sys
+import tempfile
 
-VENV_GLOBS = [
-    r"D:\Hermes\hermes-agent\venv\Lib\site-packages\edge_tts\constants.py",
-    r"D:\Hermes\hermes-agent\venv\Lib\site-packages\edge_tts\constants.py",
-    r"D:\Hermes\**\Lib\site-packages\edge_tts\constants.py",
-]
+VENV_PY = r"D:\Hermes\hermes-agent\venv\Scripts\python.exe"
+TARGET_VERSION = "7.3.1"
+MIN_VERSION = (7, 3, 0)
+LEGACY_HOST_MARKER = "msedgeservices.com"
 
-OLD_LINE_FRAGMENT = 'WSS_URL = f"wss://{BASE_URL}/edge/v1?TrustedClientToken={TRUSTED_CLIENT_TOKEN}"'
-NEW_BLOCK = '''# --- local patch (upstream rany2/edge-tts#491, not merged as of 7.2.8) ---
-# Since October 2026 the legacy host refuses speech synthesis with a 403.
-# Microsoft Edge 155 synthesizes through api.msedgeservices.com, which also
-# accepts the legacy token, given as Ocp-Apim-Subscription-Key. The voice
-# list is still served by the legacy host.
-# NOTE: `pip install -U edge-tts` overwrites this -- re-run
-#       D:\\Hermes\\scripts\\patch_edge_tts.py afterwards.
-WSS_URL = (
-    "wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1"
-    f"?Ocp-Apim-Subscription-Key={TRUSTED_CLIENT_TOKEN}"
-)'''
-MARKER = "edge-tts#491"          # 出现在磁盘上的补丁注释里
-NEW_MARKER_FALLBACK = "msedgeservices.com/tts/cognitiveservices"  # 双重判定
+PROBE = r'''
+import json, edge_tts
+c = edge_tts.constants
+print(json.dumps({
+    "version": getattr(edge_tts, "__version__", "?"),
+    "path": edge_tts.__file__,
+    "wss_url": c.WSS_URL,
+    "gec_version": getattr(c, "SEC_MS_GEC_VERSION", ""),
+}))
+'''
 
-
-def find_constants():
-    seen, out = set(), []
-    for g in VENV_GLOBS:
-        for p in glob.glob(g, recursive=True):
-            p = os.path.normpath(p)
-            if p not in seen and os.path.isfile(p):
-                seen.add(p)
-                out.append(p)
-    return out
+SYNTH = r'''
+import asyncio, os, sys, tempfile
+import edge_tts
+out = os.path.join(tempfile.gettempdir(), "edge_tts_selfcheck.mp3")
+if os.path.exists(out):
+    os.remove(out)
+asyncio.run(edge_tts.Communicate("语音播报自检，一二三四五。", "zh-CN-XiaoxiaoNeural").save(out))
+print(os.path.getsize(out))
+'''
 
 
-def status(path):
-    src = open(path, encoding="utf-8").read()
-    if MARKER in src or NEW_MARKER_FALLBACK in src:
-        return "patched"
-    if OLD_LINE_FRAGMENT in src:
-        return "unpatched"
-    return "unknown"
+def py() -> str:
+    return VENV_PY if os.path.exists(VENV_PY) else sys.executable
 
 
-def apply(path):
-    st = status(path)
-    if st == "patched":
-        return "already patched", True
-    if st == "unknown":
-        return "!! 找不到老 WSS_URL 行，文件结构与预期不符，未改动（人工看一下）", False
-    bak = path + ".bak-" + _dt.datetime.now().strftime("%Y%m%d")
-    if not os.path.exists(bak):
-        shutil.copy2(path, bak)
-    src = open(path, encoding="utf-8").read()
-    open(path, "w", encoding="utf-8", newline="").write(
-        src.replace(OLD_LINE_FRAGMENT, NEW_BLOCK)
+def run(code: str, timeout: int = 180) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [py(), "-c", code], capture_output=True, text=True, timeout=timeout
     )
-    return ("patched (备份 %s)" % os.path.basename(bak)), True
 
 
-def revert(path):
-    baks = sorted(glob.glob(path + ".bak-*"))
-    if not baks:
-        return "没有备份，无法还原", False
-    shutil.copy2(baks[-1], path)
-    return "reverted from " + os.path.basename(baks[-1]), True
+def probe() -> dict:
+    import json
 
-
-def verify():
-    """新进程里真实合成一条，确认能出声。"""
+    p = run(PROBE, timeout=90)
+    if p.returncode != 0:
+        return {"error": (p.stderr or p.stdout).strip().splitlines()[-1:] or ["unknown"]}
     try:
-        import asyncio
-        import edge_tts
-        import edge_tts.communicate as CM
-    except Exception as e:
-        return "!! import edge_tts 失败: %r" % (e,), False
-    print("  实际使用的 WSS_URL:", CM.WSS_URL.split("?")[0])
-    if "msedgeservices" not in CM.WSS_URL:
-        return "!! 仍是老地址 —— 补丁没生效（或忘了重启 App）", False
-    out = os.path.join(
-        os.environ.get("LOCALAPPDATA", "."), "Temp",
-        "edge_tts_verify_%s.mp3" % _dt.datetime.now().strftime("%H%M%S"),
-    )
+        return json.loads(p.stdout.strip().splitlines()[-1])
+    except Exception:
+        return {"error": p.stdout.strip()[:200]}
+
+
+def vtuple(v: str):
     try:
-        async def _go():
-            c = edge_tts.Communicate("语音播报自检，一切正常。", "zh-CN-XiaoxiaoNeural")
-            await c.save(out)
-        asyncio.run(_go())
-    except Exception as e:
-        return "!! 合成失败: %r" % (e,), False
-    n = os.path.getsize(out) if os.path.exists(out) else 0
-    return "合成成功: %s (%d 字节)" % (out, n), n > 1000
+        return tuple(int(x) for x in v.split(".")[:3])
+    except Exception:
+        return (0, 0, 0)
 
 
-def main():
+def install(force: bool = False) -> bool:
+    args = [py(), "-m", "pip", "install", "--no-deps"]
+    args += ["--force-reinstall"] if force else ["-U"]
+    args.append(f"edge-tts=={TARGET_VERSION}")
+    print("→", " ".join(args))
+    p = subprocess.run(args, capture_output=True, text=True, timeout=600)
+    ok = p.returncode == 0
+    tail = (p.stdout or "").strip().splitlines()[-2:]
+    print("\n".join(tail) if tail else (p.stderr or "")[:400])
+    return ok
+
+
+def synthesize() -> tuple[bool, str]:
+    p = run(SYNTH, timeout=180)
+    if p.returncode == 0:
+        n = p.stdout.strip().splitlines()[-1]
+        return True, f"合成成功 {n} 字节"
+    err = (p.stderr or p.stdout).strip().splitlines()
+    return False, (err[-1] if err else "未知错误")
+
+
+def report(info: dict) -> None:
+    if info.get("error"):
+        print(f"  ⚠️  探测失败: {info['error']}")
+        return
+    print(f"  版本    : {info['version']}")
+    print(f"  路径    : {info['path']}")
+    print(f"  GEC 代次: {info.get('gec_version') or '(无)'}")
+    url = info.get("wss_url") or ""
+    host = url.split("://")[-1].split("/")[0] if "://" in url else "(空)"
+    print(f"  合成域名: {host}")
+
+
+def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--verify", action="store_true", help="只看状态并真实合成一条")
-    ap.add_argument("--revert", action="store_true", help="还原备份")
+    ap.add_argument("--verify", action="store_true", help="只查状态 + 试合成")
+    ap.add_argument("--revert", action="store_true", help="强制重装官方 wheel")
     a = ap.parse_args()
 
-    targets = find_constants()
-    if not targets:
-        print("!! 没找到 edge_tts/constants.py，检查 venv 路径")
-        return 2
-    print("找到 %d 个 edge_tts/constants.py" % len(targets))
+    print("=" * 60)
+    info = probe()
+    print("当前状态：")
+    report(info)
 
-    ok_all = True
-    for p in targets:
-        st = status(p)
-        print("\n[%s] %s" % (st, p))
-        if a.verify:
-            msg, ok = verify()
-            print("   ", msg)
-            ok_all &= ok
-            continue
-        msg, ok = (revert(p) if a.revert else apply(p))
-        ok_all &= ok
-        print("   ", msg)
-        if a.revert and ok:
-            continue
-        msg, ok = verify()
-        print("   ", msg)
-        ok_all &= ok
+    if a.verify:
+        ok, msg = synthesize()
+        print(f"\n自检：{'✅' if ok else '❌'} {msg}")
+        return 0 if ok else 1
 
-    print("\n" + "=" * 60)
-    if ok_all:
-        print("✅ 全部就绪")
-        print("⚠️  如果 Hermes 桌面 App 在补丁之前就已启动 → 必须重启 App 才生效")
-        print("    判断方法: 让 Hermes 播报一次；仍报 403 speech.platform.bing.com = 没重启")
-    else:
-        print("❌ 有问题，见上面输出")
-    return 0 if ok_all else 1
+    needs_install = a.revert
+    if not info.get("error"):
+        ver = info.get("version", "0")
+        legacy = LEGACY_HOST_MARKER in (info.get("wss_url") or "")
+        gec = info.get("gec_version") or ""
+        if legacy:
+            print("\n⚠️  检测到 2026-10 的旧手改（WSS_URL 指向新域名）—— 那会引发 429，必须冲掉")
+            needs_install = True
+        if vtuple(ver) < MIN_VERSION:
+            print(f"\n⚠️  版本 {ver} < 7.3.0（缺 v2 令牌 = 403 根因）")
+            needs_install = True
+        if gec and not gec.startswith("2-"):
+            print(f"\n⚠️  SEC_MS_GEC_VERSION = {gec!r}，不是 v2 代次")
+            needs_install = True
+        if not (needs_install):
+            print("\n✅ 版本与令牌代次都对，无需改动")
+
+    if needs_install:
+        print("\n→ 安装官方版本…")
+        if not install(force=a.revert):
+            print("❌ 安装失败，见上面 pip 输出")
+            return 1
+        info = probe()
+        print("\n安装后：")
+        report(info)
+
+    ok, msg = synthesize()
+    print(f"\n自检：{'✅' if ok else '❌'} {msg}")
+    print("=" * 60)
+    print("✅ 全部就绪" if ok else "❌ 自检失败")
+    if ok:
+        print("⚠️  若 Hermes 桌面 App 在安装之前就已启动 → 必须重启 App 才生效")
+        print("    一键彻底重启：powershell -File D:\\Hermes\\scripts\\restart_hermes_app.ps1 -DelaySeconds 5")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

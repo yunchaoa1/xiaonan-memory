@@ -38,6 +38,9 @@ metadata:
 | 同上备选 | — | `https://ghproxy.net/https://raw.githubusercontent.com/<owner>/<repo>/<branch>/<path>` |
 | GitHub 仓库文件树（免 clone） | 需 clone | `https://data.jsdelivr.com/v1/packages/gh/<owner>/<repo>@<branch>` |
 | GitHub 仓库元数据（stars/license/最后推送/默认分支） | — | `api.github.com` **通常直连通**，用它核"是否最新"（看 `pushed_at`，星多≠最新） |
+| **GitHub Release 二进制**（APK / exe / zip / msix） | `https://github.com/<o>/<r>/releases/download/<tag>/<file>` —— 走 `objects.githubusercontent.com`，**常整段连不上**（`curl` 报 `Failed to connect to github.com port 443`） | 前面拼镜像：`https://ghfast.top/https://github.com/<o>/<r>/releases/download/<tag>/<file>`（2026-10 实测拿下 2.5MB APK，字节数与 API 报的 size 一致） |
+| 同上备选 | — | `https://ghproxy.net/https://github.com/...` / `https://gh-proxy.com/https://github.com/...` |
+| Release 校验值 | — | 同目录的 `SHA256SUMS` 也走镜像拿，下完 `sha256sum` 比对——**装到别人机器上的二进制必须验** |
 | PyPI | pypi.org | `-i https://pypi.tuna.tsinghua.edu.cn/simple` |
 | npm / playwright 下载 | registry.npmjs.org / playwright CDN | `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright`；npm 装原生模块加 `--allow-scripts=<pkg,...>` |
 | HuggingFace 模型 | huggingface.co | `HF_ENDPOINT=https://hf-mirror.com` |
@@ -46,6 +49,13 @@ metadata:
 B="https://cdn.jsdelivr.net/gh/<owner>/<repo>@<branch>"
 curl -sL --max-time 25 "$B/SKILL.md" -o out.md; echo "exit=$? size=$(wc -c < out.md)"
 ```
+
+**Release 定位的两个 API 坑（2026-10 实测）**：
+- **`api.github.com` 通 ≠ 下载域通**。同一台机器上 `api.github.com` 与 `github.com` 页面都正常，
+  `releases/download/` 却连不上（走的是 `objects.githubusercontent.com`）→ 别据此判断"项目没了"，直接上镜像。
+- **`repos/<o>/<r>/releases/latest` 返回 404 ≠ 仓库不存在**。可能只是**没有 release**。
+  正确动作：打 `repos/<o>/<r>/releases`（列表），从里面读 `tag_name` / `assets[].browser_download_url` / `assets[].size`。
+  另外 README 里写的"更新仓库"（`<repo>-updates`）可能**存在但没有任何 release**，真正的新版在**主仓库**的 releases 里。
 
 **读一个陌生仓库的正确顺序**：先拉文件树看清结构（`tools/`、`parsers/`、`scripts/` 往往是精华），再**按需**只下 README / SKILL.md / docs / tools，**不要整仓 clone**。要"学一个项目"时，先读它的 `SKILL.md` 或 `docs/how-it-works.md`——作者通常已经把方法论写好了。
 

@@ -1,136 +1,92 @@
-# edge-tts 403 / 微软换合成端点（2026-10）· 完整证据链
+# edge-tts 语音播报故障全链：403 →（误入）新域名 429 → v2 令牌正解
 
-> 场景：Hermes 语音播报报 `TTS chunk 1 failed (edge): 403, message='Invalid response status',
-> url='wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?...Sec-MS-GEC=...'`
-> 本机配置：`D:\Hermes\config.yaml` → `tts.provider: edge` / `tts.edge.voice: zh-CN-XiaoxiaoNeural`
-> 排查日期：2026-10-12（Windows / Hermes 桌面版）
+> 最后订正：2026-10-27。**结论以本文件为准**，10-12/10-13 的"换新域名"判断已被推翻。
 
----
+## 症状
 
-## 1. 结论（一句话）
+```
+TTS chunk 1 failed (edge): 403, Invalid response status,
+url='wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=...'
+```
 
-微软把 Edge「大声朗读」的**合成 WebSocket** 从 `speech.platform.bing.com` 迁到了
-**`api.msedgeservices.com`**（Edge 155 走的新地址）。老地址从 2026-10 初开始对大量地区返回 403，
-到 2026-10-12 连美国也开始了。**与本地网络、代理、IP、令牌、包版本、系统时钟全部无关。**
+之后（手改新域名后）变成：
 
-## 2. 排除矩阵（每一项都真跑过，别重复试）
+```
+TTS chunk 1 failed (edge): 429, Invalid response status,
+url='wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1?Ocp-Apim-Subscription-Key=...'
+```
 
-| # | 探针 | 实际结果 | 能排除什么 |
-|:-:|---|---|---|
-| 1 | 老地址 WSS 握手 | ❌ `WSServerHandshakeError 403` | 复现主症状 |
-| 2 | `voices/list` HTTPS（同 headers） | ✅ **200 / 170,998 字节** | **不是"net 断了"** —— 只有合成那根线被掐 |
-| 3 | 枚举版本号 140 / 141 / 142 / 143 / 144 / 不带 | ❌ 全 403 | 不是 `Sec-MS-GEC-Version` 过期 |
-| 4 | 带 `Sec-MS-GEC` / 完全不带 | ❌ 全 403 | 不是 DRM 令牌算错 |
-| 5 | 走本机代理（出口 IP 换成 103.151.173.208） | ❌ 仍 403 | 不是地区墙 / 不是 IP 被封 |
-| 6 | 本机时钟 vs 服务端 `Date` 响应头 | 偏差 **2.5 秒** | 不是时钟偏移（GEC 是时间函数） |
-| 7 | edge-tts **7.2.7** 与 **7.2.8** | ❌ 都挂 | 不是包版本旧（7.2.7 是当时最新已发布版） |
-| 8 | TCP/TLS/DNS 到 `speech.platform.bing.com` | ✅ 0.07s / TLSv1.3 | 不是链路问题 |
-| 9 | **新地址 `api.msedgeservices.com`** | ✅ **出声，19,152 字节 MP3** | **就是修法** |
+## 时间线（按发布时间排，这是关键）
 
-DNS/TLS 探针：
+| 日期 | 事件 |
+|---|---|
+| 2026-10-10 | issue #490 报 403 潮 |
+| 2026-10-12 | PR #491「改用 `api.msedgeservices.com`」+ 修 locale 日期解析 |
+| 2026-10-13 15:34 | **release 7.3.0**：合入 PR #492「Sec-MS-GEC v2 令牌」、#488 进度条、#493 |
+| 2026-10-13 15:57 | **release 7.3.1**：修 locale 相关 `parse_rfc2616_date` |
+| 2026-10-13 之后 | PR #491 被 close，理由 **`Superseded by #492`** |
+
+**教训**：`pip index versions` 只能看到版本号，看不到"上游是否刚发了修法"。
+本次卡点就在这 —— 10-12 那天 7.3.x 还没发（7.2.8 是 3 月的），所以只能手改；
+但 10-13 官方就发了正解，手改就成了债。
+
+## 正解
+
 ```bash
-python -c "
-import socket,ssl,time
-h='api.msedgeservices.com'
-print('DNS->', socket.gethostbyname(h))
-s=socket.socket(); s.settimeout(8); t=time.time(); s.connect((h,443))
-print('TCP OK', round(time.time()-t,2),'s')
-c=ssl.create_default_context().wrap_socket(s, server_hostname=h); print('TLS', c.version())
-"
+D:/Hermes/hermes-agent/venv/Scripts/python.exe -m pip install --no-deps -U "edge-tts==7.3.1"
 ```
 
-403 响应头（老地址，注意 `Content-Length: 0`、无响应体、`X-MSEdge-Ref` 里的边缘节点编号）：
-```
-strict-transport-security: max-age=31536000; includeSubDomains
-X-Cache: CONFIG_NOCACHE
-Accept-CH: Sec-CH-UA-Arch, Sec-CH-UA-Bitness, ...
-X-MSEdge-Ref: Ref A: E44817C9F44C4D2097DD0C92F35E352E Ref B: SG2AA1070305031 Ref C: 2026-10-12T10:20:35Z
-Date: Mon, 12 Oct 2026 10:20:35 GMT
-Content-Length: 0
-```
-> `Ref B` 那个值是边缘节点 ID（`SG2` = 新加坡 PoP）。**它不是错误码，别拿它当线索。**
-
-## 3. 上游时间线（就是从这里找到答案的）
-
-```
-curl -s "https://api.github.com/repos/rany2/edge-tts/issues?state=all&sort=created&direction=desc&per_page=10"
-curl -s "https://api.github.com/repos/rany2/edge-tts/pulls?state=all&sort=created&direction=desc&per_page=5"
-```
-
-- **#458**（2026-01-20 开、2026-03-22 关为 not planned）标题就是
-  `WSServerHandshakeError: 403, message='Invalid response status'` —— **那是上一轮，当时的解法是升到 7.2.7**。
-  所以"403 就升级"这条旧经验在 2026-10 **已经失效**（本机 7.2.7/7.2.8 同样 403）。
-- **#490**（2026-10-10 开）本轮的首个报告，帖子里的报错文本与本机**逐字一致**
-  （含 `Sec-MS-GEC-Version=1-143.0.3650.75`）。
-- **PR #491**（2026-10-12 开，当天）＝答案。正文关键句：
-  > "Since October 2026 `speech.platform.bing.com` answers the synthesis WebSocket with 403 in many
-  > countries, and since 12 October in the US too. Microsoft Edge 155 synthesizes through
-  > `api.msedgeservices.com/tts/cognitiveservices/websocket/v1`. That host also accepts the legacy
-  > token given as `Ocp-Apim-Subscription-Key`, with the legacy `Sec-MS-GEC` and `Sec-MS-GEC-Version`."
-  > "The voice list still answers on the legacy host, so `VOICE_LIST` is unchanged."
-
-取 diff：
-```bash
-curl -sL "https://patch-diff.githubusercontent.com/raw/rany2/edge-tts/pull/491.diff"
-```
-
-## 4. 补丁内容（PR #491 的核心，上游截至 2026-10-12 未合并）
-
-文件：`D:\Hermes\hermes-agent\venv\Lib\site-packages\edge_tts\constants.py`
+装完 `constants.py` 应是**干净原版**：
 
 ```python
-# 改前
-WSS_URL = f"wss://{BASE_URL}/edge/v1?TrustedClientToken={TRUSTED_CLIENT_TOKEN}"
-
-# 改后
-WSS_URL = (
-    "wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1"
-    f"?Ocp-Apim-Subscription-Key={TRUSTED_CLIENT_TOKEN}"
-)
+BASE_URL = "speech.platform.bing.com/consumer/speech/synthesize/readaloud"
+WSS_URL  = f"wss://{BASE_URL}/edge/v1?TrustedClientToken={TRUSTED_CLIENT_TOKEN}"
+SEC_MS_GEC_VERSION = f"2-{CHROMIUM_FULL_VERSION}"   # ← v2 令牌，这才是 403 的解
 ```
 
-- `TRUSTED_CLIENT_TOKEN` 本身**不变**（`6A5AA1D4EAFF4E9FB37E23D68491D6F4`），只是换了个 query 名传给新主机。
-- `VOICE_LIST`（音色列表）**不用改** —— 老主机仍在服务它。
-- `Sec-MS-GEC` / `Sec-MS-GEC-Version` / `ConnectionId` 由 `communicate.py` 照旧往 URL 上追加，不用动。
-- 音频格式不变：MP3 / 24kHz / 单声道。
+实测：一次成功 1.1s / 23,760 字节；连发两次 1.2s、1.3s，各 ~21KB，无 429。
 
-PR 里同时附带的第二个小修（locale 无关地解析服务端 `Date`）：`drm.py` 的
-`parse_rfc2616_date` 用 `strptime("%a, %d %b %Y %H:%M:%S %Z")`，`%a`/`%b` 跟随进程 locale，
-非英文 locale 下解析失败会抛 `SkewAdjustmentError: Failed to parse server date`。
-**只在 locale 不是英文的系统上才会碰到**；简体中文 Windows 下的 Python 默认 `C` locale，本机没复现。
-若要一并修：`from email.utils import parsedate_to_datetime` 替换掉 `strptime` 分支。
+## 弯路实录：新域名为什么不能当修法
 
-## 5. 验证脚本
+`WSS_URL` 手改成 `api.msedgeservices.com/tts/cognitiveservices/websocket/v1` +
+`?Ocp-Apim-Subscription-Key=<TRUSTED_CLIENT_TOKEN>` 后：
 
-```bash
-cd "$LOCALAPPDATA/Temp"
-# 1) 先验"能用"：monkeypatch 到新端点跑一次（注意要同时改两个模块，见坑 1）
-python - <<'EOF'
-import asyncio, edge_tts, edge_tts.constants as C, edge_tts.communicate as CM
-NEW = ("wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1"
-       f"?Ocp-Apim-Subscription-Key={C.TRUSTED_CLIENT_TOKEN}")
-C.WSS_URL = NEW; CM.WSS_URL = NEW
-async def m():
-    c = edge_tts.Communicate("语音测试", "zh-CN-XiaoxiaoNeural")
-    await c.save("t.mp3")
-asyncio.run(m())
-EOF
-ls -l t.mp3          # 必须 10~20KB；0 字节 = 仍失败（edge-tts 空文本也会写 0 字节文件，见上游 #487）
-```
+- ✅ 能出音频（10-12 实测 19,152 / 30,528 / 18,144 字节都成功过）
+- ❌ **频繁 429**。那个网关把公共 `TRUSTED_CLIENT_TOKEN` 当**订阅键**用 → 限流窗口极短
+- ❌ 越测越挂：5s → 15s → 40s 退避全部 429；10-27 连打后连续三个真实请求全 429
+- 429 响应头（无 `Retry-After`，等于让你自己猜）：
+  ```
+  x-ceto-ref: <hash>|2026-10-27T08:47:17.390Z
+  X-CDN-TraceID: 0.18d854b8.1793090837.50090cb
+  Content-Length: 0
+  ```
+- 另有间歇 `NoAudioReceived`（握手 200 但音频流空）——同一限流压力下的副产物
 
-判定标准：**文件非 0 字节**才算通过。只看"没报错"不够（上游有"空文本退出码 0 但写 0 字节坏文件"的已知 bug）。
+## 排除矩阵（都真跑过，别重复）
 
-## 6. 两个坑（踩过）
+| 探针 | 结果 | 结论 |
+|---|---|---|
+| `voices/list` HTTPS | ✅ 200 / 170KB | 音色列表没坏，别误判"网断了" |
+| 版本号 140/141/142/143/144、或不带 | ❌ 全 403 | 不是版本号过期 |
+| 带 / 不带 `Sec-MS-GEC` | ❌ 全 403 | 不是 DRM 算错（是**令牌代次**旧了） |
+| 走代理 7897 换出口 IP | ❌ 仍 403 | 不是地区墙 / 不是 IP 封 |
+| 本机时钟 vs 服务端 `Date` | 偏差 2.5s | 不是时钟 |
+| 7.2.7 / 7.2.8 | ❌ | 那时还没 v2 |
+| 手改新域名 | ⚠️ 能出但 429 | 弯路 |
+| **7.3.0 / 7.3.1** | ✅ 稳定 | **正解** |
 
-1. **monkeypatch 必须改两处**。`communicate.py` 是 `from .constants import WSS_URL`，
-   绑定发生在 import 时。只设 `edge_tts.constants.WSS_URL` **不生效** —— 报错 URL 里仍会出现
-   `speech.platform.bing.com`，会误判成"新地址也不行"。要同时 `import edge_tts.communicate as CM; CM.WSS_URL = NEW`。
-2. **补丁会被升级覆盖**。`pip install -U edge-tts` 会把 `constants.py` 换回上游版本 →
-   403 复发。升级后必须重打；等上游发版合并 PR #491 后才能撤掉。
+## app 侧配合（必做）
 
-## 7. 与相邻问题的区分（别混）
+`tools/tts_tool.py` 的 `_import_edge_tts()` 是懒加载，模块进了 `sys.modules` 就不再读盘：
 
-- **不是** `local-web-capabilities` 那类"抓网页 403/反爬"—— 那是 HTTP 抓取层。
-- **不是** `hermes-network-proxy` 里"旧 base_url 残留"—— 那个是主模型/视觉 provider 层的配置残留。
-  本条是**第三方包硬编码的服务端地址**过期，本地没配置可改，只能改包常量或等发版。
-- 若不想打补丁，替代路径 = 换 Hermes `tts.provider`（edge 是免费通道；换其他 provider 有成本）。**未实测，仅备选。**
+- 装/改完 **必须真重启 Hermes 桌面 App**
+- **桌面板"假重启"**：有托盘 + `requestSingleInstanceLock`（`app.asar` 里可查到），点 X 只收托盘，
+  再点图标是把老实例叫回来 → 进程 CreationDate 不变就是没重启
+- 校验脚本：`D:/Hermes/scripts/restart_hermes_app.ps1`（杀干净 → 等单实例锁释放 → 重新拉起，写日志到 `logs/restart_app.log`）
+- 判断生效：报错 URL 里的域名/status 变了 = 新代码进内存了
+
+## 附：`tts_tool.py` 的 429 退避补丁（2026-10-27 加，保留）
+
+`_generate_edge_tts()` 里加了 5s / 15s / 40s 三段退避，只在 **429、5xx、连接级错误、
+`NoAudioReceived`** 时重试；**403 不重试**（真故障要露出，不能被重试吞掉）。
+升到 7.3.1 后正常情况不会触发，留着当保险。验证脚本：`D:/Hermes/scripts/test_tts_retry.py`。

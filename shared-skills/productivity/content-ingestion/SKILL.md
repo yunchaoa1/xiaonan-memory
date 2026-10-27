@@ -62,6 +62,12 @@ python "D:\Hermes\skills\productivity\content-ingestion\scripts\dy_transcribe.py
 #              收到抖音链接，先做这个替换，省一整轮。dy_page.py 已内置 3 次重试兜底
 #           ⑥ 抖音 SPA 每次渲染内容不同（同一 URL 三次：4579/3249/1637/1115 字符都见过）
 #              → 抓完先看字符数，<2000 基本是空壳，别当成"没内容"就下结论
+#           ⑦ 【2026-10-27 解法】长视频（>10 分钟）抖音音视频分轨，dy_transcribe.py 抓到的
+#              直链只有 Video 轨 → ffmpeg 报 "Output file does not contain any stream"。
+#              yt-dlp 也救不了（要抖音自家反爬 cookie，导出浏览器 cookie 仍 403）。
+#              正解 = scripts/dy_grab_audio.py：Camoufox 真页面截 media-audio-und-mp4a 请求
+#              → 立刻下载（URL 带签名会过期）→ 转 16k wav → faster-whisper 内置转写。
+#              判据：下载完 ffprobe 看有没有 audio 流，没有就换它
 ```
 
 ## 验收标准（怎么知道"吸全了"）

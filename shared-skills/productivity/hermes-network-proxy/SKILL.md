@@ -243,15 +243,15 @@ hermes chat -q "只根据像素识别图中文字" --image "D:/path/test.png" --
 
 ## 常见诊断
 
-### 语音播报全挂：`TTS chunk N failed (edge)` / `WSServerHandshakeError: 403`（2026-10 微软换端点）
+### 语音播报全挂：`TTS chunk N failed (edge)`（403 → 429 → 正解是升 edge-tts 7.3.x）
 
-**症状**：语音播报报 `403, Invalid response status, url='wss://speech.platform.bing.com/...readaloud/edge/v1?...Sec-MS-GEC=...'`。
+**症状**：播报报 `TTS chunk N failed (edge): 403 / 429, Invalid response status, url='wss://...'`。
 本机 TTS 通道 = `config.yaml` 的 `tts.provider: edge` / `tts.edge.voice: zh-CN-XiaoxiaoNeural`。
 
-**根因（2026-10-12 实测）**：微软把 Edge「大声朗读」的**合成 WebSocket** 从
-`speech.platform.bing.com` 迁到了 **`api.msedgeservices.com`**（Edge 155 走的新地址）。
-老地址 2026-10 初起对大量地区返 403，10-12 起美国也开始。
-**与本地网络 / 代理 / IP / 令牌 / 包版本 / 系统时钟全部无关。**
+**★ 2026-10-27 定论（推翻 10-12 的判断，别再走老路）**：
+正解只有一个 —— **把 edge-tts 升到 7.3.0+（现 7.3.1）**。
+7.3.0 合的是 PR **#492「Sec-MS-GEC v2 令牌」**：`SEC_MS_GEC_VERSION = f"2-{CHROMIUM_FULL_VERSION}"`。
+**老域名 + v2 令牌就是通的**：实测一次成功 1.1s / 23KB，连发两次 1.2~1.3s 都成功，不限流。
 
 **先按这个矩阵排除，别重复乱试**（每一项都真跑过）：
 
@@ -262,33 +262,34 @@ hermes chat -q "只根据像素识别图中文字" --image "D:/path/test.png" --
 | 带 / 不带 `Sec-MS-GEC` | ❌ 全 403 | 不是 DRM 令牌算错 |
 | 走本机代理（换出口 IP） | ❌ 仍 403 | 不是地区墙 / 不是 IP 被封 |
 | 本机时钟 vs 服务端 `Date` 头 | 偏差 2.5s | 不是时钟偏移 |
-| edge-tts 7.2.7 / 7.2.8 | ❌ 都挂 | 不是包旧（旧经验"403 就升级"已失效） |
-| **新地址 `api.msedgeservices.com`** | ✅ 出音频 | ← **真正的修法** |
+| edge-tts 7.2.7 / 7.2.8 | ❌ 都挂 | 当年还没 v2 令牌，升小版本没用 |
+| **新地址 `api.msedgeservices.com`**（手改 constants） | ⚠️ 能出音频但**频繁 429** | ← **弯路，已废弃**，见下 |
+| **edge-tts 7.3.0 / 7.3.1**（官方 v2 令牌） | ✅ 出音频、不限流 | ← **真正的修法** |
 
-**修法（已落地 2026-10-13；上游 PR #491 截至 edge-tts 7.2.8 仍未合并）**：
-直接跑现成脚本，别手改（幂等、自动备份、自带真实合成自检）：
+**为什么"新地址"是弯路（2026-10-27 血泪）**：
+PR #491「改用 `api.msedgeservices.com`」看着最像正解，**已被作者 closed，理由 `Superseded by #492`**。
+新域名虽然能出音频，但那个网关把公共 `TRUSTED_CLIENT_TOKEN` 当订阅键 → **经常 429 限流**；
+短时间连打会把额度彻底打满，5s/15s/40s 退避都救不回来（越测越挂）。
+判断"有没有官方修法"要看 **release 时间线**，不是看装的是什么版本：
+`pip index versions edge-tts` 里 7.2.8 是 3 月的，**7.3.0 / 7.3.1 是 2026-10-13 才发的**。
 
+**修法（跑脚本，别手改 site-packages）**：
 ```bash
-python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py            # 打补丁 + 自检
-python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py --verify   # 只查状态 + 试合成
-python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py --revert   # 还原
+python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py          # 确保 >=7.3 + 真实合成自检
+python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py --verify # 只查 + 试合成
+python D:/Hermes/skills/productivity/hermes-network-proxy/scripts/patch_edge_tts.py --revert # 重装官方 wheel，冲掉任何手改
 ```
-
-它改的是 `D:\Hermes\hermes-agent\venv\Lib\site-packages\edge_tts\constants.py`：
-
-```python
-WSS_URL = (
-    "wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1"
-    f"?Ocp-Apim-Subscription-Key={TRUSTED_CLIENT_TOKEN}"
-)
+手工等价命令（**必须 `--no-deps`**，别让它顺带改 Hermes 的依赖树）：
+```bash
+D:/Hermes/hermes-agent/venv/Scripts/python.exe -m pip install --no-deps -U "edge-tts==7.3.1"
 ```
-`TRUSTED_CLIENT_TOKEN` 值不变（`6A5AA1D4EAFF4E9FB37E23D68491D6F4`），换个 query 名传给新主机；
-`VOICE_LIST` 不用改；`Sec-MS-GEC` / `ConnectionId` 由 `communicate.py` 照旧追加。音频仍 24kHz 单声道 MP3。
+装完 `constants.py` 应该是干净原版：`WSS_URL` 指向 `speech.platform.bing.com`、
+`SEC_MS_GEC_VERSION = f"2-{CHROMIUM_FULL_VERSION}"`。**不要再往新域名打补丁。**
 
-**⚠️ 三个坑（第 3 条最容易误判，2026-10-13 实测踩到）**
-1. `communicate.py` 是 `from .constants import WSS_URL` 直接导入的 —— 临时验证**必须同时改
-   `edge_tts.constants` 和 `edge_tts.communicate` 两个模块属性**，只改前者不生效（报错 URL 仍打老地址，会误判成"新地址也不行"）。
-2. `pip install -U edge-tts` 会**覆盖掉这行补丁** → 升级后重跑脚本。
+**⚠️ 三个坑（第 3 条最容易误判；10-13 / 10-27 两次实测都踩到）**
+1. 临时验证改常量时：`communicate.py` 是 `from .constants import WSS_URL` 直接导入的 —— **必须同时改
+   `edge_tts.constants` 和 `edge_tts.communicate` 两个模块属性**，只改前者不生效（报错 URL 还是老的，会误判成"新办法也不行"）。
+2. 装包一定加 `--no-deps`：venv 里依赖已齐，否则 pip 会顺带动 `aiohttp`/`tabulate`，撞 Hermes 其它依赖。
 3. ★ **改完必须重启 Hermes 桌面 App**（**且"重启"极可能是假的** —— 详见下一节，务必先看）。
    `tools/tts_tool.py` 的 `_import_edge_tts()` 是懒加载，模块一旦进了 `sys.modules` 就再也不读盘 ——
    磁盘改了、App 进程里还是老地址。**在 `terminal` 里测能过是因为每次都是新进程，极易误判成"已经修好了"**。
