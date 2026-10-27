@@ -75,6 +75,31 @@ SEC_MS_GEC_VERSION = f"2-{CHROMIUM_FULL_VERSION}"   # ← v2 令牌，这才是 
 | 手改新域名 | ⚠️ 能出但 429 | 弯路 |
 | **7.3.0 / 7.3.1** | ✅ 稳定 | **正解** |
 
+## ★★ 为什么"装好又自动变回去"：lazy_deps 硬钉版本
+
+`hermes-agent/tools/lazy_deps.py` 声明：
+
+```python
+"tts.edge": ("edge-tts==7.2.7",),
+```
+
+`tools/tts_tool.py::_import_edge_tts()` 每次调用都会先执行
+`tools.lazy_deps.ensure("tts.edge", prompt=False)` —— 不满足 `==7.2.7` 就自动 `pip install` 降级。
+所以**升级 7.3.1 之后，只要 App 里跑一次 TTS，就被打回 7.2.7**，令牌又变 `1-`，403 原地复现。
+这是"改了也白改 / 每次重启都失败"的真正原因。
+
+必须两处一起改（`pyproject.toml` 的 extras 也钉着）：
+
+| 文件 | 改动 |
+|---|---|
+| `tools/lazy_deps.py` | `"tts.edge": ("edge-tts==7.3.1",)` |
+| `pyproject.toml` | `edge-tts = ["edge-tts==7.3.1"]` |
+
+校验脚本：`D:/Hermes/scripts/verify_lazydeps_pin.py`
+（先装 7.3.1 → 再跑 `ensure("tts.edge")` → 版本仍是 7.3.1、`SEC_MS_GEC_VERSION` 仍是 `2-` → 真合成出音频）
+
+**一句话判据**：报错 URL 里 `Sec-MS-GEC-Version=1-…` = 还在 7.2.7；`2-…` = 已经是修好的版本。
+
 ## app 侧配合（必做）
 
 `tools/tts_tool.py` 的 `_import_edge_tts()` 是懒加载，模块进了 `sys.modules` 就不再读盘：

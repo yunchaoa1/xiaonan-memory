@@ -82,6 +82,15 @@ python -m pip install "snowballstemmer==3.1.1"
 python -m pip check            # 必须回到 No broken requirements
 ```
 
+**升级 Hermes 自带的包（不是新装）→ 一律加 `--no-deps`**（2026-10-27 实测）：
+Hermes venv 里那些包（`edge-tts`、`aiohttp`、`tabulate`…）本身就是 Hermes 的运行依赖，
+`pip install -U <pkg>` 会**顺带挪动它们的依赖**。只换这一个包时锁死依赖树：
+
+```bash
+D:/Hermes/hermes-agent/venv/Scripts/python.exe -m pip install --no-deps -U "edge-tts==7.3.1"
+D:/Hermes/hermes-agent/venv/Scripts/python.exe -m pip check     # 升级后照样要复检
+```
+
 ## 装哪里：决策树
 
 | 东西的形态 | 装到哪 | 例子 |
@@ -159,6 +168,13 @@ python -m venv "D:/Hermes/venvs/media"           # ✅ 原生 D:/ 形式
   套一层 `bash -lc "..."` 时，URL/引号会被外层 shell 吃掉（实测踩过）
 - **WSL 默认用户可能是 root** → 家目录是 `/root/`，不是 `/home/<user>/`
 - **卸载后同样要复检**：`pip uninstall` 完再跑一次 `pip check`
+- **升级 Hermes 自带包必须 `--no-deps`**：否则 pip 顺手挪动 `aiohttp`/`tabulate` 等，把 Hermes 依赖搞乱（见铁律 1）
+- **装 / 升级完必须「真重启」Hermes 桌面 App**：`venv/Lib/site-packages/**` 的改动对已运行的
+  `hermes_cli.main serve` **不生效**（模块早在 `sys.modules` 里了）。**在 `terminal` 里另起进程测通 ≠ App 内生效**
+  —— 这是最容易误判成"已经装好了"的地方。
+  桌面板有 **Tray + 单实例锁**，点窗口 X 只收托盘、再点图标是把老实例唤回来 →
+  **判据只看进程 `CreationDate` 是否晚于改动文件 mtime**。一键真重启：
+  `hermes-network-proxy` 的 `scripts/restart_hermes_app.ps1`（带延时、取消标记、日志）
 
 ## 与"取机制不取框架"尺子联动
 

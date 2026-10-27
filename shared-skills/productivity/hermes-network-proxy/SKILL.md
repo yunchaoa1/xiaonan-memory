@@ -286,6 +286,23 @@ D:/Hermes/hermes-agent/venv/Scripts/python.exe -m pip install --no-deps -U "edge
 装完 `constants.py` 应该是干净原版：`WSS_URL` 指向 `speech.platform.bing.com`、
 `SEC_MS_GEC_VERSION = f"2-{CHROMIUM_FULL_VERSION}"`。**不要再往新域名打补丁。**
 
+**★★ 最坑的一条：Hermes 会把你的升级偷偷降级回去（2026-10-27 血泪，先看这条再看别的）**
+`tools/lazy_deps.py` 里是**硬钉版本**：`"tts.edge": ("edge-tts==7.2.7",)`。
+`_import_edge_tts()` 每次调用都先跑 `lazy_deps.ensure("tts.edge")`，发现不满足 `==7.2.7`
+就 **pip 降级**。所以升到 7.3.1 后**第一次调 TTS 就被打回 7.2.7**（令牌变回 `1-` → 403 复现），
+外在表现就是「**每次重启都还是失败 / 刚装好的版本一转身就没了**」。
+必须同时改两处：
+
+| 文件 | 改法 |
+|---|---|
+| `hermes-agent/tools/lazy_deps.py` | `"tts.edge": ("edge-tts==7.3.1",)` |
+| `hermes-agent/pyproject.toml` | `edge-tts = ["edge-tts==7.3.1"]` |
+
+改完自检（跑一次 `ensure()` 后版本必须**还是** 7.3.1）：
+`D:/Hermes/scripts/verify_lazydeps_pin.py`
+**判断"有没有被降级"**：看报错 URL 里的 `Sec-MS-GEC-Version=`，`1-` 就是旧的 7.2.7，
+`2-` 才是 7.3.x。
+
 **⚠️ 三个坑（第 3 条最容易误判；10-13 / 10-27 两次实测都踩到）**
 1. 临时验证改常量时：`communicate.py` 是 `from .constants import WSS_URL` 直接导入的 —— **必须同时改
    `edge_tts.constants` 和 `edge_tts.communicate` 两个模块属性**，只改前者不生效（报错 URL 还是老的，会误判成"新办法也不行"）。
@@ -358,6 +375,22 @@ curl -sL "https://patch-diff.githubusercontent.com/raw/<owner>/<repo>/pull/<N>.d
 流程：**先本地 monkeypatch 验证通过 → 再决定是否落到安装目录 / 是否等官方发版**。
 ⚠️ 注意 issue 列表里**同名旧 issue 可能是上一轮的、已被关闭的**（本次 #458 是 1 月的旧 403，
 其"升级到 7.2.7"的结论对 10 月这轮完全无效）—— 看 `created_at` 挑当天/本周的那条。
+
+**⚠️ 更贵的坑：正解可能是「新版已经发了」，而你还在手改**（2026-10-27 二次踩，代价是白走两天弯路）：
+
+- **只看 `pip index versions` 或已装版本 = 会误判"上游没修法"**。必须看 release 的 `published_at`：
+  本次 7.3.0 / 7.3.1 是 **2026-10-13** 才发的 —— 10-12 那天确实还没有，两天后就有了，手改随即变成债。
+  ```bash
+  curl -s "https://api.github.com/repos/<owner>/<repo>/releases?per_page=5" \
+   | python -c "import sys,json;[print(r['tag_name'],r['published_at']) for r in json.load(sys.stdin)]"
+  ```
+- **PR/issue 被 `closed` ≠ 被拒**，必须读关闭理由。本次 #491 的 closing comment 是
+  `Superseded by #492` —— 我当时把"未合并"直接读成"没修好"，于是手动改了一行 constants 走
+  另一条路：能出音频、但**频繁 429**，比原故障更难查。
+- 判据顺序：`merged_at` → closing comment 里的 `Superseded by #N` / `Duplicate of #N` →
+  顺着那个 PR 找它落在哪个 release → `pip download` 那个版本**解包读源码**核对常量（别只看 changelog 标题）。
+- **手改 site-packages 是临时手段，不是修法**：必须同时留下 ①幂等脚本 ②自动备份 ③
+  "官方发版后如何回滚重装"的一句话，否则下一个会话会把弯路当正解继续维护。
 
 ### GitHub 直连被墙 → 装软件走另一条路（2026-09-23 实测）
 
