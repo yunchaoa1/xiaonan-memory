@@ -63,6 +63,75 @@ python -c "import importlib.util as u; print(bool(u.find_spec('<pkg>')))"
 > 实战案例（CUPID superAI 3.0 = 浙大 Easel 换皮 + openclaw 引擎 + 机器码授权）：
 > `references/rebranded-package-triage.md`
 
+## 铁律 0.6 · GitHub 项目：先核真身，再判「三层能不能用」
+
+凡哥丢一个 GitHub 链接 + 「**这个项目看看 / 我们能不能用 / 我不会安装**」时，这是**取证 + 判断**，不是"看完 README 就答"。
+（2026-10-22~27 连着四次：OpenGCUA／Harness²／hongguoTV 等）
+
+### 〇、连项目名都不知道 → 从画面里找（视频来源）
+
+凡哥刷视频问「**这项目出自哪里**」时，**答案常常不在口播里**：
+
+- **抽帧看**水印／角标／桌面图标／任务栏／窗口标题／地址栏 ——
+  `ffmpeg -ss <秒> -i x.mp4 -frames:v 1 fr.png`（**单帧原尺寸最清楚**，别用缩太小的宫格读小字）
+- 读不清就 `vision_analyze(..., region=[左,上,右,下])` **裁左上角那列放大，逐个念图标名**
+- 实例：Vidu S 那条**全片没提项目名**（口播只是演示对话），项目名印在**画面水印「AI生成数字人 | Vidu S」**；
+  同一招还从桌面图标读出 `OBS Studio／直播伴侣／数字人直播助手`，才判断出"博主在直播"
+- 拿到名字/特征词再去 GitHub、官网核。⚠️ **视频的数字和话术都要核**：
+  Harness² 说 16K star，实际 **17,462**（基本准）；OpenGCUA 说"小白一键上手"，官方要求 **macOS 14+ / Rust / Xcode**
+
+### 一、核真身（三件事，缺一件不开口）
+
+```bash
+# ① 仓库存在吗、多少星、什么许可、还活着吗
+curl -sL -H "User-Agent: Mozilla/5.0" "https://api.github.com/repos/<owner>/<repo>"
+# ② 真实安装包在哪（★ 别只信 README 里的下载链接）
+curl -sL -H "User-Agent: Mozilla/5.0" "https://api.github.com/repos/<owner>/<repo>/releases" | head -c 2000
+# ③ README 全文（简介会漏关键限制）
+curl -sL "https://ghfast.top/https://raw.githubusercontent.com/<owner>/<repo>/main/README.md"
+```
+
+**两个真实坑（2026-10-27）**：
+
+- **README 给的下载地址可能是死的**：hongguoTV 的 README 指向 `hongguoTV-updates/releases/latest`，
+  而该仓库**存在但没有 release** → API 返回 `404 Not Found`；真包在**主仓库** `releases` 里（`kotlin-v0.8.0`）。
+  → **`releases` API 404 有两种含义**：仓库不存在 **或** 仓库存在但无 release。
+  **别急着说"下载地址死了"**，同时查主仓库 releases 列表。
+- **平台适配器是硬门槛**：README 只列 `macOS / Android / browser / Linux` 时，**Windows 就是装不了**。
+  这不是"再研究一下"，是**直接判不能装**，别让凡哥白等。
+
+### 二、下完必须校验（不许裸装）
+
+release 一般带 `SHA256SUMS`：
+
+```bash
+curl -sL "<镜像>/<...>/SHA256SUMS" -o SHA256SUMS && cat SHA256SUMS
+sha256sum <下到的文件>        # 两串必须一字不差
+```
+
+不一致 = 文件被改过或下坏了，**不许交给凡哥**。
+
+### 三、「我们能不能用」按三层答，别只答能/不能
+
+| 层 | 判什么 | 例子（OpenGCUA） |
+|---|---|---|
+| **软件** | 装得上吗？平台／依赖／成本？ | ❌ 无 Windows 适配器 → 装不了 |
+| **数据** | 它的评测／基准对我们选型有用吗？ | ✅ 8 个模型同框架下的提升幅度，可当选型依据 |
+| **思路** | 它的方法能不能直接改我们的做法？ | ✅ 「能写脚本就别点鼠标」—— 不用装任何东西就能用 |
+
+**凡哥要的不是"能/不能"，是"哪种用法值得、代价多大"。** 答完**主动补反面**
+（画质不够用／每任务 4 倍成本／官方自认不稳／与研究代码同跑要先隔离）。
+
+### 四、交给他之前
+
+- 装到本机的东西 → **给完整绝对路径** + 字节数／实分辨率
+- 要装到**他的设备**上（电视 APK 这类）→ **先问设备型号/系统**再给步骤：
+  安卓电视／华为鸿蒙／老电视（需外接盒子）装法完全不同，别直接甩一套 U 盘流程
+- **没实测过的不许说"好用"**：分清「看材料得出的判断」和「我跑过」
+
+> 七个项目的完整证据链（真身数据、水印/桌面图标的找法、star 核对、各自真实门槛与"不装"的理由）见
+> `references/项目溯源与适配判断-2026-10.md`。**七次里六次结论是不装** —— 先判关系，再谈安装。
+
 ## 铁律 1 · 绝不往 Hermes 自己的 venv 装带复杂依赖树的包 ⚠️
 
 **先确认你要用的 python 是谁**：
@@ -139,11 +208,12 @@ python -m venv "D:/Hermes/venvs/media"           # ✅ 原生 D:/ 形式
 
 | 目标 | 办法 |
 |---|---|
-| GitHub release 资产（下载） | URL 前缀 `https://ghproxy.net/` + 原 URL |
+| GitHub release 资产（下载） | URL 前缀 `https://ghfast.top/`（2026-10-27 实测一次通，2.6MB）或 `https://ghproxy.net/` + 原 URL |
 | HuggingFace 模型 | `HF_ENDPOINT=https://hf-mirror.com` |
 | Playwright 浏览器 | `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright` |
 | pip 包 | `-i https://pypi.tuna.tsinghua.edu.cn/simple` |
-| GitHub 网页 / API | 直连不通；**API 匿名限流 60 次/小时/IP** |
+| GitHub **信息**（API） | `api.github.com` **通常直连可用**，匿名限流 60 次/小时/IP |
+| GitHub **文件**（releases 下载） | ⚠️ **和 API 是两回事**：走 `objects.githubusercontent.com`，**常被墙**（实测 `curl: (28) Failed to connect to github.com port 443`）。**查信息走 API、取文件走镜像** |
 
 **GitHub API 限流实战（2026-10-11）**：三个并行子代理 + 我共用同一个 IP 的配额 → 全 403。
 **绕开的正解 = 别去问 API，直接拼 release 资产 URL**：
