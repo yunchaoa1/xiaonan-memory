@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>候选人 · 面试问题清单</title>
+<!--
+  A4 面试清单模板 · 打印就绪
+  用法：
+    1. 复制本文件改名，替换 <body> 里的内容
+    2. python scripts/html2pdf.py xxx.html xxx.pdf
+  记号约定：○ 答得好 / △ 打问号 / × 答得不好（对应 .good / .mid / .bad）
+  排版铁律：问句一行加粗；答的每个版本各占一行、左侧色条 —— 凡哥要「问和答分开」。
+-->
+<style>
+  @page { size: A4; margin: 14mm 15mm 12mm 15mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.62;
+    color: #111;
+    margin: 0;
+  }
+  h1 { font-size: 19pt; margin: 0 0 3px 0; letter-spacing: 1px; }
+  .meta { font-size: 9.5pt; color: #444; margin: 0 0 3px 0; }
+  .rule { border-top: 2px solid #111; margin: 7px 0 9px 0; }
+  .tip {
+    border: 1px solid #999; background: #f4f4f4;
+    padding: 6px 10px; font-size: 10pt; margin: 0 0 14px 0;
+  }
+  /* 强制分页：加在第二部分标题上，把清单切成"前半场/后半场" */
+  h2.pb { page-break-before: always; break-before: page; margin-top: 0; }
+  h2 {
+    font-size: 12.5pt; margin: 15px 0 8px 0; padding: 3px 0 3px 9px;
+    border-left: 5px solid #111; background: #eee;
+  }
+  .q { margin: 0 0 11px 0; padding-left: 10px; page-break-inside: avoid; break-inside: avoid; }
+  .ask { font-weight: bold; margin: 0 0 3px 0; }
+  .ask .num { display: inline-block; min-width: 20px; }
+  .a { margin: 0 0 2px 20px; font-size: 10pt; }
+  .a .mark { font-weight: bold; display: inline-block; min-width: 1.2em; }
+  .good { border-left: 2px solid #2b7a2b; padding-left: 8px; }
+  .mid  { border-left: 2px solid #b8860b; padding-left: 8px; }
+  .bad  { border-left: 2px solid #b22222; padding-left: 8px; }
+  .sub { margin: 4px 0 2px 20px; font-size: 10pt; font-weight: bold; }
+  .end { margin-top: 14px; padding: 7px 10px; border: 2px solid #111; font-size: 10.5pt; font-weight: bold; }
+  .foot { margin-top: 9px; font-size: 9pt; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>某某某 · 面试问题清单</h1>
+<p class="meta">岗位：XXX（海口 X-XK）　｜　形式：线上视频　｜　轮次：初面　｜　日期：2026-XX-XX</p>
+<div class="rule"></div>
+
+<div class="tip">
+<b>打法：</b>第 X、X、X 题过不了，这场二十分钟就能收。<br>
+<b>怎么验真：</b>不问假设、不放前提，一句一句往下追，追到他说不出来为止。<br>
+<b>记号：</b>○ 答得好　｜　△ 打问号　｜　× 答得不好
+</div>
+
+<h2>一、先验真（三层追问：做了什么 → 为什么这么做 → 什么情况下会失效）</h2>
+
+<div class="q">
+  <div class="ask"><span class="num">1.</span>这个项目里，哪几块是你亲手写的，哪几块是别人做的？</div>
+  <div class="a good"><span class="mark">○</span>划得出边界，说得清自己那块</div>
+  <div class="a bad"><span class="mark">×</span>把团队成果全揽，或者含糊说"都参与"</div>
+</div>
+
+<div class="q">
+  <div class="ask"><span class="num">2.</span>这块为什么这么做？当时考虑过别的做法没有，为什么没选那个？</div>
+  <div class="a good"><span class="mark">○</span>讲得出取舍：算力／成本／工期／维护，哪头压哪头</div>
+  <div class="a bad"><span class="mark">×</span>「就这么做的」「没想过别的」</div>
+</div>
+
+<div class="q">
+  <div class="ask"><span class="num">3.</span>这套东西在什么情况下会失效？你们怎么发现的，后来怎么处理的？</div>
+  <div class="a good"><span class="mark">○</span>说得出具体故障场景和定位过程 —— 第三层还流畅＝真做过</div>
+  <div class="a mid"><span class="mark">△</span>只答"还好，没出过大问题"</div>
+</div>
+
+<h2 class="pb">二、判断力与业务</h2>
+
+<div class="q">
+  <div class="ask"><span class="num">4.</span>你上一次做这件事，第一步定的是什么？先说顺序。</div>
+  <div class="a good"><span class="mark">○</span>有明确的决策顺序，说得出为什么从这步开始</div>
+  <div class="a bad"><span class="mark">×</span>「看情况」「凭感觉」</div>
+</div>
+
+<div class="q">
+  <div class="ask"><span class="num">5.</span>有人说这件事就是按 XX 平均切／套模板，你怎么看？</div>
+  <div class="a good"><span class="mark">○</span>能区分"估算用平均"和"定稿按内容"，讲清两件事</div>
+  <div class="a bad"><span class="mark">×</span>直接附和，或者完全否定却说不出为什么</div>
+  <div class="a">※ 这类反常识题最能分人，答案没有唯一，看的是他会不会自己划边界。</div>
+</div>
+
+<h2>三、实操边界</h2>
+
+<div class="q">
+  <div class="ask"><span class="num">6.</span>你用的那套，单次能出多长？超过单次长度你怎么处理？</div>
+  <div class="a good"><span class="mark">○</span>知道单次限制是常态，说得出续接／首尾帧接力这类解法</div>
+  <div class="a bad"><span class="mark">×</span>「没试过那么长」</div>
+</div>
+
+<div class="q">
+  <div class="ask"><span class="num">7.</span>一批做 50 条，成本多少钱？卡怎么排？失败重跑怎么算？</div>
+  <div class="a good"><span class="mark">○</span>对钱和排队有数</div>
+  <div class="a bad"><span class="mark">×</span>完全没概念</div>
+</div>
+
+<h2>四、交接（决定他能不能当备份）</h2>
+
+<div class="q">
+  <div class="ask"><span class="num">8.</span>你走了以后，别人要接手你写的这套，需要什么才能跑起来？</div>
+  <div class="a good"><span class="mark">○</span>会主动留部署说明、参数说明、踩坑记录</div>
+  <div class="a bad"><span class="mark">×</span>「代码就是文档」「公司不要求我不写」——这一条废掉，备份就没了</div>
+</div>
+
+<h2>五、收尾</h2>
+
+<div class="q">
+  <div class="ask"><span class="num">9.</span>现在离职吗？什么时候能到岗？</div>
+  <div class="a mid"><span class="mark">△</span>答「随时」也要追一句上家离职原因</div>
+</div>
+
+<div class="q">
+  <div class="ask"><span class="num">10.</span>我们人在海口，要坐班，你能来吗？</div>
+  <div class="a bad"><span class="mark">×</span>犹豫、说要商量 —— 这条不问清，面完白面</div>
+</div>
+
+<div class="q">
+  <div class="ask"><span class="num">11.</span>我们这岗预算 X-XK，你的期望是多少？差多少你能接受？</div>
+  <div class="a good"><span class="mark">○</span>愿意按岗位谈</div>
+  <div class="a bad"><span class="mark">×</span>咬死一个数不放 —— 后面都是浪费时间</div>
+  <div class="a">※ 当场别表态能给到多少，统一说「后面正式谈」。</div>
+</div>
+
+<div class="end">第 X、X、X 题答不利索，这场二十分钟就能收。</div>
+
+<p class="foot">备忘：代码、现场实操、动手验证全部留到复试。面完记一句最直观的——他讲项目时是「讲自己干了什么」还是「讲这个项目多厉害」，前一种是真的。</p>
+
+</body>
+</html>
