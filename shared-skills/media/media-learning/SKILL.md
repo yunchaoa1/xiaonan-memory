@@ -139,12 +139,82 @@ for s in segs: print(f'[{s.start:.1f}-{s.end:.1f}] {s.text}')
 
 > 实例：**炉子 LUZI**（`luzi.top`，秋芝2046 团队的桌面端「AI 能力网络」；能力包 = zip + `SKILL.md` 入口，资产分 skill/prompt/reference 三类；**Hermes 是它代码里写死的官方支持 Agent 之一**，支持 copy/link 两种部署模式；它默认扫 `~/.hermes/skills`，而凡哥的技能库在 `D:\Hermes\skills` → 需 junction 联通）。完整侦察记录与 JS 挖法：`references/platform-integration-recon.md`。
 
+## YouTube 无字幕链路（2026-10-27 实测，28 分钟视频全程走通）
+
+**① 先试字幕**（能省 20 分钟）
+
+```bash
+YT="D:/Hermes/hermes-agent/venv/Scripts/yt-dlp"
+$YT --proxy "http://127.0.0.1:7897" --skip-download --write-auto-sub --write-sub \
+    --sub-lang "zh-Hans,zh-Hant,zh-TW,zh,en" --convert-subs srt -o "yt_%(id)s" "<URL>"
+```
+
+- **必须加 `--proxy "http://127.0.0.1:7897"`**（本机 Clash 端口，`netstat -ano | grep :7897` 可确认）；国内不加代理直连会超时
+- `WARNING: No supported JavaScript runtime ...` **可忽略**，不影响下载
+- 输出 `There are no subtitles for the requested languages` = 作者没开字幕 → 走 ②
+
+**② 拿元信息**（判断值不值得花 20 分钟转写）
+
+```bash
+$YT --proxy "..." --skip-download --print "%(title)s|%(duration)s|%(uploader)s|%(view_count)s" "<URL>"
+```
+
+**③ 下音频 → 转写**
+
+```bash
+$YT --proxy "..." -f "bestaudio" -o "ytgain.%(ext)s" "<URL>"      # 28min ≈ 23.8MB webm
+ffmpeg -y -loglevel error -i ytgain.webm -ar 16000 -ac 1 ytgain.wav
+python "D:/Hermes/skills/productivity/content-ingestion/scripts/transcribe_file.py" ytgain.wav ytgain.zh.txt
+```
+
+- ⚠ **必须 `background=true` + `notify=true`** —— 28 分钟音频 CPU medium ≈ 20~30 分钟，前台死等白占一轮
+- ⚠ `transcribe_file.py` 归 `content-ingestion`（凡哥自有技能）；如果那边没有，脚本内容见本技能 `references/youtube-no-subtitle-pipeline.md`
+
+**④ 同时下 360p 抽帧看画面**（知识类视频的 PPT / 数据表 / 字幕只在画面里）
+
+```bash
+$YT --proxy "..." -f 134 -o "ytvid.%(ext)s" "<URL>"        # 134 = 360p mp4 ≈ 33MB
+ffmpeg -y -loglevel error -i ytvid.mp4 -vf "fps=16/<时长秒>,scale=440:-1,tile=4x4" -frames:v 1 sheet.jpg
+```
+
+- `-f "worst[height<=480]"` 会报 `Requested format is not available` —— **先 `--list-formats` 看真实 ID 再指定**
+- 16 帧概览足够看出结构（真人口播 / PPT / 数据截图）＋ 字幕句（本次靠它先看到「100 个新用户试用」「5000 美金的市调」）
+
+---
+
+## 判断博主底色：拉整个频道的标题（⭐ 最省事的识人法）
+
+**一条视频看不出真假，30 个标题一眼就明白。**
+
+```bash
+$YT --proxy "..." --flat-playlist --print "%(title)s" "https://www.youtube.com/@<handle>/videos" | head -30
+```
+
+**2026-10-27 实例**（频道 `@LittleBoatTan`「小船」，28 分钟 / 8.4 万播放那条「1個人+AI 輕鬆年入100萬」）：
+- 自称「**知識付費第1導師**」
+- 标题清一色：一人公司年赚 400 万美金 / 我 27 岁就退休了 / 新手做 YouTube 24 小时变现 / 5 个保证高收入的 AI 技能 / 普通人必读致富神书
+- **结论：他的生意是「教别人怎么用 AI 赚钱」**（淘金热里卖铲子的），**不是「他自己靠 AI 赚钱」**
+
+**但同一动作也要看反证**：
+- 他有一条专讲 **OpenClaw**（凡哥电脑上就有）→ **不是纯外行，真在用工具**
+- 16 帧画面闪过：资产评估表 /「100 个新用户试用」/「5000 美金的市调」/「他只是需要一个确定」→ **这些是正经创业动作，不是纯忽悠**
+
+**给凡哥的交付口径（他原话：「学习的是思路，不是模式照搬过来，套用在我最擅长的事情上去找出路」）**：
+
+1. **先分离「壳」和「核」** —— 壳 = 标题党 / 人设 / 卖课；核 = 他真正在教的方法
+2. **壳不学**（凡哥不做流量课、不投财力），**核才提炼**
+3. **必须说清「他的生意是卖什么」**，别把「教人赚钱」讲成「他自己赚钱」
+4. 提炼完**落到凡哥已有能力上**（一对一解思维问题 / AI 短剧全流程 / 带团队 / 形象内容），给 2~3 条路，每条写清「卖给谁 / 收什么钱 / 第一步做什么」
+5. 标题党类高播放视频，**顺手报一句可信度**（凡哥证据分级：实测 > 官方 > 传闻）
+
+---
+
 ## 平台取流对照（2026-09-18 更新）
 
 | 平台 | 取流方式 |
 |---|---|
 | B站 | ✅ yt-dlp 直取（提取器成熟、无需签名参数；代理被拒时改走国内直连） |
-| YouTube | ⚠️ 公司网络可能被墙 |
+| **YouTube** | ✅ **yt-dlp ＋ 本机代理走通（2026-10-27 实测）** —— 见下方「YouTube 无字幕链路」 |
 | **抖音** | ❌ yt-dlp 直取必 403（需 fresh cookies ＋ 页面会话态）→ **改走 CDP 路线**：起带 `--remote-debugging-port` 的独立 Chrome → Playwright `connect_over_cdp` → 抓 network 里的**签名 CDN 直链**（`<video>` 只有 blob:） → curl ＋ Referer 下载 → ffmpeg 合流。完整的抓取全链（失败路清单、双流下载、ASR 字段名、抽帧接触表坑、同音错字校验）见 **`video-learning` skill 的 `references/douyin-capture.md`** |
 
 - 抖音三条别再试的路：`web_extract` 抓页面（JS 渲染无正文）、yt-dlp 传 `jingxuan?modal_id=` 形态（Unsupported URL）、`--cookies-from-browser chrome`（Chrome 运行时 cookie 库被独占）。
