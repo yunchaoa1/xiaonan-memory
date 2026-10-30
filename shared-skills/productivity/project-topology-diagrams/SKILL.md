@@ -39,7 +39,7 @@ metadata:
 | 项 | 内容 |
 |---|---|
 | 生成脚本 | **现役** `D:\Hermes\scripts\gen_topology_tree.py`（树形，单页）｜旧 4 页脚本 `gen_topology_drawio.py` **已废**（PPT 分页思路，凡哥 2026-09-23 否决） |
-| 产物 | `D:\Documents\我的文档\拓扑图\项目拓扑图_WBS.{drawio,png,svg,pdf}` |
+| 产物 | `D:\Documents\我的文档\06_图表\拓扑图\项目拓扑图_WBS.{drawio,png,svg,pdf}` |
 | 出图命令 | `& $EXE --export --format png --page-index 1 --scale 2 --output 拓扑图_p1.png 项目拓扑图_xxx.drawio`（逐页导） |
 | 常用参数 | `--size page` 导整页 / `--format png|svg|pdf` / `--all-pages`（只对 PDF、HTML 有效） |
 
@@ -76,14 +76,14 @@ metadata:
 
 **XMind 路线（2026-09-28 落地）**
 - 安装包：`D:\Hermes\cache\downloads\Xmind-windows-x64.exe`（官方 dl3.xmind.cn）；安装弹窗**由凡哥本人点**
-- **不手打节点**：用 `python D:\Hermes\scripts\gen_mindmap_md.py` 生成 `D:\Documents\我的文档\思维导图\技术部项目思维导图.md` → XMind 里 **文件 > 导入 > Markdown**（官方支持；第一行＝中心主题，缩进＝父子层级）→ 自动成图
+- **不手打节点**：用 `python D:\Hermes\scripts\gen_mindmap_md.py` 生成 `D:\Documents\我的文档\06_图表\思维导图\技术部项目思维导图.md` → XMind 里 **文件 > 导入 > Markdown**（官方支持；第一行＝中心主题，缩进＝父子层级）→ 自动成图
 - 数据源：`D:\Hermes\scripts\project_tree_data.py`（**唯一数据源**，拓扑图与思维导图共用）
 - **实测导入法（最省事，2026-09-28 验证）**：`Start-Process 'C:\Users\bobby\AppData\Local\Programs\Xmind\Xmind.exe' -ArgumentList '"D:\...\技术部项目思维导图.md"'` → XMind 自动导入成图（74 主题）；再用 **Ctrl+S** 存成 `.xmind`
   - ⚠ Electron 窗口**后台点击无效**，按键要 `delivery_mode='foreground'`
   - `.xmind` ＝ zip：`content.json`（rootTopic → children.attached）+ `content.xml` + `metadata.json` + `Thumbnails/` → **可直接程序化生成/更新，无需手工导入**
 - 导出：文件 > 导出（PNG/SVG/PDF）；免费版**带水印**，要去水印需 Pro（￥380/年）
 - 免费版 vs Pro（官方 2026-09-28）：免费可导 PNG/PDF 但**带水印**；**Pro ￥380/年 无水印** + SVG/Markdown/Office 导出 + 按主分支自动拆分；官网可开票、年付 7 天无理由退款
-- **专题脑图＝手写聚焦 .md，走同一条链**（2026-09-30 落地）：不必都从 `project_tree_data.py` 生成 —— 单个主题的框架图（例：影剧工坊「六节点」）**直接手写** `D:\Documents\我的文档\思维导图\<专题>.md`（首行＝中心主题，其后 `- ` 两级缩进）→ 同一个「文件参数启动」自动导入 → Ctrl+S 存 `.xmind` → 找回归位改名（实测 `影剧工坊_六节点思维导图.xmind`，45 主题）
+- **专题脑图＝手写聚焦 .md，走同一条链**（2026-09-30 落地）：不必都从 `project_tree_data.py` 生成 —— 单个主题的框架图（例：影剧工坊「六节点」）**直接手写** `D:\Documents\我的文档\06_图表\思维导图\<专题>.md`（首行＝中心主题，其后 `- ` 两级缩进）→ 同一个「文件参数启动」自动导入 → Ctrl+S 存 `.xmind` → 找回归位改名（实测 `影剧工坊_六节点思维导图.xmind`，45 主题）
 - ⚠ **凡哥会与你同时在 XMind 里改图**：Ctrl+S 存盘会把**他正在编辑的内容**一起写进去（实例 2026-09-30：他在「2.0 目标」分支补了「围绕 6 个节点实现傻瓜制剧的能力」）→ **报告前先读 `content.json` 核对是否被他改过**（见 `references/mindmap-and-xmind.md` §11），**绝不用旧 .md 覆盖他的编辑**；回复里主动说明「你补的那句一起存进去了」
 - **会议 → 当天出脑图**是常见节奏（会上定的框架，下午给团队对齐用）；节点归属只写**会上认领 / 已核准数据**，没人认领的标「待确认」，**不按岗位推定**
 
@@ -113,7 +113,7 @@ metadata:
 ### ⭐ 凡哥要的"方案脑图"标准（2026-10-10 元气森林案 · 被纠正两次后定稿）
 
 **📌 标准样板（凡哥逐字：`这个是最终版不要变了，以后的思维导图就这么做`）**
-- 样板文件：`D:\Documents\我的文档\思维导图\元气森林平台_落地方案.xmind`（40 主题 · 已设**只读**锁死，别再改）
+- 样板文件：`D:\Documents\我的文档\06_图表\思维导图\元气森林平台_落地方案.xmind`（40 主题 · 已设**只读**锁死，别再改）
   - 冻结锁法：`attrib +R "<file>"` → 验证：`ls -l` 出 `-r--r--r--` ＋ 试写报 `PermissionError`（脚本重跑也会被拒，这是故意的）；凡哥要改时先 `attrib -R`，或直接另存新文件名
 - **展开方向＝从左到右**（凡哥 2026-10-10 定）：生成器默认 `STRUCTURE = "org.xmind.ui.logic.right"`（逻辑图·向右）
   - ✗ 不要再用 `org.xmind.ui.map.clockwise`（那是左右两边都长枝的脑图）
@@ -141,7 +141,7 @@ metadata:
      - ✗ 太长：整句解释性长句、把每个页面写成一段说明 → 凡哥原话「**文字信息量太大了**」
      - ✗ 太短：砍成 2–8 字词组（如「门户概览 → 项目精选 / 资金保障」）→ 凡哥原话「**大哥，参考一下其他项目的落地思维导图。你这也太精简了**」
      - ✓ 定稿形态：**一级 ＝ 功能模块（本次 10 条 ①–⑩）**· 叶子 15–30 字 · 一个叶子只装一件事 · 全文 **约 65 主题**
-     - **动笔前先 `cat` 一遍 `智提分_落地方案.md` ＋ `元气森林平台_落地方案.md`**（`D:\Documents\我的文档\思维导图\`）对齐手感，再改生成器
+     - **动笔前先 `cat` 一遍 `智提分_落地方案.md` ＋ `元气森林平台_落地方案.md`**（`D:\Documents\我的文档\06_图表\思维导图\`）对齐手感，再改生成器
 5. 他加了参考（如"参考星火智画『电商』板块"）→ **先去技能库找依据再写**（sparkart-clone 技能里：电商场景＝应用中心/商品修图/带货短片/资产，视频模型 Happyhorse 1.1）
 6. 他改过的版本先**归档**（`xxx_凡哥改版.xmind`）再出新版；旧版删掉（换版即清）
 
@@ -194,7 +194,7 @@ metadata:
 
 ### 交付给团队的「节点框架」怎么写（凡哥 2026-09-30 定稿版 · 照这个格式抄）
 
-实例：**影剧工坊 · 六节点框架**（凡哥定稿后导出 PDF 发群；源 `D:\Documents\我的文档\思维导图\影剧工坊_六节点思维导图.xmind`，镜像 md 同目录 `影剧工坊_六节点.md`）
+实例：**影剧工坊 · 六节点框架**（凡哥定稿后导出 PDF 发群；源 `D:\Documents\我的文档\06_图表\思维导图\影剧工坊_六节点思维导图.xmind`，镜像 md 同目录 `影剧工坊_六节点.md`）
 
 1. **开头先放「创建项目」节点**：先让使用者定 ① 视觉风格（国漫3D动画 / 日系动漫 / 韩式全彩漫画 / 中国水墨工笔 / 写实电影）② 故事题材（都市悬疑 / 近未来悬疑 / 近未来科幻 / 情感治愈 / 古风幻想 / 轻喜剧 / 品牌故事）③ 画幅（横屏16:9 / 竖屏9:16）→ **可选项列全给客户选，不写死默认**
 2. **粒度写「客户可选」**：例 分章＝「60 / 90 / 120 / 150 / 180 秒钟每集」（我草稿写"1 分钟一集"，被改成这个）
@@ -279,7 +279,7 @@ python D:\Hermes\scripts\gen_topology_tree.py --layout
 4. **术语纠偏**（按凡哥口径写，不照抄日报）：智题分→**智提分**；影视工坊→**影剧工坊**；产品名 **浪浪椰 APP**（集团介绍里可能印成"浪浪耶"，**以"椰"为准**）。
 5. **卡点会换**：新日报的卡点与图上旧卡点不一致时，**先问"是同一问题的不同说法，还是变成了新问题"**，别默默替换。
 6. 日报没给的字段写 `待定` / `待更新`，并在回复里列出"还差你一句话"的清单（凡哥要看缺什么，不要含糊过去）。
-7. **日常流水线（读完日报固定按这个顺序落，别跳步）**：① 台账主数据 `D:\Hermes\xiaonan-memory\集团\台账数据.json` 追加/改行（字段 `work_date / 人 / 项目 / 节点 / 内容 / 状态 / 承诺 / 实际 / 卡点 / 解决`，另可用 `_例外` 记漏交等特例）→ ② `python D:\Hermes\scripts\gen_taikuan.py` 重出 `D:\Documents\我的文档\技术部管理\任务台账_2026-09.xlsx` → ③ 改 `gen_topology_tree.py` 顶部 `TREE`（新节点 / 状态 / 负责人）→ ④ `python gen_topology_tree.py --layout` 出图（PNG/SVG/PDF）→ ⑤ DASHBOARD 记口径与进展 + git 提交推送。
+7. **日常流水线（读完日报固定按这个顺序落，别跳步）**：① 台账主数据 `D:\Hermes\xiaonan-memory\集团\台账数据.json` 追加/改行（字段 `work_date / 人 / 项目 / 节点 / 内容 / 状态 / 承诺 / 实际 / 卡点 / 解决`，另可用 `_例外` 记漏交等特例）→ ② `python D:\Hermes\scripts\gen_taikuan.py` 重出 `D:\Documents\我的文档\02_团队\考核与绩效\技术部管理\任务台账_2026-09.xlsx` → ③ 改 `gen_topology_tree.py` 顶部 `TREE`（新节点 / 状态 / 负责人）→ ④ `python gen_topology_tree.py --layout` 出图（PNG/SVG/PDF）→ ⑤ DASHBOARD 记口径与进展 + git 提交推送。
 
 ## computer_use 实操（打开 WPS 验收、读飞书、驱动 XMind/draw.io）
 
@@ -310,7 +310,7 @@ python D:\Hermes\scripts\gen_topology_tree.py --layout
 0. **现役＝树形脚本**：`D:\Hermes\scripts\gen_topology_tree.py` → 改顶部 `TREE` 数据 → `python gen_topology_tree.py --layout` → 一条命令走完（骨架＋重叠断言＋内置树布局＋画布重设＋PNG/SVG/PDF）。命令与坑见 `references/drawio-cli-and-format.md`。
 1. **旧脚本（仅备用）**：`D:\Hermes\scripts\gen_topology_pptx.py`（WPS 版；顶部注释含全部规则与版本变更史；`DATA`/`box()`/`arrow()` 结构，改数据重跑 3 秒出图）。
    - 新机器/新环境：用 `templates/topology_slide_skeleton.py` 起手（同结构的最小骨架）
-2. 输出到 `D:\Documents\我的文档\拓扑图\项目拓扑图_YYYYMMDD[_vN].pptx`。
+2. 输出到 `D:\Documents\我的文档\06_图表\拓扑图\项目拓扑图_YYYYMMDD[_vN].pptx`。
 3. **校验**：跑形状越界检查（脚本内会打印"形状数/越界数"；判据＝每个形状 `x≥0 && y≥0 && x+w≤画布宽 && y+h≤画布高`）。
 4. **打开**：用 WPS 演示的 exe 直呼，别用文件关联：
    `cmd /c start "" "D:\Program Files\WPS Office\<ver>\office6\wpp.exe" "<文件.pptx>"`

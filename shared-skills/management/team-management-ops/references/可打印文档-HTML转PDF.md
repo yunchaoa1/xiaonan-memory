@@ -24,8 +24,8 @@ body { font-family: "Microsoft YaHei", "SimSun", sans-serif; font-size: 10.5pt; 
 ```bash
 "/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" \
   --headless=new --disable-gpu --no-pdf-header-footer \
-  --print-to-pdf="D:/Documents/我的文档/招聘/xxx.pdf" \
-  "file:///D:/Documents/我的文档/招聘/xxx.html"
+  --print-to-pdf="D:/Documents/我的文档/02_团队/招聘/xxx.pdf" \
+  "file:///D:/Documents/我的文档/02_团队/招聘/xxx.html"
 ```
 
 - **路径一律用 `C:/…`、`D:/…` 正斜杠原生路径**；HTML 用 `file:///` 前缀。**中文路径实测可用**，不用挪到临时英文目录。

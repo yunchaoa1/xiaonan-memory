@@ -49,7 +49,7 @@ winget install 9MVVSZK43QQW --source msstore \
 
 - 包装名 `draw.io.draw.ioDiagrams`，版本 **31.4.5.0 x64**，装到 `C:\Program Files\WindowsApps\draw.io.draw.ioDiagrams_31.4.5.0_x64__1zh33159kp73c`；
   AppId ＝ `draw.io.draw.ioDiagrams`（用 `Get-AppxPackage *draw* | Select Name,PackageFamilyName,InstallLocation` 复核）。
-- **能打开本地 D 盘文件**（实测：双击/文件关联打开 `D:\Documents\我的文档\拓扑图\*.drawio` → 正常渲染、中文界面）→ 沙箱不挡我们要用的场景。
+- **能打开本地 D 盘文件**（实测：双击/文件关联打开 `D:\Documents\我的文档\06_图表\拓扑图\*.drawio` → 正常渲染、中文界面）→ 沙箱不挡我们要用的场景。
 - 程序化生成的 `.drawio` 能被它正确渲染（本次用一个 3 节点测试文件验证过）。
 - **装软件前先问凡哥**；安装过程可能弹一次权限提示，那个点按钮的动作归他。
 - 安装是 139MB 级下载，放后台跑 + `notify=true`，别阻塞对话。

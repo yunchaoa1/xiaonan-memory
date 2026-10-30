@@ -15,7 +15,7 @@ python D:\Hermes\scripts\gen_topology_tree.py --layout
 3. **按内容重设画布** pageWidth/pageHeight（见 §四）
 4. 导出 PNG（`--scale 2`）/ SVG / PDF
 
-产物（`D:\Documents\我的文档\拓扑图\`）：`项目拓扑图_WBS.drawio / .png / .svg / .pdf`
+产物（`D:\Documents\我的文档\06_图表\拓扑图\`）：`项目拓扑图_WBS.drawio / .png / .svg / .pdf`
 （`_布局后.drawio` 是布局引擎的输出，供导出用；要改内容改脚本，别改它。）
 
 ## 二、CLI 调用：Store 版必须走 PowerShell

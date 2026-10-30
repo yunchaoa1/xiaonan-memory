@@ -31,7 +31,7 @@ metadata:
 | 项 | 值 |
 |---|---|
 | 生成器 | `D:\Hermes\scripts\gen_topology_pptx.py`（**改数据段重跑＝出图**，3 秒） |
-| 输出 | `D:\Documents\我的文档\拓扑图\项目拓扑图_<YYYYMMDD>.pptx` |
+| 输出 | `D:\Documents\我的文档\06_图表\拓扑图\项目拓扑图_<YYYYMMDD>.pptx` |
 | 依赖 | `pip install python-pptx`（本机已装 1.0.2） |
 
 要点：

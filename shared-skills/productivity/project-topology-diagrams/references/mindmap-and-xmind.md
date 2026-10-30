@@ -58,7 +58,7 @@
 ```
 python D:\Hermes\scripts\gen_mindmap_md.py
 # 数据源：D:\Hermes\scripts\project_tree_data.py（唯一数据源，拓扑图与脑图共用）
-# 产物：D:\Documents\我的文档\思维导图\技术部项目思维导图.md
+# 产物：D:\Documents\我的文档\06_图表\思维导图\技术部项目思维导图.md
 ```
 
 → 之后要更新：改 `project_tree_data.py` → 重跑 md → 交付新 `.xmind`（见第 7 节，已不必手工导入）
@@ -84,18 +84,18 @@ python D:\Hermes\scripts\gen_mindmap_md.py
 **① 不用手点菜单 —— 用文件参数启动，XMind 自动走导入**
 ```powershell
 Start-Process 'C:\Users\bobby\AppData\Local\Programs\Xmind\Xmind.exe' `
-  -ArgumentList '"D:\Documents\我的文档\思维导图\技术部项目思维导图.md"'
+  -ArgumentList '"D:\Documents\我的文档\06_图表\思维导图\技术部项目思维导图.md"'
 # 约 20s 后即成图：中心主题「技术部 · 技术项目主管（凡哥）」，状态栏「主题: 74」
 ```
 - 已验证：XMind 里 **74 个主题**，与 `project_tree_data.py` 的节点数一致。
 - 先决条件：XMind 已装且**已登录**（凡哥自己登的；登录/扫码一律他本人做）。
 
 **② 存档：按 Ctrl+S 即可，但存哪儿有惊喜**
-- XMind 自动把文件命名成**中心主题名**：`技术部 · 技术项目主管（凡哥）.xmind`，且落在**应用上次使用的目录**（实测落在 `D:\Documents\我的文档\拓扑图\` 而不是 .md 所在的"思维导图"目录）。
+- XMind 自动把文件命名成**中心主题名**：`技术部 · 技术项目主管（凡哥）.xmind`，且落在**应用上次使用的目录**（实测落在 `D:\Documents\我的文档\06_图表\拓扑图\` 而不是 .md 所在的"思维导图"目录）。
 - 所以存完要**找回来改名归位**：
   ```
   find /c/Users/bobby /d/Documents -iname "*.xmind" -newermt "-15 minutes"   # 找刚存的文件
-  → 移到 D:\Documents\我的文档\思维导图\技术部项目思维导图.xmind
+  → 移到 D:\Documents\我的文档\06_图表\思维导图\技术部项目思维导图.xmind
   ```
 - 给凡哥的提醒：**应用内存里还记着旧路径**，他再按 Ctrl+S 可能又存回旧目录 → 让他用「文件 > 另存为」指到"思维导图"目录。
 
@@ -170,14 +170,14 @@ python D:/Hermes/scripts/gen_mindmap_guozhiqin.py                               
 | 用途 | 数据从哪来 | 例 |
 |---|---|---|
 | **全项目树**（技术部全景） | 脚本从 `project_tree_data.py` 生成：`python D:\Hermes\scripts\gen_mindmap_md.py` | `技术部项目思维导图.md` → 74 主题 |
-| **专题框架图**（单主题，别硬塞进主树） | **手写** `D:\Documents\我的文档\思维导图\<专题>.md`：首行＝中心主题，其后 `- ` 两级缩进 | `影剧工坊_六节点.md` → `影剧工坊_六节点思维导图.xmind`（45 主题） |
+| **专题框架图**（单主题，别硬塞进主树） | **手写** `D:\Documents\我的文档\06_图表\思维导图\<专题>.md`：首行＝中心主题，其后 `- ` 两级缩进 | `影剧工坊_六节点.md` → `影剧工坊_六节点思维导图.xmind`（45 主题） |
 
 **专题图的内容配方**（影剧工坊六节点实例，凡哥要"每节点带上输入/产出/约束/负责人"）：中心＝`<项目> · 六节点框架（<版本> · <日期> 会议定）`；六个主分支＝六个节点，每节点下挂 `输入 / 产出 / 会议约束（如"1 分钟一集分章""逐章串行"）/ 工具 / 负责人 / 状态图标`；再补 5–6 条**贯穿枝**（资产库、双形态分用户、引擎与管线、AI Agent 环节、前端、目标）。归属只写会上认领或已核准数据，其余标「待确认」。
 
-**存档位置（再次确认）**：XMind 存到**上次用过的目录**，两次实测都落在 `D:\Documents\我的文档\拓扑图\`，而 .md 在「思维导图」→ 每次都要找回来改名归位：
+**存档位置（再次确认）**：XMind 存到**上次用过的目录**，两次实测都落在 `D:\Documents\我的文档\06_图表\拓扑图\`，而 .md 在「思维导图」→ 每次都要找回来改名归位：
 ```bash
 find /c/Users/bobby/AppData/Roaming/Xmind /d/Documents -iname "*.xmind" -newermt "-10 minutes"
-# → 移到 D:\Documents\我的文档\思维导图\<专题>思维导图.xmind
+# → 移到 D:\Documents\我的文档\06_图表\思维导图\<专题>思维导图.xmind
 ```
 
 **⚠ 凡哥可能正在同一份图里编辑 —— Ctrl+S 会把他的改动一起存盘**：

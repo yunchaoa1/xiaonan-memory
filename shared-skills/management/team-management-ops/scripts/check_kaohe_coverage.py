@@ -4,7 +4,7 @@
 
 用法：
   python check_kaohe_coverage.py --month 2026-10
-  python check_kaohe_coverage.py --month 2026-10 --doc "D:/Documents/我的文档/技术部管理/2026-10_绩效考核表_v5完整版.md"
+  python check_kaohe_coverage.py --month 2026-10 --doc "D:/Documents/我的文档/02_团队/考核与绩效/技术部管理/2026-10_绩效考核表_v5完整版.md"
   python check_kaohe_coverage.py --month 2026-10 --dump     # 只打印每人的日报清单（拿来当「全月流水」附录）
 
 判据：某人当月「日报条数」== 考核表里出现过的日期条数，才算覆盖完整。

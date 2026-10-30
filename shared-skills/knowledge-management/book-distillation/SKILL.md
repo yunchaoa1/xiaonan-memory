@@ -154,7 +154,7 @@ D:\Hermes\skills\<category>\<skill-name>\
 1. **查重划界**：`search_files` 全库搜关键词，判断是否跟现有技能打架——重叠就**合并**，或**划清触发边界**（防蒸出第二个打架的技能）
 2. **双产物**：
    - 技能 → `D:\Hermes\skills\<category>\<skill-name>\`（给自己用）
-   - 成品文档 `.md` + `.docx` → `D:\Documents\我的文档\蒸馏\`（给凡哥看/存档，python-docx，注意中文字体）
+   - 成品文档 `.md` + `.docx` → `D:\Documents\我的文档\04_规范与工具\蒸馏\`（给凡哥看/存档，python-docx，注意中文字体）
 3. **规范体检**（生成后必跑）：
    ```bash
    python "D:\Hermes\skills\software-development\skill-library-maintenance\scripts\validate_skill.py" \

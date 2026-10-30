@@ -7,7 +7,7 @@
 
 用法（terminal 里一律用正斜杠）：
     python D:/Hermes/skills/productivity/dual-agent-memory-sync/scripts/what_changed_today.py
-    python .../what_changed_today.py "D:/Documents/我的文档/思维导图" "D:/Hermes/xiaonan-memory"
+    python .../what_changed_today.py "D:/Documents/我的文档/06_图表/思维导图" "D:/Hermes/xiaonan-memory"
 不传参数 = 扫下面的 DEFAULT_DIRS。
 """
 import os
@@ -16,7 +16,7 @@ import sys
 import time
 
 DEFAULT_DIRS = [
-    r"D:\Documents\我的文档\思维导图",
+    r"D:\Documents\我的文档\06_图表\思维导图",
     r"D:\Hermes\xiaonan-memory",
 ]
 REPO = r"D:\Hermes\xiaonan-memory"

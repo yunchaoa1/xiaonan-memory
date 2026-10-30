@@ -14,7 +14,7 @@ import json, os, time
 # ── CONFIG ──────────────────────────────────────────────────────────
 WAV      = r"D:\Hermes\cache\audio\meeting_16k.wav"
 MODEL    = r"D:\Hermes\models\faster-whisper-large-v3"   # 没下过见 SKILL.md §③（hf-mirror）
-OUT_DIR  = r"D:\Documents\我的文档\会议记录"
+OUT_DIR  = r"D:\Documents\我的文档\02_团队\会议记录"
 OUT_TXT  = os.path.join(OUT_DIR, "会议_转写.txt")
 OUT_JSON = os.path.join(OUT_DIR, "会议_转写.json")
 

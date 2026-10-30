@@ -10,7 +10,7 @@ from docx import Document
 from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-MD = sys.argv[1] if len(sys.argv) > 1 else r"D:\Documents\我的文档\会议记录\2026-09-30_技术部会议记录.md"
+MD = sys.argv[1] if len(sys.argv) > 1 else r"D:\Documents\我的文档\02_团队\会议记录\2026-09-30_技术部会议记录.md"
 OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.splitext(MD)[0] + ".docx"
 
 doc = Document()

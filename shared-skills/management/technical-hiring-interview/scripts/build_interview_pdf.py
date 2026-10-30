@@ -2,7 +2,7 @@
 """HTML → A4 PDF（Edge 无头）+ 页数校验 + 渲图自查
 
 用法：
-    python build_interview_pdf.py "D:/Documents/我的文档/招聘/xxx.html"
+    python build_interview_pdf.py "D:/Documents/我的文档/02_团队/招聘/xxx.html"
     python build_interview_pdf.py "D:/.../xxx.html" --no-render   # 只出 PDF + 数页
 
 想批量出两份（初面/复试），在下面 BATCH 里列路径，或自己写循环调 to_pdf()。

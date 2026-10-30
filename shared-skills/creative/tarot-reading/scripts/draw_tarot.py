@@ -38,7 +38,7 @@ SPREADS = {
     "five-career": ["现在的底子", "推你的力量", "绊住的阻力", "机遇", "落点"],
 }
 
-DEFAULT_DIR = r"D:\Documents\我的文档\塔罗"
+DEFAULT_DIR = r"D:\Documents\我的文档\05_个人\塔罗"
 
 
 def build_deck():
