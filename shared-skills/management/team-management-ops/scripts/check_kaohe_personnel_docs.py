@@ -62,5 +62,5 @@ def main(folder):
 
 
 if __name__ == "__main__":
-    folder = sys.argv[1] if len(sys.argv) > 1 else r"D:\Documents\我的文档\02_团队\考核与绩效\技术部管理\考核下发_2026-10"
+    folder = sys.argv[1] if len(sys.argv) > 1 else r"D:\Documents\我的文档\02_团队\考核与绩效\月度成绩\2026年10月\考核下发_2026-10"
     sys.exit(main(folder))

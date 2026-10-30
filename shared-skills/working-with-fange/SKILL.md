@@ -653,6 +653,7 @@ metadata:
 | **长补丁参数会被截断** | 把大段新文字整块塞进 `patch` / `skill_manage` 的 `new_string`：只落了一部分，最坏情况**把要被替换的原文标题一起覆盖没了**（skill 正文结构被破坏，回读才能发现） | ① 补丁**只放短锚点**，长内容改用 `write_file` 或分几步小补丁；② 每次改完**回读那一段**（`read_file` / `skill_view`）**别相信"成功"提示** |
 | **`re.subn` / `re.sub` 替换串里的 `\n` 会变成真换行** | 想往文件里写**字面** `\n`（=脚本源码里的转义写法），落盘却成了**真换行** → 生成脚本 `SyntaxError: unterminated string literal` | 替换改用 **`str.replace`**；非用正则时传 **`lambda m: repl`**（lambda 返回值不再做转义处理） |
 | **长脚本多处修改中途被打断** | `write_file` / `patch` 报 `[Command interrupted]` 后**部分改动可能已落盘**，接着改必然 MISS | 中断后**先核验实际内容**（逐条替换自检 / 读回），再续改；改完 `py_compile` 通过再跑 |
+| **长脚本内联进 `execute_code` 会被静默截断** | 把 100+ 行、含大量中文串的脚本整段塞进 `execute_code` 的 `code`：实际下发的代码被截断 → `SyntaxError: unterminated string literal` / `'(' was never closed`（2026-10-30 整理目录、生成考核表各踩一次，白跑两轮） | 长脚本一律 **`write_file` 落盘到 `D:\Hermes\scripts\xxx.py` 再 `python` 跑**；只有十几行以内的短脚本才内联。中文内容里的引号一律用全角「」，避免把 Python 字符串截断 |
 
 ### 图像/视频提示词参考（2026-07-24新增）
 
