@@ -279,7 +279,7 @@ python D:\Hermes\scripts\gen_topology_tree.py --layout
 4. **术语纠偏**（按凡哥口径写，不照抄日报）：智题分→**智提分**；影视工坊→**影剧工坊**；产品名 **浪浪椰 APP**（集团介绍里可能印成"浪浪耶"，**以"椰"为准**）。
 5. **卡点会换**：新日报的卡点与图上旧卡点不一致时，**先问"是同一问题的不同说法，还是变成了新问题"**，别默默替换。
 6. 日报没给的字段写 `待定` / `待更新`，并在回复里列出"还差你一句话"的清单（凡哥要看缺什么，不要含糊过去）。
-7. **日常流水线（读完日报固定按这个顺序落，别跳步）**：① 台账主数据 `D:\Hermes\xiaonan-memory\集团\台账数据.json` 追加/改行（字段 `work_date / 人 / 项目 / 节点 / 内容 / 状态 / 承诺 / 实际 / 卡点 / 解决`，另可用 `_例外` 记漏交等特例）→ ② `python D:\Hermes\scripts\gen_taikuan.py` 重出 `D:\Documents\我的文档\CTO攻略\任务台账_2026-09.xlsx` → ③ 改 `gen_topology_tree.py` 顶部 `TREE`（新节点 / 状态 / 负责人）→ ④ `python gen_topology_tree.py --layout` 出图（PNG/SVG/PDF）→ ⑤ DASHBOARD 记口径与进展 + git 提交推送。
+7. **日常流水线（读完日报固定按这个顺序落，别跳步）**：① 台账主数据 `D:\Hermes\xiaonan-memory\集团\台账数据.json` 追加/改行（字段 `work_date / 人 / 项目 / 节点 / 内容 / 状态 / 承诺 / 实际 / 卡点 / 解决`，另可用 `_例外` 记漏交等特例）→ ② `python D:\Hermes\scripts\gen_taikuan.py` 重出 `D:\Documents\我的文档\技术部管理\任务台账_2026-09.xlsx` → ③ 改 `gen_topology_tree.py` 顶部 `TREE`（新节点 / 状态 / 负责人）→ ④ `python gen_topology_tree.py --layout` 出图（PNG/SVG/PDF）→ ⑤ DASHBOARD 记口径与进展 + git 提交推送。
 
 ## computer_use 实操（打开 WPS 验收、读飞书、驱动 XMind/draw.io）
 
