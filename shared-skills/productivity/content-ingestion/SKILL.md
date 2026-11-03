@@ -39,6 +39,25 @@ metadata:
 | **GitHub 项目** | README + 目录结构 + 依赖 + 最近提交 + **是否官方仓库**（防仿冒） | Camoufox 抓页；`ghproxy` 拿 raw |
 | **图片/截图** | OCR 文字 + 画面语义 | 视觉工具 |
 
+## 本机通用「视频/音频 → 文字」一条命令（2026-11-02 新建并实测）
+
+凡哥手上任何**本地视频或音频文件**（会议录音、短剧成片、教程、客户素材），一条命令出三样：带时间戳 txt ＋ 字幕 srt ＋ 结构化 json。
+
+```bash
+# 单个文件
+python "D:\Hermes\scripts\video_to_text.py" "D:/路径/某视频.mp4" --out "D:/输出目录"
+# 整个目录批量
+python "D:\Hermes\scripts\video_to_text.py" "D:/路径/某个文件夹" --out "D:/输出目录"
+# 提高专名准确率（把项目名、人名、术语塞进去）
+python "D:\Hermes\scripts\video_to_text.py" "D:/xxx.mp4" --prompt "浪浪椰、影剧工坊、智提分、帧格视界、分镜"
+```
+
+- **视频和音频走同一条路**：ffmpeg 先把视频音轨抽成 16k 单声道 wav（`-vn`），再喂 faster-whisper —— 所以「视频转写」不用另找工具。
+- **实测数据（2026-11-02）**：5 分钟视频 = 92 秒（3.3×）；64 分钟会议录音 = 860 秒（4.5×）；GPU RTX 5080 Laptop 16G，模型 `D:/Hermes/models/faster-whisper-large-v3`（2.9G，完整可用，加载 3.6s）。
+- **全是本机跑，不出网、零成本** —— 客户素材、内部会议都能用。
+- ⚠️ 传路径给**原生程序**（ffmpeg/python）必须用 `D:/...` 这种 Windows 路径，`/d/...` 的 MSYS 写法会报 "No such file or directory"（本机路径转换是关的）。
+- ⚠️ 纯音乐或无人声素材会出空结果（VAD 滤掉了），这是正常行为。
+
 ## 视频吸收的标准动作（照抄即可）
 
 ```bash
@@ -53,6 +72,8 @@ python "D:\Hermes\skills\productivity\content-ingestion\scripts\dy_transcribe.py
 #    ⚠️ 坑：① 抖音需 cookie（yt-dlp 读 Chrome cookie 常被锁 → 用 Camoufox 截链绕过）
 #           ② HF 直连超时 → 脚本已内置 HF_HUB_OFFLINE=1 + 自动挑本地完整模型
 #           ③ large-v3 缓存是空壳（1KB 空目录）→ medium 完整（1.5G），脚本自动优先 medium
+#              【2026-11-02 更正】D:/Hermes/models/faster-whisper-large-v3 现在是完整可用的 2.9G 模型
+#              （GPU float16，加载 3.6s，4.5 倍速）。本条只对旧的 HF 缓存目录成立，本地模型目录别再当空壳。
 #           ④ 【2026-10-14 踩】别跑 D:\Hermes\cache\dy_transcribe.py 的旧副本（写死 large-v3，必卡
 #              HF 超时 ~80s 后崩）；只跑上面技能目录里这份。cache 副本是历史遗留，已同步但不要引用
 #           ⑤ 【实测铁证 2026-10-14】凡哥的分享链接形如
