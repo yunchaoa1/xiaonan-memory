@@ -58,6 +58,13 @@ python "D:\Hermes\scripts\video_to_text.py" "D:/xxx.mp4" --prompt "浪浪椰、�
 - ⚠️ 传路径给**原生程序**（ffmpeg/python）必须用 `D:/...` 这种 Windows 路径，`/d/...` 的 MSYS 写法会报 "No such file or directory"（本机路径转换是关的）。
 - ⚠️ 纯音乐或无人声素材会出空结果（VAD 滤掉了），这是正常行为。
 
+**交付给别人用之前必测的 5 条（2026-11-03 两次翻车换来）**：
+1. **显卡有、CUDA 运行库没有**：模型能加载，转写一开就 `cublas64_12.dll not found` → 必须捕获 CUDA 类异常并**自动改 CPU 重跑**，否则用户看到英文堆栈。
+2. **没有模型**：本地目录不存在时会走 HuggingFace 下载，国内常失败 → 必须给中文指引（拷模型 + `--model`）。
+3. **ffmpeg 别依赖 PATH**：先找脚本同目录的 `ffmpeg.exe`／`ffmpeg\bin`，再找 PATH。别写「winget install」当主推（很多机器没有 winget）。
+4. **缓存别写死盘符**：用 `tempfile.gettempdir()`。
+5. **CPU 实测速度**：本机 30 秒视频 32 秒（约 0.9 倍速），别照抄别人给的 0.3 倍。
+
 ## 视频吸收的标准动作（照抄即可）
 
 ```bash

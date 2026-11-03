@@ -149,7 +149,15 @@ python D:\Hermes\scripts\md2docx_meeting.py     # 见 scripts/md2docx_meeting.py
 - `scripts/transcribe_meeting.py` — 转写主脚本（顶部改文件名/AUDIO 路径即复用；含术语表 `initial_prompt`、逐段 flush、进度打印）
 - `scripts/md2docx_meeting.py` — 纪要 Markdown → Word（标题/表格/加粗/引用；微软雅黑，表格套内置样式）
   - ✅ **2026-10-19 起支持命令行传参**：`python md2docx_meeting.py "D:/…/纪要.md" "D:/…/纪要.docx"`（不传才用顶部默认路径）。**别再复制多份脚本、也别再改顶部路径**；生成后照旧自检 `**`／反引号残留（本次 622 段稿 → docx 41K / 52 段 / 3 表 / 残留 0）。
-  - `scripts/transcribe_meeting.py` 仍写死 4 个路径（WAV / MODEL / OUT_TXT / OUT_JSON）：**复制成 `transcribe_meeting_<日期>.py` 改这 4 行 + 术语表**即可（2026-10-19 实证，1 分钟），跑完把那 4 行之外的东西一句不动。
+  - ⭐ **2026-11-02 起优先用通用脚本 `D:\Hermes\scripts\video_to_text.py`，别再逐场复制 `transcribe_meeting_<日期>.py`**：
+    ```bash
+    python D:\Hermes\scripts\video_to_text.py "D:/Hermes/attachments/11月2日.m4a" \
+      --out "D:/Documents/我的文档/02_团队/会议记录" --prompt "<本场术语表>"
+    ```
+    出三样：`带时间戳.txt` ＋ `.srt 字幕` ＋ `.json segments`；**传目录＝批量**；`--model` / `--device` 可指定
+    （模型三级回退：参数 → `VIDEO_TO_TEXT_MODEL` → 默认路径 → 在线下载）。**音频和视频走同一条路**
+    （ffmpeg 抽音轨 → whisper），所以凡哥发来的是**会议录像 mp4** 也直接喂进去，不用先自己转格式。
+    `scripts/transcribe_meeting.py` 退为**历史脚本**（只在需要它那种"逐段 flush + 断点续读"的极端场景才用）。
   - ⚠️ **已修的两个渲染坑（2026-10-12 实测）**：① **引用块（`> `）原来走 `p.add_run()`，绕过了加粗解析** → `**` 原样漏进 Word；② **行内代码反引号没剥** → 正文里带 `` ` ``。修法：引用块改用 `add_runs(p, ln[2:])` 再对 `p.runs` 统一样式；`add_runs()` 开头加 `text = text.replace("`", "")`。
   - **每次转完必须自检渲染**：用 python-docx 读段落，统计残留 `**` 与反引号数量（正常 0 或成对）。凡哥要拿 docx 转发，带星号会显得毛糙。
 - `references/group-roster.md` — **集团人物/角色名册**（称呼 ↔ 身份 ↔ 角色）· 转写校正 + 纪要「关键人物」表的底稿
