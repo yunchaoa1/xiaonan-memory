@@ -28,6 +28,7 @@ description: 凡哥干活时该想起哪个工具：学过的项目索引与到�
 | **写场景提示词 / 要真实街景参考** | **randomstreetview.com**（224 国 1000+ 城，免登录免费）；备选 mapcrunch.com、virtualvacation.us（都能选步行/驾车/骑车） | 找真实街景→提取空间/光影/材质→写进提示词。⚠️ 图是 Google 的，只能看不能当素材；instantstreetview.com **有付费墙别用** |
 | **批量重复操作**（改一堆文件 / 填一堆表 / 点很多次） | **OpenGCUA 思路**（阿里通义）：AI 自己判断"何时截屏点击、何时直接写脚本"→ 能写代码就别点鼠标 | Windows 装不了（只支持 mac/安卓/Linux），但**思路直接用**：我一次写完脚本，不一步步点 |
 | **问"怎么让 AI 变强 / 改了没效果 / 要不要改提示词"** | **Harness² 方法**（google-research/harness2）：不改模型，提**两个改法**（一个治通用毛病、一个治专业毛病）→ **都真跑** → 比"行为有没有变好" → 留好的、写经验库。不需要标准答案 | 装不了（要 Linux+Python3.12+uv+付费 API，token 四倍），**方法照用**。数据：64.2→75.7 |
+| **小南抓网页太慢 / 要批量抓普通站点** | **Obscura**（★3.03 万，Rust，Apache-2.0）**已装**：`D:\Hermes\bin\obscura\obscura.exe`（v0.2.6 stealth 版，无依赖不需要 Chrome/Node） | **2026-11-04 实测**：example.com **0.9 秒**、百度 ✅；**抖音 ❌ 验证码中间页**、知乎 ⚠️只拿到壳、Cloudflare 测试站 ❌ 超时。**结论：替代 Lightpanda（快抓普通站），替代不了 Camoufox（反爬站）**。用法：`obscura.exe fetch <url> --dump text/markdown/html --wait-until networkidle0 --proxy <代理>` |
 
 ## 二、✅ 已经落地的（直接给路径，别重新研究）
 
