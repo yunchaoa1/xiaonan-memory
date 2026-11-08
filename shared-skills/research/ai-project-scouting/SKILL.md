@@ -60,7 +60,23 @@ curl -sL --max-time 40 -H "User-Agent: Mozilla/5.0" \
 
 - **认准 `owner/repo`** —— 同名仿冒仓库很多（LinkSwift 就有 4 个搬运仓库）
 - 用 `api.github.com/search/repositories?q=<name>&sort=stars` 找候选，比网页搜索准
-- **未认证 API 有 60 次/小时限流** → 超了就改用抓 github.com 页面 / raw
+- **限流分两套**：仓库/README 等核心接口未认证 60 次/小时；**搜索接口只有 10 次/分钟**。连发多条查询要 `sleep 3`，否则直接 403
+
+**中文关键词必须 percent-encode**（2026-11 实测）：把「短剧 分镜」原样拼进 URL，GitHub 返回的是 **HTML 400「Bad request」**，不是 JSON —— `json.load` 会炸在 `<html>` 上，很容易误判成「被限流」。
+
+```python
+from urllib.parse import quote
+q = quote("短剧 分镜 in:name,description")
+url = f"https://api.github.com/search/repositories?q={q}&sort=stars&order=desc&per_page=15"
+```
+
+**一次扫一片领域时的取数手法**（省上下文、抗中断）：
+
+1. `curl -s ... -o 结果.json` 落盘，再用 Python 读文件打印 —— **别让原始 JSON 进上下文**，只打 `full_name / stars / pushed_at / description[:100]`。
+2. **`topic:` 搜索优先于中文全文搜索**。实测 `topic:ai-short-drama` 一次给出 62 个对口仓库；中文「短剧 分镜」全文搜索返回的大半是 ComfyUI、MoneyPrinterTurbo 这类不相关大仓库。先试 `topic:<英文名>`，没有再回中文。
+3. 读 README 用 `api.github.com/repos/<owner>/<repo>/readme` + `-H "Accept: application/vnd.github.raw"`，直接拿干净 markdown（不用 base64 解码）。
+4. **6-10 个仓库不要逐个读全文**：按领域词逐行扫描，只打印命中行（如 `爽/打脸/钩子/卡点/分镜/时长`），一眼看出谁真懂行、谁只是套壳。要细看的再整篇读。
+5. **官方仓库自带 skill 是常被漏掉的宝藏**：搜到官方主仓库后一定要看 `skills/` 目录（H3 官仓就自带 `skills/h3-prompt-writing`，一条 `npx skills add` 可装）。第三方包装再多，底稿都在这里。
 
 ---
 
@@ -213,4 +229,5 @@ curl -sL --max-time 40 -H "User-Agent: Mozilla/5.0" \
 
 > 2026-10-15 六条视频（Windows-MCP / LinkSwift / 萌芽知识库 / Vidu S / OpenGCUA / Harness²）的完整证据链、官方原文摘录与最终判词：`references/case-log-2026-10.md`
 > 2026-10-29 五条（OpenGCUA 复看 / Harness² / Agent Lightning / Opus 5.5 代码生成动画 / 人体姿势+服装图库）的判词与官方数据：`references/project-verdicts-2026-10-late.md`
+> 2026-11 两次生态扫描（MiniMax H3 提示词改写器 / 爽剧剧本+分镜）的候选清单、星数分布与判词：`references/github-ecosystem-scans-2026-11.md`
 > 内容吸收的按源型强制清单（口播/画面/评论一维都不能少）见 `content-ingestion` 技能。

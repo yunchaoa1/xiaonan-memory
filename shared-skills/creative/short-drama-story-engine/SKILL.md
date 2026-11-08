@@ -242,7 +242,7 @@ For OPC one-click production, revise scripts, names/pronouns/honorifics, charact
 
 **Concrete cadence (one character at a time):** derive and present gender as a standalone approval draft per character — 鼠 → 牛 → 猴 → …, each gated by a separate "可以/继续". The decisive technique is to write out **both versions concretely** (女版推演 vs 男版推演) and lock only when one version produces a structurally different power consequence, not merely a re-worded accusation. When several consecutive roles derive to the same gender, stop and check *both* directions: it may be a natural per-plot result, **or** it may be the "sharper-version" trap silently flipping every male-dominated role female (user caught this when 鼠/牛/猴 all came out female). If the latter, reset to the stereotype baseline and re-derive rather than accepting the streak. See `references/gender-derivation-approval-draft.md` for the reusable draft skeleton and the 鼠/牛/猴 worked examples.
 
-For the fantasy/zodiac-superhero genre playbook, see `references/xianxia-awakening-ensemble.md` (觉醒翻盘流、动物特征=异类=反差、美强惨、时间权柄体系、未来道具时效性、十二生肖历史考证、逻辑自洽教训). For quantified hook/rhythm rules (黄金3秒、憋屈≤30秒、落差即流量上限、信息差提前给观众、付费卡点、诊断"平/闷"七问), see `references/hook-rhythm-rules.md`.
+For the fantasy/zodiac-superhero genre playbook, see `references/xianxia-awakening-ensemble.md` (觉醒翻盘流、动物特征=异类=反差、美强惨、时间权柄体系、未来道具时效性、十二生肖历史考证、逻辑自洽教训). For quantified hook/rhythm rules (黄金3秒、憋屈≤30秒、落差即流量上限、信息差提前给观众、付费卡点、诊断"平/闷"七问), see `references/hook-rhythm-rules.md`. 外部爽剧框架对照（五种钩子分型、8 类爽感矩阵配比、四层反派、四级卡点体系、红果必爆 7 招秒级时间轴、五份 md 分工 + 跨文件数值一致性校验、男频女频分版口径）见 `references/external-shortdrama-frameworks.md` —— 只当对照表和灵感源，不替代本技能的「情绪债 + 因果还款」主模型。
 
 ### Mythic Reincarnation & Future-Prop Cheat (玄幻神转世 + 未来道具)
 
