@@ -104,6 +104,7 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 | 凡哥说 | 加载 |
 |--------|------|
 | 爽剧 / 剧本 / 短剧故事 | short-drama-story-engine |
+| 写剧本 / 改剧本 / 去AI味 / 剧本看不懂 / 小说转剧本 / 剧本精修 | **write-screenplay**（v4.1 编导一体：四大死刑砍AI腔、观众先看懂、可拍性写法、`scripts/script_lint.py` 机器查、新观众测试拿分） |
 | 网站复刻 | website-cloning + sparkart-clone |
 | 更新ComfyUI | comfyui-update + comfyui |
 | 总控台 / 进度 | project-dashboard + dashboard-tree + dual-agent-memory-sync |
