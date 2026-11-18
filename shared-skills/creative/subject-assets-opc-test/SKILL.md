@@ -1,0 +1,316 @@
+---
+name: subject-assets-opc-test
+description: 生成主体资产图（人物四视图/场景主图+派生角度/道具）时加载。把已批准的 OPC 资产清单编译成一张资产图提示词；出图走豆包 Seedream 5.5（模型无关的编译模板）。
+version: 0.4.0-rc
+author: Hermes Agent
+license: MIT
+metadata:
+  hermes:
+    category: creative
+    tags: [opc, seedream, subject-assets, direct-generation]
+    related_skills: []
+---
+# Subject Assets 编译模板（出图走豆包 Seedream 5.5）
+
+**出图工具（2026-11-18 换轨）**：默认出图走**豆包 Seedream 5.5**（火山方舟 API，纯文本提示词、全正向），最高 2K：**横屏 16:9 = 2816x1584，竖屏 9:16 = 1584x2816**（无 4K）。云电脑上的 Qwen-Image 2.1（ComfyUI 三件套）保留为**备用/批量通道**，工作流未拆。本模板与模型无关：编译规则（四格一致性、锁风全句、EXCLUSIONS）照用，出图参数按当次所用模型填。
+
+## Prompt-Writing Rules（编译规则，模型无关；2026-09-24 立，2026-11-18 换轨 Seedream）
+
+1. **写详细描述**——Seedream 5.5 吃自然语言长描述（约 300-500 词），纯文本全正向，不要极简关键词堆、不写否定句。
+2. **肯定式为主**（官方倾向 positive phrasing）；排除项少而准，不能用来替代正向描述。
+3. **身份靠参考图指认**，不用文字描述五官（文字描述会损害相似度）；多参考图按顺序绑定，并写明各图角色。
+4. **保持项点到为止**——写"保持服装与发型不变"即可，不要展开描述要保留的内容。
+5. **要渲染的文字引号逐字**；不确定的文字不加。
+6. **画幅/分辨率只走参数**，不写进 prompt 正文。
+7. 锁风措辞以正向为主，"东方五官 + 修长比例 + 国漫渲染"三锚点缺一不可（凡哥实测）。
+
+## Style Selection
+
+Use `references/opc-style-and-asset-tiering-v0.1.md`. Qwen-Image 2.1 has no fixed official
+style menu; OPC presents five customer-friendly directions: 3D animated film, Japanese
+anime, Korean full-color webtoon, Chinese ink/gongbi, and realistic cinematic concept
+design. Lock one project style before generating characters or scenes and carry the same
+style descriptor into every asset request.
+
+The style is a platform-level global parameter chosen outside the node through a
+customer-facing dropdown (`style_id`), inherited and never chosen or changed by this node.
+It is adjustable across the project lifetime without rewriting subject facts. Character,
+scene, and prop visible facts are decoupled from style: switching style changes only the
+rendering language, not facial geometry, hairstyle, wardrobe structure, spatial topology,
+materials, or palette logic. When compiling prompts, fill the `[STYLE]` placeholder with the structured style declaration for the locked `style_id` from `opc-style-prompt-vocabulary-v0.1.md` (style name + 2-3 key traits + one explicit exclusion, placed near the front of the prompt) — never a bare label such as "3D animated film style" (drifts toward realistic CGI), and never an over-stuffed keyword stack: Qwen-Image 2.1 reads natural-language description, so write the style as a sentence-level declaration rather than a keyword dump.
+
+## High-Attractiveness Character Baseline
+
+Unless the approved screenplay marks an ugly comic role or another appearance exception,
+use `references/opc-high-attractiveness-character-rules-v0.1.md`. Encode attractiveness
+through stable observable facial geometry, balanced feature proportions, clear eye shape
+and spacing, defined nose/lips/jaw, readable hairline, healthy natural skin, stable body
+proportions, and coherent clothing. The face detail reference has highest identity priority.
+Do not use "beautiful" or "handsome" as the sole specification, and do not turn every
+character into the same face.
+
+## Purpose
+
+Compile one approved upstream asset specification into one direct Qwen-Image 2.1 subject-asset
+sheet for one character, scene, or prop. The node generates the final asset in one pass; it
+does not first produce a separate template and then expand it. It owns only fixed-rule prompt
+compilation and image generation.
+
+## Boundary
+
+This node is a closed black-box production function with one single job: read one approved
+upstream asset package/version, apply its own fixed rules, generate the designated visual asset
+**once**, and deliver it. It does not read chat messages, customer requests, platform-side
+instructions, other project files, or unapproved drafts. It never interviews or proposes
+options. It never generates a second image for the same asset in one run.
+
+A customer-requested local rewrite is a platform-model and version-orchestration concern, not a
+node capability. The platform creates a new controlled approved input version, then this node
+runs the same fixed rule again. Every prompt fact must resolve to a source field or a rule in
+this Skill.
+
+## Required Input
+
+Input is one versioned JSON-like request containing:
+- `node_run_id` and `prompt_schema_version`;
+- approved `source_manifest[]` with path/URI, version, approval status, and SHA-256;
+- `asset_spec` with `asset_id`, `asset_type`, `spec_version`, and `state_version`;
+- sourced `visible_facts`, `required_invariants`, `allowed_changes`, and `explicit_unknowns`;
+- controlled runtime `provider`, `runtime_model_id`, endpoint, and credential reference;
+- requested size, quality, background, and output format;
+- ordered `reference_images[]`, or an explicit empty list.
+A credential reference may identify a secret but must never contain a secret value.
+
+## Input Interpretation
+
+A character input supplies stable visible identity facts and a declared state delta. The character's
+stable visible identity facts (facial geometry, hair, skin, body proportions, wardrobe structure, and
+worn accessories) come from two lawful sources only: (a) the visible fields of the approved upstream
+asset package (identity masters and character snapshots), or (b) a customer-supplied appearance
+specification delivered by the platform as a new controlled input version. The node never interviews,
+prompts the user, or invents these facts. When neither source provides enough stable visible identity
+facts to compile a four-view sheet, return `ASSET_BLOCKED` and do not infer appearance from occupation,
+kinship role, or dramatic personality. A scene input
+supplies spatial core, orientation/topology, visible anchors, and requested views. A prop input
+supplies repeatable geometry, material, structure, state, and its social-use context when that
+context is sourced by the approved upstream package. For wearable or carried props, that context
+may include the user's life stage, era, daily environment, carrying need, and visible history of
+use. These facts guide a common-sense design inference without becoming a literal occupational
+costume. Explicit unknowns remain absent from the compiled prompt. The node does not resolve
+missing information through questions, self-diagnosis, or invented design; it applies only the
+declared input and fixed Skill defaults.
+
+## Style Lock (凡哥 2026-09-04 定稿 v2)
+
+项目 style_id=`3d_animated_film` 时，prompt 必须用**中国 3D CG 动漫锁风措辞**（国漫 3D 动画风：《凡人修仙传》《雄狮少年》质感——3D 建模+东方审美，非皮克斯非写实）：
+- 结构：`Chinese 3D donghua animation style, Chinese 3D CG anime character, oriental facial features: oval face, refined phoenix eyes, slender small nose, slender realistic 7.5-head-tall proportions, elegant smooth skin, fine detailed hair strands, refined fabric folds, cinematic CG render, soft warm lighting, gentle depth of field`
+- 显式排除（凡哥实测去皮克斯）：`not Pixar style, not Disney style, not western cartoon, no rounded chubby body proportions, no big circular western eyes, not photorealistic, not realistic skin pores, not flat 2D cel anime, no ink outlines`
+- **禁用写实渲染词**：subsurface scattering skin / PBR material detail / volumetric lighting 会漂向写实 CG（凡哥实测），不得单独使用；要 3D 质感用 "Chinese 3D donghua cinematic render"。
+- 凡哥历次纠正：裸标签漂 2 次元 → subsurface/PBR 偏写实 → large eyes/rounded 偏皮克斯欧美。**东方五官+修长比例+国漫渲染三锚点缺一不可**。
+- 每张资产图的 prompt 都带这组锁风措辞，与 `references/opc-style-and-asset-tiering-v0.1.md` 的结构化风格声明合并使用。
+
+## Universal Pure-White Background Rule
+
+Every subject-asset image uses a pure-white canvas background (`#FFFFFF`) for every asset type.
+Characters and props are isolated directly against pure white. A location keeps its approved
+interior materials inside the floor-plan or camera-view footprint, while all unused canvas,
+outer margin, panel backing, gutters, and separators are pure white. No gray, beige, colored,
+transparent, textured, gradient, environmental, checkerboard, or decorative background is part
+of the generated asset specification.
+
+## Asset Sheet Contract
+
+All deliverables use **Qwen-Image 2.1 native maximum size** and a pure-white (`#FFFFFF`) canvas,
+panel backing, gutters, and separators. Two supported frames: **横屏 landscape 16:9 = 2816x1584**（Seedream 2K；Qwen 备用通道仍为 2752x1536）,
+**竖屏 portrait 9:16 = 1584x2816**（Seedream 2K；Qwen 备用通道 1536x2752）. Do not upscale and call it native maximum.
+
+**Grid Format Rule (凡哥 2026-09-04 定稿 v2，边框稳定约束)**：任何多面板宫格图（四视图人物/四视图道具/机械拼合的场景图）：
+- **子图间分割线**（prompt 必写）：`uniform ultra-thin hairline dividers between panels, every divider exactly the same 1mm thickness, thin light-gray hairline lines`——每根线同粗细，禁粗细不一。
+- **宫格外无边框**（prompt 必写）：`no outer frame, no outer border around the whole sheet`。
+- **禁止项**（凡哥实测边框粗细不稳定，prompt 必写）：`no thick borders, no black frames, no comic panel outlines, no double lines, no colored dividers, no decorative edges`。
+- 子图本身无描边，画面直达细线。
+
+## Character Sheet
+
+Principal character assets are a four-panel multi-view set, not a single portrait: exactly three
+full-body standing views (front, one side, back) plus one enlarged facial-feature detail view.
+"One side" means one side view only; never split it into left-side and right-side views. The face
+detail is the highest-priority identity reference.
+
+**State-Version Rule (凡哥 2026-09-04 定)**: a changed outfit or an injury state is a new state
+version — generate a complete new four-view character sheet of the same person wearing the full
+new outfit, or with the injury on the body. Never render clothing as a separate wearable prop
+sheet to composite onto the character, and never render an injury (bandage/wound/blood) as a
+standalone patch sheet: reference images are always fully dressed, complete people, because
+combining clothes or wounds onto a base body is unacceptable.
+
+**Accessory Boundary (凡哥 2026-09-04 纠偏)**: removable accessories (hat, scarf, glasses,
+handbag) are PROPS, not outfits — they never trigger a character state-version sheet. The
+character sheet is always the accessory-free baseline; wearing states are combined downstream
+at the storyboard/staging level by referencing the character sheet + the prop sheet together.
+Only an actual clothing change or a body injury justifies a new character state version.
+
+Establish sourced facial geometry, hair, skin, shoulder/upper-body proportions, current wardrobe
+structure, worn accessories, and visible expression. Classify each visible fact as SOURCE_FACT,
+DERIVED_DEFAULT, or UNKNOWN. A DERIVED_DEFAULT is allowed only when the approved identity/state
+strongly entails a minimal, reality-grounded consequence. The standard for every DERIVED_DEFAULT
+is plain common sense — what an ordinary person would regard as reasonable for that identity and
+state, never a counterintuitive or attention-grabbing choice. Examples: a recently discharged
+serviceman gets a short crew cut (板寸) with tapered sides and nape; a middle-aged homemaker gets
+natural fine lines and a few white strands. Write the derived fact precisely (use "crew cut", not
+"short hair") so the model actually enforces the detail instead of blurring it into a generic term.
+External props are a separate responsibility and are absent. Do not infer bags, props, decorative design, or unrelated
+biography from occupation or relationship. Keep age, clothing, hair, body proportions, palette,
+style, and stable identity anchors consistent across the set.
+
+## Scene Sheet（2026-10-08 凡哥定改版：主图先行 + 逐机位派生）
+
+**背景**：一次生成"场景四宫格"会让四格**看着像四个不同场景**（材质/光线/尺度对不上——凡哥实测 ✗）。社区/行业共识（Nano Banana Pro"一图派生多机位"教程、Reddit r/aifilmmaking 场景一致性专帖、国内 AI 长片导演陈小雨"让 AI 每次只专注于一件事"）与项目角色四视图经验一致：**场景多格一次生成不稳定，必须分步**。角色四视图与道具四视图保持"一次多格"不变（已成熟），本条只改场景。
+
+**三步流程（身份一致优先）**：
+1. **主图（Scene Master）= 俯视图**：先单张生成场景**正俯视主图**（从正上方垂直向下看），作为场景身份锚——锁定**完整平面布局、四面墙及门窗位置、固定地标、走道关系**，同时锁定材质、配色与光线氛围。社区共识（B站场景一致性工作流："俯视图+九宫格是室内空间逻辑的定海神针"）与 Reddit r/aifilmmaking"master image 建立空间视觉事实"一致。此图为该场景资产的**唯一身份源**。
+2. **逐机位派生**：以俯视主图为参考图（`<image1>`）做**图生图**，逐个生成平视机位（按剧本需要的区域，如灯室/木梯/门口），**每张只允许改变"机位"这一个变量**，其余全部写"与参考图完全一致"（空间布局/材质/配色/光线/地标）。墙面材质与细节由派生平视机位呈现。保持项点到为止。
+3. **机械拼合**：需要多格交付形态时，把主图与派生图**机械拼合**为宫格（俯视在固定位置，作为空间总览格）。
+
+底层契约不变：面板是同一场景的机位视图（主图 + 细节派生），全部属于同一场景并保持空间身份。
+Scene Master fact: initial scene master view becomes the identity source of the scene asset.
+
+The screenplay selects which empty spatial regions and fixed landmarks must be visible. It does
+not authorize rendering characters, body parts, actions, plot props, shot labels, captions, or
+storyboard annotations. Every panel is an unoccupied location view containing architecture,
+fixed furniture, and permanent landmarks only. People, performance, handled objects, and prop
+contact enter later in the storyboard node. Plot-critical ordinary props remain deferred to
+storyboards.
+
+### Common-Sense Base + Screenplay Addition
+
+Establish a believable common-sense base first, then add the screenplay's fixed structures.
+For a modern home, a living-room base normally includes a sofa seating area, a low coffee
+table, a television on a low console, and a usable open activity area. A kitchen base reads as
+a usable kitchen with its worktop/chopping-board area, hob, sink, and normal counter line. A
+dining area reads as a usable dining area with a table and ordinary chairs. These are everyday
+common-sense impressions, not a checklist. Incidental plants, ordinary furniture, small
+appliances, and household details may appear when they are consistent with the dwelling and do
+not contradict the screenplay; they do not trigger rework for quantity or unnamed source.
+
+On top of that base, add only the screenplay's extracted fixed structures, such as an entrance
+door with a clear wall-side area for a bag, a window sill with a green pothos, a washed-blue
+dining cloth, a hob, or a chopping-board worktop. Do not render the extracted structure list
+as an empty room; the base must remain recognizable and usable.
+
+### Subject-Centered Spatial Anchoring
+
+The scene compiler expresses cross-view consistency through visible subject anchors, not
+camera-relative words alone. For each panel:
+
+1. Select one visible fixed subject from the scene's visible fixed landmarks as the panel anchor
+   (entrance door, sofa, coffee table, TV console, kitchen worktop, hob, dining table).
+2. Describe every other visible fixed object from that anchor's own front, back, left, or right.
+   Object-relative directions do not rotate when the camera moves.
+3. Repeat the same object's unique identity, count, material, orientation, and nearest-neighbor
+   relationships in every panel where it is visible.
+4. A camera change may alter screen-left/screen-right, projection, occlusion, crop, and visible
+   range only. It must not change real object coordinates, adjacency, orientation, or quantity.
+5. Use at least two shared fixed landmarks between neighboring panels whenever the approved scene
+   makes them visible.
+6. Relationships unsupported by the approved scene facts remain unknown and are not invented.
+   Plot props are not promoted into fixed landmarks.
+
+The scene master view is the shared spatial truth. Each derived panel must be reversible: its
+anchor and visible neighbor relationships must map to one unambiguous position in the master view.
+
+## Scene Prompt Writing（2026-10-08 实测调通 · 凡哥验收"比较稳定"）
+
+### 写法五条（社区实证 + 本地实测）
+
+1. **开场句 = 画面是什么**：直接以画面内容开句（如"一间宽敞的石砌灯塔塔楼的一层室内，午后时分"），不用"为XX生成…"的任务式开头。
+2. **物体流**：每个物体一个独立句子——"什么物体 + 在哪 + 什么材质状态"（如"一扇厚重的木门，高约两米，闭合在墙上，门板由竖向木板拼成"）。
+3. **尺度自然句**：把"宽敞 / 直径足有五米 / 塔壁高约四米"写进散文句，防止空间被画成井；楼梯必须写"贴壁、无中柱、踏面保持水平、均匀平顺升高、绕行近一整圈"防折叠。
+4. **排除段 = 名词列表 + "均排除"**：如"墙面上的第二道门、额外的拱形开口、散置的道具、人物、玩偶、文字，均排除"。**不写"不要…"否定句**（官方指南：否定句会催生对应概念；Qwen 默认 cfg=1 无 negative 通道，排除只能靠名词列表式正向写法）。
+5. **风格句收尾**：视角 + 渲染 + 光 + 色调 + 氛围一句收（如"从塔顶斜上方约四十五度向下俯视，像从塔顶边缘探头往下看……电影级CG渲染，柔和暖光……"）。
+
+### 避雷清单（本地实测踩坑）
+
+| 坑 | 现象 | 正确做法 |
+|---|---|---|
+| 否定句"不要第二个门" | 每轮催生新门 | 名词列表式排除 |
+| "门"字高频（>3次） | 墙上到处长门 | "门"只在自有句子里出现一次；其余用"出入口"或省略 |
+| "通向 / 接入 / 内侧 / 通道" | 催生开口、门洞 | 删掉这些词；改"搭接 / 连到 / 靠墙" |
+| "平台上方的开阔空间" | 催生"上层门" | 改"一整片连续的石砌墙面，向上延伸到画面之外" |
+| "等轴测"术语 | 模型不认，出平视 | 改身体语言："从塔顶斜上方45度俯视、像探身往下看" |
+| 不写尺寸 | 空间画成井 | 开场句写"宽敞"+ 散文句给直径/高度 |
+| 楼梯只写"螺旋" | 踏板纸片感/折叠 | 写厚度三指 + 踏面/立板/踏沿可见 + 连续扶手 + 栏柱 + 无中柱贴壁 |
+
+### 多层空间（楼上楼下）避雷（2026-10-08 灯室实测）
+
+| 坑 | 现象 | 正确做法 |
+|---|---|---|
+| 顶层空间描写"上来的楼梯" | 塔顶凭空多出楼梯/出口 | **顶层只留"下去的口"**：写"从梯口向下隐约望见通往塔底的梯段"，楼梯本身一字不写 |
+| 梯口画成正圆 | 地板中央一个大圆洞 | 写"**方形梯口，约一米见方**"（人通行口径，顺带防"猫洞"尺寸） |
+| 梯口位置飘移 | 洞口跑到画面中央、与中央物件重合 | **贴墙 + 画面位置双锚定**："地面紧贴塔壁内侧……画面左侧紧贴塔壁处"，并写明"与中央灯台之间隔着一段开阔石地" |
+| 上下层空间脱节 | 顶层梯口方位与下层楼梯不一致 | **连续性声明**："梯段沿同侧塔壁盘旋而下"——上层的口必须在下层楼梯的同侧正上方 |
+| 平视机位拍地面物件 | 地面上的梯口不可见或乱放 | **拍地面必须用俯视**："比视平线略高的位置向下约三十度俯视"；平视只能拍立面 |
+| 尺度句丢失 | 空间忽大忽小（井感复发） | **尺度句 = 固定段落，每版必带**：开场写"宽阔敞亮 + 直径X米"，并给 2-3 组参照（窗台高、灯台高、梯口尺寸） |
+
+**验证版完整示例**：`references/scene-prompt-validated-2026-10-08.md`（潮汐塔塔底主图，凡哥验收通过）
+Each panel repeats the empty-location contract independently: zero people, zero body parts, zero
+text, zero labels, zero numbers, zero arrows, and zero loose plot props.
+
+## Prop Sheet
+
+A prop asset is a four-panel multi-view set, not a single front view: exactly four panels in one
+Qwen-Image 2.1 native-maximum sheet (landscape 2752x1536 or portrait 1536x2752) — straight-on
+front, one side, back, and one functional view.
+The functional view shows the prop performing its core physical function (for example, a bag with its main
+compartment opened, a lighter with the flame lit), derived from the prop's sourced physical
+function rather than its story meaning. Establish silhouette, proportions, material, color, part
+count, fasteners, controls, and current state. If the screenplay requires visible functional
+states, the functional panel shows the primary function state; additional function states are
+separate sheets with invariant parts and changed parts explicitly recorded. Ordinary keys, cups,
+food, utensils, and generic household objects remain shot-level bindings. For wearable or carried
+props, derive common-sense positioning from sourced user life stage, era, daily environment,
+carrying need, and use history; do not equate occupation with military design or gender-coded color.
+
+## Prompt Compilation
+
+## One-Shot Generation Rule (凡哥 2026-09-04 定)
+
+每个 asset_id 只调**一次**生成，结果生成后**立即交付并登记**。禁止重新生成、筛选、
+择优、修图、或任何形式的"不满意再来一张"——节点没有第二次机会。生成一张 = 交付一张。
+
+**场景例外（2026-10-08 凡哥定）**：场景资产采用"主图 + 逐机位派生 + 机械拼合"流程（见 Scene Sheet 节），
+该流程整体视为**一次生成交付**（最终交付物为拼合后的场景资产图或主图+派生图集），
+不属于"重新生成"，不受本条禁止约束。
+
+1. Read the selected asset's approved visible facts and explicit unknowns.
+2. Select the matching sheet job (character / scene / prop).
+3. Compile the fixed prompt in the order: task, output, camera/projection, visible facts,
+   layout/topology, invariants, allowed change, background/light, exclusions.
+4. Send one generation request with the controlled runtime settings.
+5. Output the generated image.
+
+## Prompt Rules
+
+The prompt contains only sourced visible facts, required invariants, the current state delta,
+and neutral presentation wording. It may describe framing, plain presentation, or a clean
+background for subject presentation. It must not add biography, motivation,
+cinematic action, setting history, symbols, text, decorative architecture, or style facts.
+Unknowns are not negative prompts and are not silently filled by model convention. Preserve
+them as unknown in the fact map; use neutral wording only when it does not assert a value.
+Keep external props, abilities, and scene bindings outside the identity master prompt.
+
+## Runtime Resolution
+
+**出图默认走豆包 Seedream 5.5（方舟 API）；云电脑 Qwen-Image 2.1（ComfyUI 本地工作流）保留为备用通道**。画幅按 Asset Sheet
+Contract 的横屏/竖屏原生最大尺寸走工作流参数，不写进 prompt 正文。Runtime
+telemetry, file validation, acceptance, and asset lifecycle management belong outside the Skill.
+
+## Output
+
+Output the one generated image for the selected asset. Delivery, storage, and versioning of the
+delivered asset happen outside this node.
+
+## Prompt Templates
+
+Use `references/prompt-compilation-templates-v0.1.md` for the character, scene, and prop sheet
+prompt structures.
