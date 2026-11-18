@@ -1,16 +1,12 @@
 渠总=集团副总(分管财务兼出纳)
 §
-反派见nanmingdao-villain-design。
-§
 齐白兰:甜美20岁声线;台词'齐白兰说:{台词}'。
 §
 提示词/H3见h3-video-prompt。
 §
 南凕岛:六界六阶/57角色,DASHBOARD+world/。
 §
-生图=豆包Seedream5.5(方舟,最高2K,16:9=2816×1584,无4K);四视图靠prompt宫格;场景=主图+派生
-§
-十二生肖IP:主悬念=龙神困时间外
+生图只走Seedream5.5(方舟2K,2816×1584);GPT-Image/Qwen已退役(提示词模板留subject-assets/storyboard-keyframe);四视图靠prompt宫格;场景=主图+派生
 §
 OPC下游Skill=黑匣子:只读上游+固定输出;禁自查/重试/改图;验收在节点外。
 §
@@ -58,7 +54,7 @@ cron提醒:App自带调度器(60s),别起gateway(双调度器互抢=丢任务);d
 §
 消息里的链接会被桌面版自动开窗致弹窗→URL须反链接化(ghproxy[.]net)、协议名勿写全。
 §
-环境:重包用独立venv(D:\Hermes\venvs\媒体),禁往Hermes venv装依赖树;无Docker→WSL。
+重包用独立venv(D:\Hermes\venvs\媒体);无Docker→WSL。
 §
 姚静=帧格视界负责人(首批用户);杨董=前董事长已退出,借2×4090/48G。并发:10人内测/30人上线。
 §
@@ -87,3 +83,5 @@ Seedance隔离skills-archive,没明说不装。
 招聘:海口;分镜归帧格;技术岗BOSS;口径=运维+AI应用10-15K。
 §
 剧本:语义完整>句长;动作必有动机;意外=两动机撞非巧合;AI味测=缺主语+零推断
+§
+不自动建skill;凡哥问'有无相关skill'→先检索再答;确无且点头才建,并说清为何不能并进旧的。
