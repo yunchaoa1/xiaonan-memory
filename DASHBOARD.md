@@ -2555,3 +2555,42 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 **现状盘**：形象基础线已成型（侃哥 9 条干货 + 约会/通勤/海边三套方案 + 购物准备包 + 六围实测）。**"展示面"是唯一还空着的一环** —— 方案齐了，但一张照片都没有。
 
 **下一步**：拿到凡哥现状照片做基线 → 才有资格谈拍法/修图/头像/发布。
+
+---
+
+### 10.13 技能库激进瘦身（2026-11-18 · 凡哥令「数量还是很多啊，181个都有用吗」→「激进吧」→「干」）
+
+**起因**：看了马导的 Skill 教学（16 分钟，8 章），他讲两个副作用——**装多了慢且费钱**（AI 开工先扫全部描述）、**功能相近会调错**（"招牌鱼香肉丝 vs B点鱼香肉丝"）。对照自查，我们 181 个文件、117 个启用，**全中**。
+
+**实证数据（按 `.usage.json` 的 `last_used_at` 算）**：
+- 启用 117 个里，30 天内真用过 **51 个（44%）**
+- 31-90 天 **44 个（38%）** ← 最大群体
+- 90 天以上 **6 个**（南溟岛三件套 133/98/98 天、sparkart-clone 117、maps 105、z-image 104）
+- 零使用记录 **16 个**
+
+**执行结果（凡哥选"激进"）**：
+| | 之前 | 之后 |
+|---|---|---|
+| 技能文件 | 180 | **146** |
+| 启用 | 117 | **63** |
+| 归档 | 2 | **36** |
+| 禁用 | 53 | **73** |
+
+**归档 34 个（挪 `D:\Hermes\skills-archive\<分类>\`，不删）**，五类理由：
+1. **重复**（11 个）：personal 系列留 1 砍 4（style-consulting 留）、brand-identity 留 design 砍 system、logo-generator、hiring-interview-evaluation、screenplay-asset-extraction、document-to-action-items、project-idea-to-mindmap、dashboard-tree
+2. **从没用过/不做的**（12 个）：box、product-price-monitor、yuanbao、competitor-news-monitor、email-inbox-triage、songwriting-and-ai-music、merge-reconciler、inspecting-hermes-desktop-dom、youtube-content、luzi-capability-network、grounded-citations、weekly-review-planning
+3. **模型换代遗留**（3 个）：gpt-image-style-prompting、z-image、z-image-prompt
+4. **南溟岛整组**（3 个）：nanming-island、nanming-ip-design、nanmingdao-villain-design（五个月没动，重启时拉回）
+5. **边缘**（5 个）：sparkart-clone、maps、creative-project-structure、github-issue-to-pr、web-console-permission-configuration
+
+**禁用 20 个（文件留着，config.yaml 的 `skills.disabled`，随时能开）**：character-vlog-pipeline、agnes-ai、opc-workflow-reuse、multi-agent-architecture、agent-cost-optimization、lightpanda-fastfetch、js-rendered-page-extraction、blocked-source-alternatives、vision-analysis-reliability、book-distillation、website-cloning、dual-agent-memory-sync、self-reflection、knowledge-base-utilization、hermes-network-proxy、local-tool-provisioning、compute-capacity-procurement、product-tutorial-production、ad-claim-verification、blocked-page-recovery
+
+**恢复办法**：
+- 归档的 → `python D:\Hermes\skills-archive\restore_skills.py --all`（或只写名字）
+- 禁用的 → 从 `config.yaml` 的 `skills.disabled` 删掉那一行
+
+**同批完成（前一步）**：`gpt-image-storyboard` / `gpt-image-subject-assets` 归档；`qwen-image-*` 两个改名为 `storyboard-keyframe-opc-test` / `subject-assets-opc-test` 并改成**模型无关**（出图 Seedream 5.5 / 2816×1584，Qwen 标为云上备用）。**关键认知：`subject-assets` 是"四视图提示词编译模板"，跟模型无关，`image-prompt` 依赖它，不能删。**
+
+**验证**：52 个关键技能（写剧本/出图/视频/咨询/管理/招聘/记忆/工具链）逐个确认全在启用 ✓；`hermes skills list` = 64 enabled / 73 disabled。
+
+**遗留未做**：① 剩余 3 组描述雷同（novel-to-screenplay|screenplay-to-15s-storyboard、docx|powerpoint|xlsx、claude-code|codex|opencode 后三者已禁）② 16 个缺"怎么算做完"③ 44 个缺触发词 ④ 体检脚本目前扫全部文件（含 disabled），应改成只扫 enabled。

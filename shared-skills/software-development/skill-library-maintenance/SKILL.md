@@ -140,6 +140,42 @@ curator:
 5. **改完三查**：`health_check.py` + frontmatter（每个 skill 的 `name:`/`description:` 各 1 条）+ 引用完整性两层检查（见 §4）。
 6. **交付包同步**：包内目录名、说明书节点表、依赖表、打包（zip 名带日期+版本）、旧 zip 清理，一步不落。
 
+### 4.6 模型换代的技能改造：先查依赖，再决定删还是改名（2026-11-18 实战：gpt-image / qwen-image → 豆包 Seedream）
+
+**病根**：每换一次出图/视频模型，就留下一个**以模型命名**的技能（`gpt-image-*` → `qwen-image-*` → `z-image-*`）。体检时它们被报成"两道鱼香肉丝"，看着像重复，**但只要按 `grep` 结果判断，处理方式完全不同**。
+
+**铁律一：动手前必须先查"谁依赖它"。** 判据一句话 —— **同名的相似 ≠ 重复；被别的技能引用 = 依赖，绝不能删。**
+
+```bash
+cd /d/Hermes && grep -rn "<疑似重复的技能名>" skills/ xiaonan-memory/ scripts/ 2>/dev/null | grep -v "skills-archive\|curator_ledger"
+```
+
+- **命中活文档**（别的 SKILL.md / DASHBOARD / `related_skills`）→ **是依赖，必须留**，改成模型无关再改引用。
+- **只命中 `.curator_ledger.jsonl` / `.usage.json`** → 历史日志，不影响功能，可安全归档旧版。
+
+**实证（差点删错）**：`qwen-image-subject-assets-opc-test` 名字带 Qwen，看着是"Qwen 版的资产技能"，实则是一份**与模型无关的"四视图提示词编译模板"**——`image-prompt`（豆包 Seedream 那套，正在用）第 50 行明写「四视图编译**必须走它的模板**」。删了它，Seedream 的四视图就没人编了。
+
+**铁律二：同名一对多半是"旧版 vs 升级版"，不是双胞胎。** 先开 frontmatter 比 `version:`（本次 0.1.0-rc vs 0.2.0-rc），再 `diff` 看谁多了规则 → **留版本高的那个**，旧的直接进归档柜。
+
+**标准动作（一对约 15 分钟）**
+
+1. **归档旧版**：`mkdir -p D:/Hermes/skills-archive/<类>` → `mv 旧技能 skills-archive/<类>/`（保留可回滚，不删）。
+2. **改名去模型前缀**：`mv qwen-image-subject-assets-opc-test subject-assets-opc-test`。⚠️ 目录名带 `-opc-test` 后缀时**先 `find -maxdepth 3 -type d -name "*关键词*"` 拿真实目录名**，别凭印象 `wc`（本次因此空跑一轮）。`mv` 报 `Device or resource busy` 时退回 §4.5 的 `cp -r → sleep 3 → rm -rf`。
+3. **改四类内容**（`str.replace` 精确替换，别用正则改结构化文本）：
+   - frontmatter `name:`（与目录名一致）
+   - `description:`（去掉模型绑定，写清"出图走 XX"）
+   - `tags:` 里的模型标签
+   - **顶部一行"当前工具 + 换轨日期"**
+4. **参数按新模型改**（分辨率/长宽比/步数），**规则段落一个字不动**（锁风全句、四格一致性、EXCLUSIONS 都是模型无关的资产）。
+5. **修引用**：把旧名批量换成新名，逐个打印命中数；`image-prompt` 这类"下游依赖方"必改。
+6. **验证**：`hermes skills list | grep <新名>` 显示 `enabled`；`find skills -name SKILL.md | wc -l` 对账（改名不改数，归档才减数）。
+7. **同步**：`sync_skills.py push` → git commit（commit message 写清"归档旧版 N 个 + 改成模型无关"）。
+
+**改完的长期收益（这才是重点）**：技能变成**模型无关的"编译规则 + 当前工具参数"**，下次换模型**只改参数那一行**，不用再建一个 `xxx-image-*` 新技能、也不会再留下双胞胎。
+
+**⚠️ 别一次推全量。** 先做完 1 对 → 给凡哥看"改了什么/数字怎么变" → 他点头再推下一对。凡哥的规矩是"事一件一件过"。
+完整案例（改动前后对照、4 处改动点、grep 证据、体检数字）见 `references/model-migration-skill-refactor-2026-11.md`。
+
 ### 4. 修复悬空引用
 - ⚠️ **两层都要查（2026-09-24 补）**：① SKILL.md → `references/xxx.md`；② **references 文件之间的相互引用**。第二层最易漏——实战：`opc-style-and-asset-tiering-v0.1.md` 正文引用 `references/opc-style-prompt-vocabulary-v0.1.md`，而该文件只在仓库共享 `references/` 下、没进 skill 目录 → 交付包里就是悬空。查法：
   ```bash
@@ -211,7 +247,7 @@ curator:
 | 脚本 | 用途 |
 |---|---|
 | `health_check.py` | 一键体检（7 项，见下），退出码 1 = 有异常 |
-| `skill_audit.py` | **质量体检（四维量化）**：时效分布 / description 雷同分组 / 缺验证章节清单 / 体积分布 + 空壳&无 frontmatter。`--root <路径>` 可换目录，默认 `D:\Hermes\skills` |
+| `skill_audit.py` | **质量体检（六维量化）**：①时效分布 ②description 雷同分组 ③缺验证章节 ③b**缺触发词** ③c**缺边界/坑** ④体积分布 + 空壳&无 frontmatter。`--root <路径>` 可换目录，默认 `D:\Hermes\skills`。**报数一律以本脚本为准**（VERIFY_RE 口径统一），别在会话里另写一个计数器 —— 2026-11-18 曾自写一版报"缺验证 59 个"，与官方脚本的 22 个对不上，白解释一轮 |
 | `validate_skill.py` | **单技能按宿主规范审计**：`--lens claude\|copilot\|amp\|hermes\|openclaw\|opencode`；本库日常用 `--lens hermes`。来源：开源项目 `book-to-skill`（MIT，脚本头有出处声明）。health_check 第 3.5 节已自动调用它 |
 | `disable_skills.py` / `fix_dangling_refs.py` | 批量停用 / 批量修悬空引用 |
 
