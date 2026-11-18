@@ -26,7 +26,10 @@ description: 技能总调度——凡哥提提示词、分镜、运镜、景别�
 ### 分镜/镜头类
 | 凡哥说 | 加载 |
 |--------|------|
-| 出分镜 / 分镜方案 / 镜头语言 / 运镜 / 景别 / 镜头方案 | **h3-video-prompt**（镜头与切点章节 + `references/ai-short-drama-production-storyboard.md`） |
+| **剧本拆镜头 / 出分镜 / 分镜方案 / 分镜稿 / 故事板** | **sd-storyboard-engine**（2026-11-18 装的成熟外部技能·漫剧老李 V7.5，★2145 MIT，原样未改）：**首选**。剧本→文字分镜 + 故事板图；带机检脚本 `scripts/check_p45.py`；三条硬契约：**台词不许私自删**、**不许越权决定切镜**、**3D 禁特写×平视正面**（对应我们的 3D 国漫风）。references：机位体系/镜头经济性/故事板模板/投喂格式（model-adapters.md 七段式，H3 就靠这个） |
+| 情绪怎么演 / 表演读不到 / 一镜塞几个动作 / 镜头不够近 | **h3-storyboard**（待测）：专讲**怎么想** —— 构图优先于内容、一镜一主节拍（塞多了 H3 静默抹平）、表情生理顺序、验收用数字 |
+| 写 H3 提示词 / 运镜 / 景别 / 镜头方案落地 | **h3-video-prompt**（管**怎么写**：H3 语法与参数 + `references/ai-short-drama-production-storyboard.md`） |
+| 出宫格关键帧图（Seedream 出图） | **storyboard-keyframe-opc-test** |
 | 分镜还原 / 看别人片子怎么剪的 | video-learning + video-analysis（**先跑 PySceneDetect**：纯 CPU·0 显存） |
 
 ### 表演类（人物）
