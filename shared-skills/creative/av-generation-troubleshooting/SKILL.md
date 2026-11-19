@@ -169,6 +169,57 @@ AI 生成视频/音频出现异常时（杂音、低频嗡、爆音、画面重�
 
 **这条最容易误诊**：因为它是"看起来出片成功、只是结尾糊"，很容易被归到编码/后处理/放大环节去查 —— **先看时长与帧数有没有顶满**。
 
+### 症状 C：动作写了，但画面上没做 / 做成了别的动作（2026-11-19 真机实证）
+
+**四类根因，按命中率排序。先数词，再查术语，再看接触方式，最后查 Subject 引用。**
+
+#### C-1 词数超限 → 只剩第一个动作（最常见）
+
+台词以外的正文，**单镜 ≤70 词；75 是警戒线；>100 直接丢指令（先丢机位）**。
+
+同一场戏、同一套写法、同一模型，**只差词数**：
+
+| 词数 | 实测结果 |
+|---|---|
+| 56 | 抓袖口 + 手臂被拉下 + 桌上纸散落，**三个动作全做出来** |
+| 64 | 甩臂挣脱 + 抬头看人，**做出来** |
+| **80** | **只做了"手放在肩上"一个静态姿势**，推力／后退半步／撞椅腿／停顿全丢 |
+
+**判定**：数一数这颗镜头里想让你看见的动作有几个、正文多少词。**80 词不是"丢一点细节"，是"只剩第一个动作"。** 修法＝拆镜头，不是改写得更精炼。
+
+#### C-2 影视行业术语 H3 一个都不执行
+
+这些在分镜圈是标准语言，写进去等于白写：
+
+| 写了 | 实际反应 |
+|---|---|
+| 「画面顿住两帧」/ 顿帧 / 冲击帧 | **完全无效果**；"两帧"可能被当成画面里的物体 |
+| 升格 / slow motion / 慢动作 | **静帧或糊片**（官方禁用） |
+| 「力的三张回执」/ 发力链 / 重心转移 | 无效果（这是给人看的分析语言） |
+| 白闪 / 冲击波环 / 摇臂 / 滑动变焦 | 无效或糊片 |
+
+**只写"看得见的结果"**：手被拉下来、袖口被扯紧、纸从桌上滑落、他往后靠了一下、她抬头。**结果具体到肉眼能核对 → H3 能做；写成行业概念 → 当没看见。**
+
+⚠️ 这条对**外部打戏技能**尤其重要：`sd-combat-engine`（漫剧老李套装，`lixiaoxiao9888-create/manju-laoli-skill`）那套「顿帧／冲击帧三级／白闪／升格」是**给 Seedance 写的**，直接搬到 H3 全部失效。它的**设计层**（IAU 动作单元上限、起爆顿收四拍、双向攻防、抽掉特效能连成武打吗）有价值，**输出层不能抄**。
+
+#### C-3 H3 只演持续接触，不演瞬时发力
+
+| 能演（可靠） | 演不成（会变别的） |
+|---|---|
+| 抓、揪、拉、拽、按住、扶着 | **推** → 变成"手搭在肩上" |
+| 持续接触、僵持、慢慢放下／缓缓抬起 | **打、撞** → 变成静止贴脸 |
+| | 快速出拳 → 静帧或糊掉 |
+
+原因：持续接触有稳定的画面状态可渲染；瞬时发力是一个"瞬间"，H3 抓不住那一帧。**肢体冲突要写成"揪住不放"，不是"一拳打过去"。**
+
+#### C-4 正文没引用 `<Subject N>` → 那张参考图白挂，模型自己编
+
+**实证**：某段只引用两个人物标签、漏了场景 `<Subject 3>`（办公室）→ 前两段是白板＋百叶窗，这一段的办公室变成木门＋玻璃柜＋显示器＋台灯，**同一间房变成两间房**。
+
+写完每段核对：本段定义的每个 Subject 是否都在正文出现。机检口径 H5「定义了却未被引用（白占 9 图额度）」。
+
+> 打斗/动作在 H3 上的完整边界（含 `sd-combat-engine` 可复用设计层、IAU 上限表、四拍、实测三镜对比）见 `references/h3-action-fight-limits-2026-11.md`。
+
 ## 16GB 显存（本机 RTX 5080）二采上限 —— 2026-09-15 四次实测
 
 **规律（可复用）：二采成败由「激活值规模」决定，与模型大小/显存管理策略无关。**
@@ -200,6 +251,22 @@ GUI 驱动不可用（预览面板无响应 / 窗口枚举不可用）时的可�
 - 提交 `submit.py`（`--nofree` 可保留节点缓存）；监控 `monitor.py`
 - **三个必踩的坑**：① bypass 节点直接删会**断链**（本例 `#226 AudioLock` 的 `av_latent` 直喂一采采样器 `latent_image`），必须做同类型直通重连；② 下拉值大小写要与磁盘实际目录名一致（`MiniMax-H3\` vs `minimax-h3\`）；③ **`widgets_values` 数组才是生效值**，`widgets_values_named` 会骗人（worked 例：数组 15 / named 9，实际生效 15）
 
+### 2026-11-19 二次实战：ref2va 全参考图跑通（四个新坑，都踩过）
+
+完整可复现配方（零依赖转换器、子图展开、参数对照、成片自检）见 `references/h3-api-run-ref2va-2026-11.md`。四条要点：
+
+1. **★ `mode` 必须显式写 `ref2va`，绝不能留 `auto`**。取值 `['auto','t2va','fl2va','ref2va']`；`auto` 会判成纯文本生成 → **参考图全部被忽略，任务照样 `status: success` 出片**，但人物长相、道具、场景全跑偏，只有提示词文字生效。**这是最阴的坑：不报错、有片子、肉眼看"生成成功"，只有对帧才发现人物不对。**
+2. **绕过提示词改写节点（凡哥明确要求）**。工作流里有一条 `QwenTE_ImageInfer` 链：`媒体加载器 → 分流器 slot18 → Qwen 改写 → Any Switch → 201.prompt`，配套 5 个 `PrimitiveStringMultiline` 当 T2VA/I2VA/L2VA/FL2VA/Ref2VA 的 system prompt。终稿六段式进去会被 Qwen 当"原始想法"重写一遍全毁。
+   绕法：**把 `201.prompt` 设成常量字符串**（或接分流器 slot 18 的 `string_1`），然后把改写链的 7 个节点从 payload 里删掉。**删干净的好处是 Qwen 15GB 文本编码器根本不加载，省显存也快。**
+3. **动态控件会让 widget 映射整体错位**。`COMFY_DYNAMICCOMBO_V3` 型输入（`BlockSparseAttention.selection`、`MinimaxH3LatentUpscaler3D.mode`、`MiniMaxH3ReferenceSplitter.aspect_ratio`）在 `widgets_values` 数组里占**不止一格**（主值 + 子参数），按 `object_info` 顺序数就会全部前移一格。症状是荒谬的参数：`end_percent 1.3 > max 1.0`、`align = 'scale by multiplier'`、`precision = True`。
+   修法：① 对这类节点**直接按 `object_info` 手写完整 inputs**，别信自动映射；② 动态子参数用**点号写法**（`"mode.scale": 1.5`），报错原文就是 `input_name: mode.scale` / `Required input is missing: scale`。
+4. **参考图必须缩小再喂**。11 秒段、5 张 2848×1600（4.5MB）参考图，一采采样 6 步全部跑完、崩在 VAE 解码（`Fatal Python error: Aborted`，栈在 `vae.py tiled_decode`）。缩到**最长边 1024 / ~100KB** 后一次通过。
+   ⚠️ 与既有 `short_edge_max=0` 那条（见上）是**同一类病、两个入口**：那条是二采侧未缩放，这条是 ref2va 把参考图过 VAE 编码时爆。
+
+**实测工时（本机 5080 16G，11 秒段，5 张参考图）**：一采 960×544 ≈ 4.5 分钟（6 步 × 33 秒）+ 二采 1440×832 ≈ 8 分钟（4 步 × 107 秒）≈ **12 分钟/段**。只验证镜头设计时可以只跑一采。
+
+**替代媒体加载器的更简做法**：不需要 220 媒体加载器 + 221 分流器这一对，直接用 N 个标准 `LoadImage` 连 `201.ref_images.ref_image_0..N`（`ref_images` 是 `COMFY_AUTOGROW_V3`，数量不限）；删掉 `226 AudioLock` 后把 `125.latent_image` 直连 `201.av_latent` 即可。
+
 ## Support Files
 
 - `references/h3-audio-noise-case-2026-09.md` — H3 低频嗡完整案例（issue 编号、便携版部署步骤、依赖坑、**云端定制镜像整体降级失败教训**、托管平台架构与诊断探测）
@@ -209,4 +276,6 @@ GUI 驱动不可用（预览面板无响应 / 窗口枚举不可用）时的可�
 - `references/h3-2k-upscale-vsr-ltx25-2026-09.md` — **高清成片三期**：社区 5090 实测数据（wan2-7 31.8GB/时间档、ai-muninn 2K 悬崖 3.5h）、RTX VSR 部署+quality 补丁、纯超分保真边界、LTX2.5 跨模型放大完整方案（6 模型清单+HF 仓库+hf-mirror 下载+UP 工作流参数）、UP 视频/转写/工作流本地位置；**第五节含 2026-09-09 落地实证**：HF gated 仓库下载实测（hf-mirror 不转发 gated、comfyicu 非 gated 镜像、Read token 流程）、UP 工作流两插件依赖（ComfyUI-LTXVideo+VHS）、IC-guide 多参考图源码接法 + 3 参考 json 交付（未实测标注）
 - `references/h3-refimage-scaling-vram-crash-2026-09.md` — **H3 二采崩（`cuMemFreeAsync` CUDA_ERROR_INVALID_VALUE + `Fatal Python error: Aborted`）根因＝参考图未缩放**：`MiniMaxH3ReferenceSplitter.short_edge_max = 0`（0=不缩放）＋3.7MP 参考图硬喂 → 显存压爆；正解＝按 UP 官方把 `short_edge_max` 设 544/816/1088 或预缩放参考图（工作流作者＝**Astral星芒**）；含**被凡哥否定的自创方案**（`--disable-cuda-malloc`）与工作流作者归因法
 - `references/comfyui-upgrade-crash-2026-09.md` — **0.30→0.35 内核升级崩溃排查全链**：崩溃取证命令（awk 取栈顶）、exit 134/Fatal Abort 特征判别、SolAttn/TE-Speed 第三方加速插件 vs 内核重构根因链、官方 --use-sage-attention 加速、LTX-2.5 需 ≥0.32.0 版本对应表、VAE size mismatch 非文件错判别、torch cu130 升级坑（-U 必须/三件套同源/版本号体系）、云 git tag 升级命令
+- `references/h3-api-run-ref2va-2026-11.md` — **★ H3 Ref2VA 无头跑片完整配方（2026-11-19 实测跑通）**：UI→API 转换器写法、**子图(subgraph)展开**、**绕开 Qwen 提示词改写链**、`mode` 必须显式 `ref2va`、动态控件(`COMFY_DYNAMICCOMBO_V3`)widget 错位对照表、`mode.scale` 点号写法、**参考图必须缩到 1024/100KB 否则 VAE 解码 `Fatal Aborted`**、用 `LoadImage` 替代媒体加载器、删 AudioLock 后 latent 直连、实测工时（一采4.5分+二采8分）、成片抽帧自检四问；**第九节附提示词侧硬限制**（单镜≤70词、镜长→词数换算、风格句不能省、道具不能六宫格、场景要平视、台词必须全量）
+- `references/h3-action-fight-limits-2026-11.md` — **★ H3 打斗/动作边界实测**：三镜对照（80 词废 / 56·64 词成）、H3 演不了的五类东西（瞬时发力、时间指令、升格、快速位移、多人缠斗）、可复用的 `sd-combat-engine` 设计层（IAU 上限表、四拍、全身景别下限）、收敛后的 H3 打斗 prompt 模板、缺资产图与漏写场景 Subject 的实证
 - `scripts/audio_spectrum_check.py` — 音频分段频谱诊断脚本

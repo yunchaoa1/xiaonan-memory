@@ -44,6 +44,10 @@ version: 2.0.0
 | 云电脑镜像分享后环境不见、数据盘不含、云端协作姿势、下载进度看不见 | `references/03-云端与镜像.md` |
 | H3 Turbo / 融合主模型 / 量化件 / 16G 低显存档 / UP Swan MV 工作流缺件表 / 工作流 JSON 连线体检 / UI 改布局 | `references/04-H3模型与工作流.md` |
 | **报缺件**、四类假缺件、装完怎么验、`/prompt` 提交成功但值非法、无头提交跑工作流、二采崩、进度条不动 | `references/05-排障体检与无头运行.md` |
+| **参考图不生效**（画出来不是那个人/道具变了/写实照片质感）、要绕开工作流的 Qwen 提示词改写链、二采被静默跳过 | `references/h3-ref2va-production-discipline.md` |
+| **打戏/武打/肢体冲突**、一镜塞太多动作被静默抹平、要数「一镜几个动作」 | `references/h3-action-density-and-fight-scenes.md` |
+| **要一场完整打斗 / 30–60 秒成片**、单段 15 秒上限、四段怎么拼、段缝接不上 | `references/h3-long-form-fight-multisegment.md` |
+| **提示词该写多长**（70 词还是 500 词）、「官方 ref-en.txt 是官方还是海螺平台」、官方口径与 forest 冲突 | `references/h3-prompt-length-and-official-guide.md` |
 | 附带的脚本、完整实录时间线 | `references/06-其他实录与脚本.md` |
 
 ---
@@ -67,6 +71,12 @@ version: 2.0.0
 - **界面没进度条 ≠ 卡死** —— 第三方节点不上报进度；`tail -f comfyui.log` 看阶段行、`nvidia-smi` 看 GPU-Util。
 - **"第二次跑不采样" = seed 没换**（缓存命中，不是 bug）。
 - **同名工作流 ≠ 同一份内容**。
+- **`mode=auto` 会判成纯文本生成，参考图一张都不生效、还不报错** → 用参考图就写死 `ref2va`（2026-11-19 实测）。
+- **参考图原图（2848×1600 / 4.5MB）直接喂会崩在 VAE 解码**（`Fatal Python error: Aborted`，无 Python ERROR 行）→ 先缩到长边 1024。
+- **正文没引用 `<Subject N>`，那张参考图就白挂** → H3 自己编场景。本次实测：段 03 删了书架资产、正文只提了两个人物，**画出来变成了另一间房**（木门/玻璃柜/显示器），跟前后段完全对不上。**这一镜用到哪个空间/道具，正文就必须出现它的 `<Subject N>`**；机检 H5 只报 WARN 不拦投片，跑之前自己清干净。
+- **「词数超了就丢动作」是误判** —— 80 词那颗只剩第一个动作，是因为四个动作各写一句、**句句写糊**；同一个 5.17 秒镜头改成 516 词写透物理链，动作全都出来了（2026-11-19 A/B 真跑）→ **管动作条数，别管字数**，见 `references/h3-prompt-length-and-official-guide.md` §六。
+- **「顿住两帧 / 冲击帧」这类影视术语 H3 不认**，它当成画面元素 → 改成写可见物理结果（衣服扯紧、重心偏移、道具撞散）。
+- **`node_errors` 非空但任务 success = 有支路被静默跳过**（本例二采不跑、只出一采 960×544）→ 去 `outputs` 数文件个数，别只看 status。
 - **任务中断后模型不卸载**（`0 models unloaded`）→ 下个任务 OOM。批量时每任务前 `POST /free`。
 - **UP = Astral星芒，不是"啦啦啦的小黄瓜"**（后者是 LTX2.5 放大方案，已被凡哥否）。辨识特征：带本地提示词优化（QwenTE / comfyUI-llama-TE）。
 - **云端别把轮次浪费在"想办法自己连"上** —— 详见 `references/03`。

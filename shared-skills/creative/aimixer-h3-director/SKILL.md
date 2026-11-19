@@ -130,6 +130,31 @@ metadata:
 - **⚠️ 交接纪律：测试 ≠ 交接（2026-09-20 凡哥纠正：『测试是测试，和交接有什么关系？』）**。凡哥在云上自己测通，只代表"**可以交**"，**不要**：① 回头问他要成品 ffprobe 数据（分辨率/时长）去填交接文档；② 把测试结论写进交接包、或据此改「待确认清单」；③ 在汇报里把"测试通过"当成交接进度的一部分。**交接 = 接口文档 + 随附样例，两块交齐即完成**，测试与它的唯一关系就是"测过了所以能交"。「待确认清单」只留**小何云端才能验**的项，凡哥已验过的不要去动它。
 - **交接包构成**（凡哥定稿形态）：**文档包** = README（总览+规格+5分钟上手）/ 接口规格.md / 素材与提示词.md / 运维与故障.md / 待确认清单.md / `examples/opc_client.py`——**不含工作流 JSON**（小何有云端操作权限，自行界面「导出(API)」）；**样例包** = `样例-输入素材/`（参考图 + 一条提示词 + 样例说明）——**小何手上没有我们的资产图，样例必须随包给**，否则他没法建集成测试。两份可并成一个 zip 一次发。
 
+## 本地 V4 直投跑片（2026-11-19 本地实测跑通，主版 18188）
+
+> 本节是**本地 5080 laptop 16G 上亲手跑通 V4 全流程**的实证，与上面「云端 OPC 交接」互补：那边交接口，这边是**自己跑片时必踩的四个坑**。完整可复用配方（含删节点清单、参数值、实测耗时、拼接命令）见 `references/v4-local-run-recipe-2026-11.md`。
+
+**四个坑，每一个都实证废过片或崩过服务：**
+
+1. **`201.mode` 必须显式写 `ref2va`，绝不能留 `auto`**。选项 `['auto','t2va','fl2va','ref2va']`；`auto` 在没接首帧图时被判成 **t2va（纯文本生成）**，**五张参考图全部被忽略**——出片人物长相、道具、场景全是模型自己编的，提示词写得再准也没用。第一颗片子（258s）就是这么废掉的。判定特征：成片风格变写实照片感、道具全不对、该出现的人不出现。
+2. **参考图必须先缩到 1024 宽再用**。原图 2848×1600 / 约 4.5MB × 5 张 → ref2va 走 VAE 编码参考图时 **`Fatal Python error: Aborted`**（C++ 层 OOM，崩在 `vae.py tiled_decode`），整个 ComfyUI 进程死掉、HTTP 全超时。缩到 1024 宽 / ~100KB 立刻跑通。**注意区分**：`mode=auto`（参考图没生效）时大图没事；一旦 `ref2va` 真的把图送进 VAE 就必崩——所以"缩图"和"设 ref2va"必须同时做。
+3. **绕过 Qwen 提示词改写链路**（这是 V4 的默认行为）：`1301 Any Switch` 的 `any_01` 接 `1379 QwenTE_ImageInfer`（用本地 Qwen 32B 把用户输入**重写成它自己的风格**），`any_03` 才是原始文本。六段式终稿送进去会被洗掉。**最干净的做法是不让它进执行图**：把 `201.prompt` 设成常量字符串（或直连文本源），并从 payload 删掉 `220/221/1301/1379/1380/1382/1383/1384/1385/1386/1387`。附带好处：Qwen 那个 ~15GB 文本编码器根本不加载，省显存。
+4. **图片加载器可以直接换成 `LoadImage`**：`220 MediaLoaderFantastic` 的 `media_state` 是自带文件管理机制（会把选中文件改名成 `minimax_h3/png` 这种固定名），手工造 media_state 很别扭。`201.ref_images` 是 `COMFY_AUTOGROW_V3`（可挂任意张，命名 `ref_images.ref_image_0..N`），**直接用 N 个 `LoadImage` 连进去**最省事，连 220/221 都不需要。
+
+**手写 UI→API 转换器的失败模式（印证上文「禁手写转换器」铁律）**：UI 格式的 `widgets_values` 是**纯数组、不带名字**，必须靠 `/object_info/<NodeName>` 的 input 顺序反推。而**动态 combo 会多吃一个值**，导致后面全部前移一位——本次连踩三处：
+- `MiniMaxH3ReferenceSplitter.aspect_ratio`（`COMFY_DYNAMICCOMBO_V3`）吃掉 `['16:9 (Widescreen)','960×544','1920×1088']`，真 `duration` 是数组第 4 个 `15`
+- `BlockSparseAttention.selection` 吃掉 `['sol-attn', 1.3]`，导致 `start_percent/end_percent` 收到离谱值（`end_percent=1.3` 触发 `> max 1.0` 报错）
+- `MinimaxH3LatentUpscaler3D.mode` 吃掉 `['scale by multiplier', 1.5]`，**API 提交时这个 1.5 必须写成 `"mode.scale": 1.5`**（报错会说 `Required input is missing ... extra_info: mode.scale`）
+→ 结论：能走界面「导出(API)」就走界面；非写不可时要对每个节点单独 dump `/object_info` 核对 widget 数量。
+
+**子图 `1297`（"模型加载"，13 内部节点）铺平映射**：输出 `MODEL=`节点 `1369` BlockSparseAttention、`MODEL_1=`节点 `1371`、`CLIP=`节点 `128` CLIPLoader、`VAE=`节点 `119` VAELoader、`VAE_1=`节点 `120` VAELoader。子图内部指向 `origin_id=-10` 的连线（引用子图输入口）在铺平时**直接丢弃**，用节点自身 widgets 值即可。
+
+**模型目录名大小写不一致（Windows 不区分，ComfyUI 校验区分）**：本机 `models/vae/minimax-h3/`（小写）而 `models/diffusion_models/MiniMax-H3/`、`models/text_encoders/MiniMax-H3/`（大写）。填错大小写报 `'X\\file.safetensors' not in ['Y\\file.safetensors', ...]`——**照报错里列的字符串抄，别照目录 ls 抄**。
+
+**实测耗时（960×544 一采 + 1440×832 二采，RTX 5080 Laptop 16G）**：5s 段 ≈ 5 分钟；11s 段 ≈ 12 分钟（一采 4.5 分 + 二采 8 分，二采每步约 107s）。二采 `1317.scale=1.5` → 960×544 出 1440×832。
+
+**成片处理**：ffmpeg 在 `D:\tools\ffmpeg\ffmpeg`（**不在 PATH**，直接 `ffmpeg` 会 command not found）。多段拼接用 concat demuxer（同参数可 `-c copy` 不重编码）：写 `list.txt` 每行 `file 'xxx.mp4'` → `ffmpeg -f concat -safe 0 -i list.txt -c copy out.mp4`。抽帧用 cv2 时**路径必须写 `D:/...`，不能用 `/d/...`**——cv2 在 Windows 上对 MSYS 路径静默失败（`imwrite` 返回 False 但不报错，文件根本不落地）。
+
 ## 资源纪律（凡哥血泪，2026-09-02）
 
 - **段间清理 `clear_vram_between_segments` 切记不要打开**（凡哥铁令）。它只清显存+卸载模型（`gc.collect` + `unload_all_models` + `soft_empty_cache`），对 RAM 爆帮助小、段间重载模型更慢。

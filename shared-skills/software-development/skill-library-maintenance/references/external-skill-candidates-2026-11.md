@@ -205,3 +205,76 @@ grep -c "【画幅风格】\|【时间轴分镜】"               <技能>/refer
 按技能规则产出提示词 → 过机检（筛掉 80% 低级错误，免费秒出）→ 真跑 H3 → 看片子
                                                      ↑ 这一步机检替代不了
 ```
+
+---
+
+## 七、H3 提示词 / 打戏专用仓库（2026-11-19 新增）
+
+凡哥问「去开源社区找 H3 的打斗 skill」时，按这个顺序查 —— **先官方，再专用**。
+
+### ① 官方仓库 `MiniMax-AI/MiniMax-H3`（最高权威，先看这个）
+
+官方自己就发了一份 `skills/h3-prompt-writing/`：
+
+```
+skills/h3-prompt-writing/references/
+├── base-en.txt    ← 文本/关键帧模式（T2VA / I2VA / FL2VA / L2VA）
+└── ref-en.txt     ← 全参考模式（Ref2VA，23553 字节，sha256 1e574f356716ad55…）
+```
+
+**同一份也在 HuggingFace `MiniMaxAI/MiniMax-H3`，两份哈希一致。**
+凡涉及「官方怎么说」，**只认这两处**；第三方仓库 `references/official/` 下的同名文件可能被改过
+（实测 `AI-KSK` 那份 23894 字节，比官方多 341 字节，哈希对不上）。
+
+⚠️ **它的定位是「改写器输出规范」不是「人手写说明」**：标题就叫
+《Full-Reference Mode **Rewrite** Output Format Guide》，服务的是云端托管的
+`H3-Context-IR` 改写器，**开源权重里不含它**。
+所以里面的「detailed_description 350–500 词」是改写器产物的典型长度，
+不是硬规则 —— 详细分析见 `comfyui-env-ops/references/h3-prompt-length-and-official-guide.md`。
+
+### ② `AI-KSK/aiksk-minimax-h3-local-prompt`（H3 全域提示词工程 · ★46 · Apache-2.0）
+
+43 个文件，v1.8.1，**目前见过最贴 H3 本地生产的第三方套装**：
+
+```
+SKILL.md 20K
+references/official/         base-en.txt · ref-en.txt   ← 官方副本（⚠️ 被改过，别当原件引用）
+references/playbooks/        fight-choreography.md 13K   打斗编排（站位→起手→轨迹→接触→重心→恢复）
+                             fight-prompt-mapping.md     九组 A0–A8 动作风格映射
+                             fight-lora-presets.json     LoRA 预设
+                             camera-action-recipes.md · failure-repair-matrix.md · ref2va-reference-recipes.md
+templates/                   ref2va_master.txt · fight_ref2va_5s_master.txt · fight_t2va_5s_master.txt
+                             i2va/fl2va/l2va/director_r2v master
+examples/                    fight_ref2va_5s_two_person.txt   ← 双人打斗完整 450 词范例（最好用的一份）
+integrations/                AIKSK_H3_JOKER141_九预设_T2VA_R2VA_Veda_单阶段.json   ← 现成 ComfyUI 工作流
+scripts/                     sync_fight_workflow.py
+```
+
+**打斗编排的四段式（5.17s / 124 帧 = 17×7+5）**：
+`0–1s 站位起手 → 1–2.2s A 攻 B 挡 → 2.2–3.65s B 反击 A 闪避 → 3.65–5.17s 恢复定格`
+原则：「只编排一轮明确交换，宁可 3–4 个真实动作，也不要 12 个模糊动作」；
+「每一拍只有 1 次可辨识的主要攻击 + 1 次防御/反应」。
+**跟我们摸出来的 IAU 上限（3s ≤2）互相对得上。**
+
+### ③ `irenerachel/fight-prompt-director`（AI 动作导演 · ★84 · MIT · 6 个文件）
+
+`SKILL.md 8.9K + references/{fight-design, camera-guide, diagnostics}.md`。
+结构简洁、主文件小（不会被剪枝），README 明写支持 `Seedance, MiniMax-H3`。
+七类动作结构（单人突围/双人攻防/远程能量/一人对多/人兽/单人演武/风格化材质），
+输出三套提示词（高强度/慢节奏/中间型）。**未实测，装之前先按 §五 查格式家族。**
+
+### ④ `sd-combat-engine`（在 `lixiaoxiao9888-create/manju-laoli-skill` 里，16 文件 ≈370KB）
+
+**Seedance 向**，不是 H3 向。价值在**动作设计层**（IAU 上限、速度四拍、冲击帧三级、全身景别下限），
+输出层是七段式、不能直接投 H3。
+**打法细节和真跑结论见 `comfyui-env-ops/references/h3-action-density-and-fight-scenes.md`。**
+
+### 判断顺序（固定）
+
+```
+要「官方口径」        → ① MiniMax-AI 官方仓库，核 sha256
+要「H3 本地怎么组装」  → ② AI-KSK（模板 + 工作流 + 范例最全）
+要「动作怎么编」      → ③ fight-prompt-director（简洁）/ ④ sd-combat-engine（设计最细但 Seedance 向）
+```
+**别一上来搜关键词就装** —— 今天这两个都是通过 `web_search("minimax h3 combat fight prompt skill")` 找到的，
+先用 §一 的合集索引查一遍，再落到具体仓库。
