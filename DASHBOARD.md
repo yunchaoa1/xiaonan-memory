@@ -2527,6 +2527,8 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 
 ---
 
+**11-20 追加（CPU 与显卡兼容）**：AMD CPU 与 NVIDIA 显卡**无冲突**——超微 AS-4125GS／4126GS、技嘉 G363-ZR0、联想 SR675 V3 均为双路 EPYC 9004／9005 的 8 卡整机（支持 H100／H200、L40S）。真风险在**主板 PCIe BAR 空间**：公开装机记录 4×RTX PRO 6000 装 1 张正常、2 张卡死；另例 2×PRO 6000 报 PCI/MMIO/BAR 资源耗尽，须 BIOS 开 Above 4G Decoding／Resizable BAR。已写入计划书 1.2 配置要求、六章验收（8 卡全部识别）、七章风险、附录 C 依据。
+
 ### 10.10 周一材料工具（2026-10-18 建 · 配合「每周一例会 · 周为工作周期」新制）
 
 - **一条命令出周汇总底稿**：`python D:\Hermes\scripts\gen_weekly_summary.py [起日 止日]`（不传参＝上一周周一～周日）
@@ -2709,3 +2711,4 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 - `出图` → 前三个 `image-prompt` / `storyboard-keyframe-opc-test` / `subject-assets-opc-test` ✓
 
 **特点**：**归档和禁用的也一起列出来并标注状态** —— 凡哥一问，我能直接说"现在用这个，另外 X 个历史重复版已归档"，从根上不给"再建一个"留借口。**有弱相关噪声**（正文匹配），但主技能排序稳定在最前。
+
