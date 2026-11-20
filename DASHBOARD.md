@@ -2527,7 +2527,7 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 
 ---
 
-**11-20 追加（CPU 与显卡兼容）**：AMD CPU 与 NVIDIA 显卡**无冲突**——超微 AS-4125GS／4126GS、技嘉 G363-ZR0、联想 SR675 V3 均为双路 EPYC 9004／9005 的 8 卡整机（支持 H100／H200、L40S）。真风险在**主板 PCIe BAR 空间**：公开装机记录 4×RTX PRO 6000 装 1 张正常、2 张卡死；另例 2×PRO 6000 报 PCI/MMIO/BAR 资源耗尽，须 BIOS 开 Above 4G Decoding／Resizable BAR。已写入计划书 1.2 配置要求、六章验收（8 卡全部识别）、七章风险、附录 C 依据。
+**11-20 追加（CPU 与显卡兼容）**：AMD CPU 与 NVIDIA 显卡**无冲突**——超微 AS-4125GS／4126GS、技嘉 G363-ZR0、联想 SR675 V3 均为双路 EPYC 9004／9005 的 8 卡整机（支持 H100／H200、L40S）。真风险在**主板 PCIe BAR 空间**：公开装机记录 4×RTX PRO 6000 装 1 张正常、2 张卡死；另例 2×PRO 6000 报 PCI/MMIO/BAR 资源耗尽，须 BIOS 开 Above 4G Decoding／Resizable BAR。**结论：无风险，按凡哥指示不改动文件——相关改动已全部回退，PDF 恢复原状。**
 
 ### 10.10 周一材料工具（2026-10-18 建 · 配合「每周一例会 · 周为工作周期」新制）
 
