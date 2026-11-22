@@ -2740,3 +2740,17 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 - 体检：70 个启用技能，悬空引用 0、疑似重复 0 ✅
 
 **待凡哥定**：`sd-storyboard-engine`、`screenplay-to-15s-storyboard-opc-test`、`short-drama-storyboard` 属 OPC 套装与影剧工坊六节点，不是 H3 重复项；若只做 H3 出片可一并归档。
+
+### 10.166 forest-laoli-h3 原样性核验（11-22）
+
+**凡哥问**：下载测试成功的那个 skill 是不是最初的样子。
+
+**核验方法**：GitHub API 取上游 `lixiaoxiao9888-create/forest-laoli-h3` 的 blob SHA，与本地逐文件算 git blob sha1 对比（逐字节，不看大小）。
+
+**结果**：
+- 上游该目录 55 个文件，本地 23 个
+- **本地 22 个文件与上游完全一致（含 SKILL.md、18 本 references、scripts/h3_lint.py）**
+- 本地多出 1 个 `case01_test.md`（3,231 字节，mtime 11-18 17:09，装完后 2 分钟）→ 是我们测试时放的测试稿，不是技能内容
+- 本地缺 32 个上游文件（`scripts/tests/` 29 个官方测试用例 + CHANGELOG 等）→ 当初只装了核心，机检自带的用例没装
+
+**结论**：技能本体**零改动**，仍是最初版本（version 2.1.1）。今天改的 skill-router / av-generation-troubleshooting / h3-segment-filmmaking 都是自建技能，未触碰 forest。
