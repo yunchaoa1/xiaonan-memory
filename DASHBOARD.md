@@ -2725,3 +2725,18 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 - 采购方案四个减为三个：经济型（2 台 4090）／扩容型（3 台 4090）／性能型（2 台 PRO 6000）
 - PRO 5000 仅在对比表与 3.1 保留一行结论：算力六款最低，除官方售后外与 4090 48G 改装无实质差别，**不建议采购**
 
+### 10.165 分镜技能去重（11-22）
+
+**凡哥令**：分镜技能只留一个。
+
+**原状**：做「剧本→分镜」的启用技能 5 个 —— `forest-laoli-h3`（唯一入口）、`h3-storyboard`（与前者同为 H3 分镜，47,861 字，重复）、`sd-storyboard-engine`（套装内部/七段式）、`short-drama-storyboard`（通用短剧分镜+首帧）、`screenplay-to-15s-storyboard-opc-test`（OPC 节点）。
+
+**打架证据**：`skill-router` 顶部写「唯一入口 forest-laoli-h3」，检查清单第 144 行却仍写「三步链必走：sd-storyboard-engine → h3-storyboard → h3-video-prompt」——两处自相矛盾；`av-generation-troubleshooting` 另有 4 处把 h3-storyboard 当可用技能引用。
+
+**已处置**：
+- 归档 `h3-storyboard` → `D:\Hermes\skills-archive\creative\h3-storyboard`（可回滚，`restore_skills.py h3-storyboard`）
+- `skill-router` 两处改为 forest 一条链，并注明 h3-storyboard 已归档
+- `av-generation-troubleshooting` 4 处引用改指 forest / 标注已归档
+- 体检：70 个启用技能，悬空引用 0、疑似重复 0 ✅
+
+**待凡哥定**：`sd-storyboard-engine`、`screenplay-to-15s-storyboard-opc-test`、`short-drama-storyboard` 属 OPC 套装与影剧工坊六节点，不是 H3 重复项；若只做 H3 出片可一并归档。
