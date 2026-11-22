@@ -2756,5 +2756,5 @@ Hermes：OpenAI Codex OAuth · gpt-5.6-sol 主模型；视觉设为 auto 跟随�
 **结论**：技能本体**零改动**，仍是最初版本（version 2.1.1）。今天改的 skill-router / av-generation-troubleshooting / h3-segment-filmmaking 都是自建技能，未触碰 forest。
 
 **11-22 补齐并自测（凡哥批准）**：下载上游 `scripts/tests/` 全部 32 个文件（29 个用例 + run_tests.py + check_docs.py + fixture）→ 跑 `python scripts/tests/run_tests.py`，**29/29 全部严丝合缝通过，退出码 0**（每个用例的 FAIL/WARN 数都与期望完全一致）。
-核验复算：上游 55 个文件、本地 55 个，**54 个逐字节一致、0 个改动、本地多出 case01_test.md（我们 11-18 的测试稿）**，仅 `CHANGELOG.md` 未下（与技能运行无关）。
+核验复算：**上游 55 个文件、本地 55 个，55 个逐字节一致、0 个改动、0 个多出**。我们自己的测试稿 `case01_test.md` 已按凡哥指示移出技能目录（存 `D:\Hermes\cache\forest_misc\case01_test_2026-11-18.md`），并补下上游 `CHANGELOG.md`，目录与上游一一对应、无任何自有文件。
 结论：forest-laoli-h3 仍是原版 2.1.1，机检 h3_lint.py 经官方 29 例基线验证未失效。
