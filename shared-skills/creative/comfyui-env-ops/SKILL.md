@@ -47,6 +47,7 @@ version: 2.0.0
 | **参考图不生效**（画出来不是那个人/道具变了/写实照片质感）、要绕开工作流的 Qwen 提示词改写链、二采被静默跳过 | `references/h3-ref2va-production-discipline.md` |
 | **打戏/武打/肢体冲突**、一镜塞太多动作被静默抹平、要数「一镜几个动作」 | `references/h3-action-density-and-fight-scenes.md` |
 | **要一场完整打斗 / 30–60 秒成片**、单段 15 秒上限、四段怎么拼、段缝接不上 | `references/h3-long-form-fight-multisegment.md` |
+| **要批量提交十几二十顆跑一条片子**、`build_payload` 返回路径不是 dict、竖屏参数漏传、duration 被 15.0 拒、一顆能塞几段、跨场景混一颗、台词按秒数算节拍、合成时景别怎么统一 | `references/h3-batch-submit-and-segmentation.md` |
 | **提示词该写多长**（70 词还是 500 词）、「官方 ref-en.txt 是官方还是海螺平台」、官方口径与 forest 冲突 | `references/h3-prompt-length-and-official-guide.md` |
 | 附带的脚本、完整实录时间线 | `references/06-其他实录与脚本.md` |
 
@@ -79,4 +80,8 @@ version: 2.0.0
 - **`node_errors` 非空但任务 success = 有支路被静默跳过**（本例二采不跑、只出一采 960×544）→ 去 `outputs` 数文件个数，别只看 status。
 - **任务中断后模型不卸载**（`0 models unloaded`）→ 下个任务 OOM。批量时每任务前 `POST /free`。
 - **UP = Astral星芒，不是"啦啦啦的小黄瓜"**（后者是 LTX2.5 放大方案，已被凡哥否）。辨识特征：带本地提示词优化（QwenTE / comfyUI-llama-TE）。
+- **前端只看得到 `500 Internal Server Error`，真异常在 ComfyUI 进程日志里** → 提交批量脚本一律先 `process poll` 那个跑 `main.py` 的后台会话，别在客户端猜。（2026-11-22 实例：真因是 `build_payload.build()` **返回 JSON 文件路径字符串、不是 dict**，ComfyUI 端报 `'str' object has no attribute 'items'`。）
+- **竖屏漏传 `w=544, h=960` → 静默出横屏**，构图全废且不报错。`build_payload.build()` 默认就是 960×544。
+- **一顆生成里混两个场景 = 一颗废**。3–4 段必须同空间同一张参考图起；跨场景拆两颗。
+- **「一颗 10 秒」这类拍脑袋的时长分配，必导致装不下台词**。先用实测语速算出每句秒数、排出总时长、再定颗数。详见 `references/h3-batch-submit-and-segmentation.md`。
 - **云端别把轮次浪费在"想办法自己连"上** —— 详见 `references/03`。
