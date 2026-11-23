@@ -71,14 +71,18 @@ def main():
     if runner_pids() or live_lock_holder():
         return
 
-    # 真没人跑 → 清掉陈旧锁，起一个
+    # 真没人跑 → 清掉陈旧锁，起一个（必须脱离父进程：不经 cmd.exe、自带句柄）
     if os.path.exists(LOCK):
         try:
             os.remove(LOCK)
         except Exception:
             pass
-    subprocess.Popen(f'cd /d D:\\Hermes\\cache\\emotion && "{PY}" run_all_cg.py >> D:\\Hermes\\cache\\run_daemon.log 2>&1',
-                     shell=True)
+    _env = {k: v for k, v in os.environ.items()
+            if k.upper() not in ("PYTHONPATH", "PYTHONHOME")}
+    _logf = io.open(r"D:/Hermes/cache/run_daemon.log", "a", encoding="utf-8", errors="replace")
+    subprocess.Popen([PY, "run_all_cg.py"], cwd=r"D:/Hermes/cache/emotion",
+                     stdout=_logf, stderr=subprocess.STDOUT, env=_env, close_fds=True,
+                     creationflags=subprocess.CREATE_NO_WINDOW | subprocess.CREATE_NEW_PROCESS_GROUP)
     print(f"跑片守护进程不在了，已重启一个实例。当前进度 {len(done)}/20，失败 {failed or '无'}")
     return
     # 正常运行 → 不说话
