@@ -79,6 +79,7 @@ version: 2.0.0
 - **「顿住两帧 / 冲击帧」这类影视术语 H3 不认**，它当成画面元素 → 改成写可见物理结果（衣服扯紧、重心偏移、道具撞散）。
 - **`node_errors` 非空但任务 success = 有支路被静默跳过**（本例二采不跑、只出一采 960×544）→ 去 `outputs` 数文件个数，别只看 status。
 - **任务中断后模型不卸载**（`0 models unloaded`）→ 下个任务 OOM。批量时每任务前 `POST /free`。
+- **`VAEDecodeAudio` 卡一小时，不是慢，是模型在显存与内存之间反复搬运**。日志特征：同一句 `Model ...VAE prepared for dynamic VRAM loading. 2677MB Staged.` 重复出现多次，配合 `Using RAM pressure cache`；同时 `nvidia-smi` GPU 100%、内存剩不到 2G。根因是显存跑满后模型被踢出显存、下次用时再从硬盘搬回，每搬 2.7G 就是几分钟，搬八次就一小时。**实测有效：一次只排一段、段与段之间重启实例**（两段单独排均顺利出片）；`--disable-dynamic-vram`、加内存只是候选，未实测。**先数日志里同一句模型加载重复了几次，再判断是真卡还是搬运**。
 - **UP = Astral星芒，不是"啦啦啦的小黄瓜"**（后者是 LTX2.5 放大方案，已被凡哥否）。辨识特征：带本地提示词优化（QwenTE / comfyUI-llama-TE）。
 - **前端只看得到 `500 Internal Server Error`，真异常在 ComfyUI 进程日志里** → 提交批量脚本一律先 `process poll` 那个跑 `main.py` 的后台会话，别在客户端猜。（2026-11-22 实例：真因是 `build_payload.build()` **返回 JSON 文件路径字符串、不是 dict**，ComfyUI 端报 `'str' object has no attribute 'items'`。）
 - **竖屏漏传 `w=544, h=960` → 静默出横屏**，构图全废且不报错。`build_payload.build()` 默认就是 960×544。

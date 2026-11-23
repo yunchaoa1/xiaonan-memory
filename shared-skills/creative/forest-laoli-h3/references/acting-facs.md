@@ -110,3 +110,124 @@ H3 对程度副词（`slightly` / `very` / `a little`）不敏感，容易幅度
 3. **是不是结论**？"她很委屈"是结论；"眉毛内侧上抬 + 下巴起皱"是过程。**只写过程**。
 
 三问有一个"否"，回 `acting-recipes.md` 查对应情绪的四区配方。
+
+---
+
+## 八、物理链三层（一个动作写到多厚，H3 才会真的做）
+
+> **为什么单列这一节**：前面七节解决了「写哪个部位」，没解决「写多厚」。2026-11-23 实战：200 秒成片里她的眉 0 次、眼皮 0 次——四区一个不缺，但每区只有一句话。H3 把「一句话」读成**状态**，不读成**动作**：眉毛是「抬着的」，不是「抬起来的」。
+> **结论先给**：一个表演动作必须写到三层——**肌肉怎么动 → 皮肤表面出现什么 → 保持多久**。三层缺一层，这个动作就退化成一张姿势。
+
+### 八·一 三层各写什么
+
+| 层 | 写什么 | 词性 | 缺了会怎样 |
+|---|---|---|---|
+| **L1 肌肉** | 哪块肌肉、往哪个方向、幅度多少 | 动词 + 部位 | 没有动作，只有表情包 |
+| **L2 表面** | 皮肤/布料上出现什么：竖纹、沟、皱、发白、鼓起、堆叠、拉扯 | **可见名词**（纹/沟/皱/白/鼓） | 有动作但没痕迹，H3 只能调通用模板 |
+| **L3 保持** | 这个痕迹停在脸上几拍/几秒，**被什么打断** | 时间 + 下一个动作 | 动作一闪而过，24fps 抓不住，观众看不见 |
+
+**L2 是全片最容易漏的一层，也是 H3 唯一认的「动作已经发生」的证据。** L1 是意图，L2 是结果，L3 是观众来得及看见的那一瞬。
+
+### 八·二 脸部三层模板（四区都用这一套）
+
+| 演什么 | L1 肌肉 | L2 表面痕迹 | L3 保持 |
+|---|---|---|---|
+| 委屈 | `the inner ends of her brows lift` | `two short vertical creases appear between her brows` | `she holds it for two beats before her brows drop back` |
+| 忍泪 | `her jaw muscles tighten` | `the skin of her chin creases, two ridges stand out at the sides of her jaw` | `she keeps her jaw clenched through the next line, then swallows and it lets go` |
+| 假笑 | `her mouth stretches sideways` | `the skin under her eyes stays flat, no bunching at the lower lids` | `she holds the smile until he looks away, then it drops off her face` |
+| 被戳中 | `her lids hang low, her gaze drops to the table` | `a single crease deepens between her brows` | `she stays like that for three seconds, then her thumb presses into her knuckle` |
+| 愣住 | `her jaw goes slack` | `her lips part by a finger's width, the lower lip hangs` | `she holds the open mouth through his whole next sentence, then swallows` |
+
+**写法口径**：L2 一律用**能指着看的东西**（一道纹、两排骨、一指宽的缝、指节上的白），不许用形容词。躲不开否定时改成正向锚定：不写 `no bunching under her eyes` 这类孤句，写在 `the skin under her eyes stays flat` 后面（见第六节禁令 1）。
+
+### 八·三 肢体三层 = 五段物理链的压缩版
+
+肢体动作的三层，就是 `h3-action-density-verification-2026-11-21.md` 第三节那五段的归并：
+
+| 三层 | 对应五段 | 写什么 |
+|---|---|---|
+| **L1** | ① 出发 + ② 路径 + ③ 落点 | 哪个部位出发、沿一条看得见的线、精确落到哪块骨头上 |
+| **L2** | ④ 接触后果 | 受力方的几何变化 + 布料/皮肤被压出的堆叠与拉扯 |
+| **L3** | ⑤ 重心与恢复 | 位移量（半步/几厘米）+ 稳身动作 + 停住几拍 |
+
+**缺 L1=摆姿势，缺 L2=手穿过去了也没人发现，缺 L3=动作做完人就僵在那儿（实测 57 秒片子里 26 秒静止就是这么来的）。**
+
+### 八·四 2026-11-21 实测：同一颗镜，64 词 vs 516 词
+
+**条件全部相同**：同一段剧情（他绕过桌子推她肩膀）、5.17 秒／124 帧、同三张参考图（人物四视图 ×2 + 办公室）、同机位（40 度侧角手持锁定）、同风格句。唯一变量＝写法。
+
+**短版（64 词，一句话式）**：
+
+```
+He rounds the desk corner toward <Subject 1> and plants one palm flat against her left shoulder.
+Her shoulder is shoved back and she staggers half a step, her heel knocking the chair leg.
+The desk and the chair stay where they are.
+The movement stops and the picture holds still for the last second.
+```
+
+**出片结果**：手掌搭在肩上，她**笔直站着**、面带笑、双手垂着。画面读作「领导拍肩安慰」，**完全没有推力**。
+
+**长版（516 词，三层物理链）关键段**：
+
+```
+His open palm travels along a clear, visible line and lands flat on the outer edge of her
+left shoulder, just below the collarbone. The palm does not pass through her body.
+The moment the palm lands, its forward pressure drives her whole upper body backward:
+her left shoulder is pushed behind the line of her hips, her head tips back, and the
+fabric of the grey cardigan bunches and creases around his hand.
+Her weight transfers onto her back foot. She takes half a step backward, and her heel
+strikes the base of the black mesh chair with a small recoil.
+Her arms swing up loosely in front of her chest as she fights for balance.
+```
+
+**出片结果**：上身被推得后仰、眼睛紧闭眉头皱、双臂张开、**真的退开了半步**（3.6 秒位置明显比 2.8 秒靠后）。
+
+**结论：同一颗镜、同一时长，516 词做的动作比 64 词多。词数不是限制器，「写没写到 L2/L3」才是。** 另有对照：14.3 秒长镜写 **760 / 836 / 759 / 797 词**，四段全部跑通、零 node_errors、八拍动作做完。
+
+### 八·五 一句话式 vs 三层式，逐拍对照
+
+同一个动作，两套写法摆在一起看，缺的是哪一层一目了然（全部取自上面的实测原文）：
+
+| 拍 | 一句话式（64 词版） | 三层式（516 词版） | 缺的是 |
+|---|---|---|---|
+| 接触 | `plants one palm flat against her left shoulder` | `His open palm travels along a clear, visible line and lands flat on the outer edge of her left shoulder, just below the collarbone.` | L1 的**路径**：没有线，手是瞬移过去的 |
+| 受力 | `Her shoulder is shoved back` | `its forward pressure drives her whole upper body backward: her left shoulder is pushed behind the line of her hips, her head tips back` | L2 的**几何**：只动肩＝局部抖一下；肩过胯线+头后仰＝整个人被推 |
+| 痕迹 | （无） | `the fabric of the grey cardigan bunches and creases around his hand` | **整个 L2**：布料堆叠是「力真的传过去了」的唯一证据 |
+| 位移 | `her heel knocking the chair leg` | `Her weight transfers onto her back foot. She takes half a step backward, and her heel strikes the base of the black mesh chair with a small recoil.` | L3 的**重心**：先移重心再退，才有「退」；只写脚跟碰椅子，是退完之后的事 |
+| 恢复 | （无） | `Her arms swing up loosely in front of her chest as she fights for balance.` | L3 的**收**：没有恢复动作，人就是被摆过去的道具 |
+| 收尾 | `The movement stops and the picture holds still for the last second.` | —（长版摘录到此处，靠重心与呼吸自然收） | 短版把「保持」写在**画面**上，长版把「保持」写在**人**身上 |
+
+**判据**：一条 3 秒的动作，至少 3 句；**每层至少 1 句**；其中必须有一句是纯 L2（只写痕迹，不写动作）。写完数一遍——**这一镜里「皮肤或布料上留下来的东西」出现在哪句话里？** 答不上来就是写太薄了。
+
+**同一条判据反过来用**：把 L2 那句删掉再读一遍，如果读起来还成立，说明 L1 写得太笼统（`plants one palm` 就是），得先补路径和落点。
+
+### 八·六 什么时候该用三层，什么时候一句话就够
+
+| 镜型 | 用几层 | 写法 | 词量参考 |
+|---|---|---|---|
+| **大特写**（眼睛/嘴/手）情绪镜 | 三层，但 L2 只写在**眼周、唇线、指节** | 一道纹、一排骨、一处发白，占满整镜 | 一个动作 3 句起 |
+| **特写**情绪镜（裂、忍、假笑、答不上来、愣住） | **三层全写**，递进拆成两镜（第五节） | L1 一镜、L2+L3 一镜 | 一个动作 40–80 词 |
+| **近景**关键动作（递东西、抓袖口、握手、擦眼泪） | 三层各一句 | L2 写布料/指节，L3 写停几拍 | 一个动作 30–50 词 |
+| **中景**走位/交代（进门、坐下、转身） | **一句话就够** | 只写方向 + 结果 | 一句 15–30 词 |
+| **全景 / 远景 / 过场** | **一句话** | 谁从哪到哪，不写脸 | 一句 |
+| **群戏背景人** | **一句话** | 只写时间差（谁慢半拍） | 一句 |
+
+**判据一句话：这镜的戏在脸上，就用三层；戏在空间里，一句话就够。**
+
+两个高发误用：
+- **远景写三层**——脸在画面里只有几十像素，L2 的纹和沟会被糊成一团（第四节：景别只能写它装得下的东西）。
+- **特写只写一句话**——最贵的镜头配最薄的写法，就是 2026-11-23 那部片子「眉 0 次、眼皮 0 次」的直接原因。
+
+### 八·七 三条硬规矩 + 自检三问
+
+1. **三层缺一层，就不是动作，是姿势。** 尤其不能省 L2。
+2. **L3 必须写在动作上，不能写在画面上。** ❌ `the picture holds still`（观众看到的是停摆）→ ✅ `she keeps her jaw clenched through the next line`（观众看到的是她在忍）。
+3. **L2 必须装在景别里。** 大特写写「下巴起皱」会被裁掉；特写写「布料堆叠」看不见腰。写之前先问：这一层在当前景别里有没有像素。
+
+**自检三问（每写一个表演句必过）**：
+
+1. **皮肤上有痕迹吗**？这句里有纹、沟、皱、白、鼓、堆叠中的任何一个吗？
+2. **保持了几拍**？这个痕迹被哪个下一动作打断？（答「一直保持着」＝没写 L3）
+3. **删掉 L2 还成立吗**？成立 → L1 太笼统，回去补路径和落点。
+
+三问全过，这个动作才配得上一个特写。

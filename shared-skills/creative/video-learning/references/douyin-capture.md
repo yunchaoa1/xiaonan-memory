@@ -69,14 +69,35 @@ mkdir -p "$LOCALAPPDATA/Temp/vid/profile"
   --no-first-run --no-default-browser-check about:blank
 ```
 
-健康检查（必须打印出 `Chrome/xxx` 才算起来了）：
+健康检查（**必须 curl 通端口才算起来了**，光看进程启动不够——见下方 PITFALL 2）：
 
 ```bash
-curl -s http://localhost:9222/json/version
-curl -s http://localhost:9222/json/list   # 拿 page 的 webSocketDebuggerUrl
+curl -s http://127.0.0.1:9222/json/version    # 要打印 Chrome/xxx
+curl -s http://127.0.0.1:9222/json/list       # 拿 page 的 webSocketDebuggerUrl
 ```
 
 > 不要用 `&` 后台化（会被拦），用 `terminal(background=true)`。任务完成后 kill 掉这个进程。
+
+**⚠️ PITFALL 1：一律写 `127.0.0.1`，不要写 `localhost`（2026-11-23 实测）**
+playwright 解析 `localhost` 会先走 IPv6 `::1`，而 Chrome 的调试端口只监听 IPv4 →
+`BrowserType.connect_over_cdp: connect ECONNREFUSED ::1:9222`。
+**改成 `http://127.0.0.1:9222` 立刻通**。curl 也同样写 `127.0.0.1`，避开同类歧义。
+
+**⚠️ PITFALL 2：profile 目录被占用 → Chrome 静默退出（2026-11-23 实测）**
+复用同一个 `--user-data-dir`（如 `Temp/vid/profile`）时，Chrome 会把启动命令转交给已有实例
+然后**自己退出**：日志里明明打印了 `DevTools listening on ws://127.0.0.1:9222/...`，
+但端口从未真正监听，`netstat` 里只剩一条 `TIME_WAIT`，playwright 报 `ECONNREFUSED`。
+**治法**：每次换一个干净 profile 目录（`profile2`、`p3`…），并加 `--headless=new --remote-allow-origins=*`：
+
+```bash
+"/c/Program Files/Google/Chrome/Application/chrome.exe" \
+  --headless=new --remote-debugging-port=9222 --remote-allow-origins=* \
+  --user-data-dir="C:/Users/<user>/AppData/Local/Temp/vid/p3" \
+  --no-first-run --no-default-browser-check --disable-gpu about:blank
+```
+
+判据：`process(action='poll')` 看到 `status: exited` 而端口不通 ＝ 撞上本条，换目录重起，**别反复重启同一个 profile**。
+headless 模式下抖音视频页仍能正常渲染并吐出标题/章节要点（2026-11-23 实测拿到完整项目简介）。
 
 ### 2. playwright `connect_over_cdp` 驱动它 + 记录网络
 
@@ -86,7 +107,7 @@ from playwright.sync_api import sync_playwright
 
 url = "https://www.douyin.com/video/<id>"
 with sync_playwright() as p:
-    b = p.chromium.connect_over_cdp("http://localhost:9222")
+    b = p.chromium.connect_over_cdp("http://127.0.0.1:9222")   # 必须 IPv4，localhost 会解析到 ::1 被拒
     ctx = b.contexts[0]
     page = ctx.pages[0]
     reqs = []

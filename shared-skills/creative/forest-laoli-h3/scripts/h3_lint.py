@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-h3_lint.py — MiniMax H3 提示稿机检（H1~H36 · 支持单段与多段合稿自动切分校验）
+h3_lint.py — MiniMax H3 提示稿机检（H1~H38 · 支持单段与多段合稿自动切分校验）
 
 用法:
     python h3_lint.py prompt.md --duration 15
@@ -9,6 +9,9 @@ h3_lint.py — MiniMax H3 提示稿机检（H1~H36 · 支持单段与多段合�
     python h3_lint.py multi_segments.md --duration 15 --whole  # 强制按单段整体解析
     python h3_lint.py prompt.json
     python h3_lint.py prompt.md --duration 12 --json
+
+    # 对比新旧结果：关掉表演层(H37)/语调层(H38)两条新规则
+    python h3_lint.py prompt.md --duration 15 --no-h37 --no-h38
 
 输入支持:
     1. 纯文本 / Markdown（单段或多段合稿）：用字段名做小标题（## detailed_description 或 detailed_description:）
@@ -349,7 +352,81 @@ def fmt_sec(sec):
     return re.search(r"(\d{2}):(\d{2})\.(\d{3})", sec)
 
 
-def check(text, duration, aspect=None):
+# ---------- H37 表演层：四区肌肉词表（依据 references/acting-facs.md §一） ----------
+# 眉说情绪 / 眼说真假 / 口说态度 / 颌说力度。只看"这个部位有没有被写进画面"，
+# 不判对错——判的是"压根没写动作"这类漏项（H13 只查结论词，查不出漏写）。
+FACE_ZONES = (
+    ("眉", re.compile(r"\b(?:brows?|eyebrows?|foreheads?|frowns?|frowning)\b", re.I)),
+    ("眼", re.compile(r"\b(?:eyes?|lids?|eyelids?|blinks?|blinking|pupils?|gaze|lashes)\b", re.I)),
+    ("口", re.compile(r"\b(?:lips?|mouths?)\b", re.I)),
+    ("颌", re.compile(r"\b(?:jaws?|chins?|teeth|tooth|throats?|swallows?|swallowing|cheeks?)\b", re.I)),
+)
+# 插入镜（手/道具/门锁特写）根本装不下脸，不该按"脸不动"判——按景别头 + 非脸部主体识别。
+FACE_INSERT_RE = re.compile(
+    r"\b(?:extreme close[- ]?up|close[- ]?up|close shot|macro|insert|detail shot)"
+    r"[^.;]{0,30}?\bof\b[^.;]{0,40}?\b"
+    r"(?:hands?|fingers?|fingertips?|wrist|thumb|feet|foot|shoes?|sleeve|cuff|hem|skirt|heel|"
+    r"tea ?cup|cup|saucer|pot|bowl|plate|tray|door|handle|key|letter|ledger|certificate|booklet|"
+    r"knife|blade|phone|ring|bag|box|envelope|paper|document|table|floor|wall|window|smoke|dust|light)\b",
+    re.I,
+)
+# 画外声的"闭口证据"是格式要求（H9），不是表演动作，计区时要先剥掉。
+FACE_LIPS_CLOSED_RE = re.compile(
+    r"\b(?:the\s+)?(?:[A-Za-z'-]+\s+)?lips\s+remain\w*\s+completely\s+closed\b", re.I
+)
+OS_VO_RE = re.compile(r"off-screen voiceover", re.I)
+
+
+def face_zones_of(txt):
+    """返回这段镜行里被写到的四区（眉/眼/口/颌），顺序固定。"""
+    txt = re.sub(r"\beye[\s-]level\b", " ", txt, flags=re.I)  # 机位术语不算眼动作
+    return [name for name, rx in FACE_ZONES if rx.search(txt)]
+
+
+# ---------- H38 语调层：台词腔调的"短语核" ----------
+# 只取 says … <d> 之间的腔调描述，剥掉 in a / at the / same 这类虚词，
+# 留下「形容词 + voice/pace/pitch…」做指纹。"low flat voice" 反复用 = 一个调。
+VOICE_CLAUSE_RE = re.compile(r"\bsays?\b([^:]{0,140}?)(?=:?\s*<d>)", re.I)
+TONE_NUCLEUS = {"voice", "voices", "pace", "pitch", "timbre", "tone", "register"}
+TONE_STOP = {
+    "in", "a", "an", "the", "same", "of", "at", "her", "his", "their", "its",
+    "with", "and", "on", "one", "held", "that", "this", "as", "very", "almost",
+}
+
+
+def tone_phrase_of(clause):
+    """把 'in the same low flat voice at a slow pace' 归一成 'low flat voice / slow pace'。"""
+    voice_core = pace_core = None
+    for part in re.split(r"[,;]", clause):
+        words = [w for w in re.sub(r"[^a-z'\- ]", " ", part.lower()).split() if w not in TONE_STOP]
+        buf = []
+        for w in words:
+            if w in TONE_NUCLEUS:
+                if buf:
+                    core = " ".join(buf[-3:] + [w])
+                    if w.startswith("voice") or w in ("timbre", "tone", "register"):
+                        voice_core = voice_core or core
+                    else:
+                        pace_core = pace_core or core
+                buf = []
+            else:
+                buf.append(w)
+    if voice_core and pace_core:
+        return f"{voice_core} / {pace_core}"
+    return voice_core or pace_core
+
+
+def tone_phrases_of(text):
+    """按出现顺序返回全篇的腔调短语（含重复）。"""
+    out = []
+    for m in VOICE_CLAUSE_RE.finditer(text):
+        ph = tone_phrase_of(m.group(1))
+        if ph:
+            out.append(ph)
+    return out
+
+
+def check(text, duration, aspect=None, skip=(), tone_ledger=None, seg_label="本段"):
     r = Report()
     secs = split_sections(text)
     body = ""
@@ -1071,6 +1148,61 @@ def check(text, duration, aspect=None):
         r.ok("H35", f"氛围层齐（光位={'有' if has_light else '缺'} / "
                     f"空气={'有' if has_air else '缺'} / 前景={'有' if has_fore else '缺'}）")
 
+    # ---------- H37 表演层缺失（每镜四区动作） ----------
+    # 2026-11-23 定案：H13 只查「写没写结论词」，查不出「压根没写动作」。
+    # 《暖阁》20 段稿机检全绿、成片里女主角眉 0 次/眼睑 0 次/嘴唇 1 次——
+    # 缺口就在这一条：说话的时候脸必须动 ≥2 区，否则 H3 只给一张静止的脸。
+    if "H37" not in skip and shots:
+        thin_lines, silent_empty = [], []
+        for i, m in enumerate(shots):
+            seg = body[m.end(): shots[i + 1].start() if i + 1 < len(shots) else len(body)]
+            spoken = "<d>" in seg
+            clean = re.sub(r"<d>.*?</d>", " ", seg, flags=re.S)
+            clean = re.sub(r'"[^"]*"', " ", clean)
+            clean = FACE_LIPS_CLOSED_RE.sub(" ", clean)   # H9 闭口证据不是表演动作
+            head = re.split(r";|\.\s+[A-Z]", clean, 1)[0]
+            if FACE_INSERT_RE.search(head):
+                continue                                   # 手/道具插入镜装不下脸
+            zones = face_zones_of(clean)
+            n = int(m.group(1))
+            off_voice = spoken and bool(OS_VO_RE.search(clean))
+            if spoken and not off_voice and len(zones) < 2:
+                miss = [nm for nm, _rx in FACE_ZONES if nm not in zones]
+                thin_lines.append(
+                    f"Shot {n} 只有 {len(zones)} 区动作（{'/'.join(zones) or '无'}），缺{'/'.join(miss)}"
+                )
+            elif (not spoken or off_voice) and not zones:
+                silent_empty.append(f"Shot {n}")
+        if thin_lines:
+            more = " 等" if len(thin_lines) > 6 else ""
+            r.fail("H37", f"台词镜脸部动作不足（开口时脸必须动 ≥2 区）：{'；'.join(thin_lines[:6])}{more}"
+                          f"——这一镜脸几乎不动，按 acting-facs.md §一 补第二区"
+                          f"（眉说情绪 / 眼说真假 / 口说态度 / 颌说力度）")
+        if silent_empty:
+            r.warn("H37", f"无开口镜 0 区动作（纯环境镜/纯听戏镜可接受，确认是有意为之）："
+                          f"{', '.join(silent_empty[:8])}")
+        if not thin_lines and not silent_empty:
+            r.ok("H37", f"每镜四区动作合规（{len(shots)} 镜，台词镜均 ≥2 区）")
+
+    # ---------- H38 语调重复（一个调） ----------
+    # 2026-11-23 定案：全片 `low flat voice` 用了 11 次，人耳听着就是一个人在念稿。
+    # 同一腔调短语在本段 ≥2 次 → FAIL（说话人没起伏）；全片 ≥3 次 → WARN 并列出位置。
+    if "H38" not in skip:
+        tone_seq = tone_phrases_of(text)
+        if tone_ledger is not None:
+            tone_ledger.append((seg_label, tone_seq))
+        tone_cnt = {}
+        for ph in tone_seq:
+            tone_cnt[ph] = tone_cnt.get(ph, 0) + 1
+        tone_dup = {k: v for k, v in tone_cnt.items() if v >= 2}
+        if tone_dup:
+            worst = sorted(tone_dup.items(), key=lambda kv: -kv[1])[:3]
+            detail = "；".join(f"'{k}' 在同一段用了 {v} 次" for k, v in worst)
+            r.fail("H38", f"{detail}——说话人一个调，情绪没有起伏"
+                          f"（换腔调：压低再松开 / 先压后放 / 断在词中间，幅度见 acting-facs.md §三）")
+        elif tone_seq:
+            r.ok("H38", f"台词腔调 {len(tone_seq)} 处无重复")
+
     # ---------- H14 画幅全片一致（推荐 9:16，16:9 实测可用） ----------
     # v2.0：不再是"恒 9:16"。9:16 是推荐档，16:9 实测跑得通；只禁 auto/adaptive 与段间混用。
     # v2.0.2：吃下 9：16（全角）与 16x9 写法——原来只认半角冒号，中文输入法打出的全角冒号
@@ -1212,14 +1344,21 @@ def check_cross_segment_slots(segments):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="MiniMax H3 提示稿机检 H1~H36")
+    ap = argparse.ArgumentParser(description="MiniMax H3 提示稿机检 H1~H38")
     ap.add_argument("path", help="prompt.md / prompt.txt / payload.json")
     ap.add_argument("--duration", type=float, default=None, help="段时长（秒），用于 H2/H3")
     ap.add_argument("--aspect", default=None, help="画幅外部声明（渲染端节点参数决定时用）：9:16（默认推荐）或 16:9（横屏）")
     ap.add_argument("--whole", action="store_true", help="强制按单段整份校验（不自动切分多段合稿）")
     ap.add_argument("--json", action="store_true", help="以 JSON 输出结果")
     ap.add_argument("--quiet", action="store_true", help="只显示 FAIL/WARN")
+    ap.add_argument("--no-h37", action="store_true", help="关掉 H37 四区动作缺失（表演层）——用于跟旧结果对比")
+    ap.add_argument("--no-h38", action="store_true", help="关掉 H38 语调重复（一个调）——用于跟旧结果对比")
     args = ap.parse_args()
+    skip = set()
+    if args.no_h37:
+        skip.add("H37")
+    if args.no_h38:
+        skip.add("H38")
 
     p = Path(args.path)
     if not p.exists():
@@ -1238,14 +1377,17 @@ def main():
         args.aspect = json_aspect
 
     segments = [(None, text)] if args.whole else split_multi_segments(text)
+    tone_ledger = []          # [(段标签, [腔调短语…])]，供 H38 全片级统计
     if len(segments) == 1:
-        rep = check(text, duration, aspect=args.aspect)
+        rep = check(text, duration, aspect=args.aspect, skip=skip,
+                    tone_ledger=tone_ledger, seg_label="本段")
     else:
         rep = Report()
         seen_global = set()          # 全片级告警（如"未声明画幅"）只报一次，不按段刷屏
         GLOBAL_CODES = ("H14",)
         for label, seg_txt in segments:
-            sub = check(seg_txt, duration, aspect=args.aspect)
+            sub = check(seg_txt, duration, aspect=args.aspect, skip=skip,
+                        tone_ledger=tone_ledger, seg_label=label or "本段")
             for lvl, code, msg in sub.items:
                 if code in GLOBAL_CODES:
                     key = (code, re.sub(r"^\[[^\]]*\]\s*", "", msg or ""))
@@ -1261,6 +1403,25 @@ def main():
                 rep.fail("H34", err)
         else:
             rep.ok("H34", f"跨段图槽一致性通过（共 {len(segments)} 段）")
+
+        # H38 全片级：同一腔调短语出现 ≥3 次 → 跨段一个调（段内重复已由 H38 FAIL 抓过）
+        if "H38" not in skip and tone_ledger:
+            tally = {}
+            for label, seq in tone_ledger:
+                for ph in seq:
+                    tally.setdefault(ph, []).append(label)
+            flat = [(ph, labels) for ph, labels in tally.items() if len(labels) >= 3]
+            if flat:
+                flat.sort(key=lambda kv: -len(kv[1]))
+                parts = []
+                for ph, labels in flat[:3]:
+                    uniq = list(dict.fromkeys(labels))
+                    shown = "、".join(uniq[:6]) + ("…" if len(uniq) > 6 else "")
+                    parts.append(f"'{ph}' {len(labels)} 次（{shown}）")
+                more = f" 等 {len(flat)} 种腔调在重复" if len(flat) > 3 else ""
+                rep.warn("H38", f"全片同一腔调反复用：{'；'.join(parts)}{more}"
+                                f"——同一副嗓子从头念到尾，情绪没有起伏；"
+                                f"按段换腔调（一低冷慢 / 一高亮快 / 一次只说半句）")
 
     # H36 图槽越界（仅载荷带 images 数组时生效，单段/多段都查整份）
     h36 = check_picture_overflow(text, images)
