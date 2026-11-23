@@ -396,6 +396,18 @@
 
 ## 九、技术环境
 
+**2026-11-23 Hermes 内核升级：v0.20.6（2026.8.27）→ main @ 0f602c5（2026-11-22，比最新正式版 v0.23.3 还新两天）**
+- 跨 0.21/0.22/0.23 三个大版本、50167 个提交；运行时 Python 3.11 → **3.14.9**；5 个档案配置 v32 → v54 自动迁移。
+- 备份（可回滚）：`D:\Hermes\backups\pre-update-2026-11-23-123929.zip`（7.4G 全量，`hermes import` 恢复）+ `backups\hermes-update-20261123\`（config/SOUL/记忆/技能包/state.db/6 个改动原件/完整补丁）。
+- 坑①（最坑）：`apps/*/src` 下积了 **1645 个 8 月旧编译残渣**（`.js` 与 `.ts` 同名并存，构建优先读旧 `.js`）→ Web/桌面两处构建全挂、报一堆 `MISSING_EXPORT`。删净后 web 构建 3.4 秒通过。**以后见 MISSING_EXPORT 先查同名 `.js` 残渣，别怀疑源码**。
+- 坑②：生图 4K 自定义尺寸上游仍未支持 → 补丁重打在 `plugins/image_gen/openai/__init__.py` 的 `_resolve_size`；独立 key / 中转地址上游已原生支持，改用新字段 `image_gen.openai.key_env: IMAGE_GEN_OPENAI_API_KEY` + `base_url: https://api-yue88.xyz/v1`。实测横 3840×2160 / 竖 2160×3840 / 方 3840×3840，未知比例回落 1024×1024。
+- 坑③：edge-tts 429 退避补丁上游没有 → 重打到新位置 `tools/tts_tool_providers.py` 的 `_generate_edge_tts`（403 不重试，真故障不吞）。**好消息：`tools/lazy_deps.py` 不再硬钉 `edge-tts==7.2.7`，降级复发的根没了**；现装 7.3.1、令牌 `2-`、实测合成 20,880 字节。
+- 坑④：看图缩放上游已内置（`_RESIZE_TARGET_BYTES`/`_EMBED_MAX_DIMENSION`），旧补丁不必再打。
+- 坑⑤：更新器有"虚拟环境被占用"安全闸（桌面后端/抓取服务锁 `.pyd`）→ 必须关 App 才能换依赖；它在安全闸前已完成全量备份，代码未被改动。
+- 迁移副产物：`display.personality` 被重置（已改回 **kawaii**）、`background_process_notifications` all→concise、`delegation.max_iterations` 50→250、connections 工具集对 cli 开启。
+- 新增能力（0.22/0.23）：改 SOUL/技能后老会话下一轮生效（`hermes sessions refresh-prompts`）、会话倒带 `/rewind`、定时任务共享缓存省 token、可中止运行中的定时任务、压缩摘要标 `UNVERIFIED`、内置技能 58→44（Word/PPT/Excel 合为 `microsoft-office`）。
+- 遗留：桌面外壳仍是 6-30 旧构建，重建要关 App 跑 `hermes desktop --build-only`（残渣已清，现在能过）。state.db 3.5G，可跑 `hermes sessions optimize-storage` 省约 2.1G。
+
 ComfyUI **v0.35.0** · RTX 5080 16GB · CUDA 13.0 · torch 2.13.0+cu130 · 端口18188 · Python 3.12.11（`.venv` 由 uv 建，**无 pip —— 装包用 `uv pip install --python D:/SDkecheng/ComfyUI/.venv/Scripts/python.exe`**）
 启动脚本 `D:/admin桌面/start_comfyui.bat`：**2026-09-14 起带 `--disable-cuda-malloc`**（云端必带，不带二采崩在显存分配；原文件备份 `.bak.20260914`）。⚠️ 原生 curl/程序**不认 MSYS 的 `/d/...` 路径**，给它们必须传 `D:/...` 原生路径（本机踩过：下载全空转）。
 
